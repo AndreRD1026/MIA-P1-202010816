@@ -48,28 +48,74 @@ void Comando::crearArchivo(string tam,string path, string ajuste, string dim){
 
     if (tamano > 0)
     {
+
+        string ruta = "";
+        string rutacomillas = "";
+
+        //if(path.)
+
+        int inicio = 0;
+        int fin = path.find("/");
+        string delimitador = "/";
+
+        while(fin != -1){
+            ruta += path.substr(inicio,fin - inicio);
+            ruta += "/";
+            inicio = fin + delimitador.size();
+            fin = path.find("/", inicio);
+        }
+
+        string name = path.substr(path.find_last_of("/") + 1);
+
+        string extension = name.substr(0, name.find("."));
         
 
-        // Preparacion Bloque
+        
+
+        // Escritura de Bloque en Archivo
+        int pos = name.find(".");
+        name.erase(0,1+pos);
+
+        if(name != "dsk"){
+            cout<<"La extension del archivo no corresponde a .dsk"<<endl;
+            return;
+        }
+
+            // Preparacion Bloque
         char bloque[1024];
         for (int i = 0; i < 1024; i++)
         {
             bloque[i] = '\0';
         }
 
-        // Escritura de Bloque en Archivo
+
         int limite = 0;
         FILE *archivo_binario;
-        string name = path.substr(path.find_last_of("/") + 1);
-        cout<<"que sale? "<<name<<endl;
+
+
+        //Creacion del path
+        string crear = "mkdir -p " + ruta;
+        system(crear.c_str());
+
+        //string permiso = "sudo chmod 777 " + ruta;
+        //system(permiso.c_str());
+        
+        //cout<<"que sale? "<<name<<endl;
         // path = comando.substr(comando.find_last_of("/") + 1);
-        archivo_binario = fopen(name.c_str(), "w");
-        while (limite != size_file)
+        if ((archivo_binario = fopen(path.c_str(), "w+b")) == NULL){
+            cout<<"Error"<<endl;
+        } else {
+
+        
+
+            while (limite != size_file)
         {
             fwrite(&bloque, 1024, 1, archivo_binario);
             limite++;
         }
         fclose(archivo_binario);
+        }
+        
     }
     else
     {
