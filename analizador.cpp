@@ -60,8 +60,79 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
                 param = replace_txt(param, "\"", "");
                 cmd.param.Unit = param;
                 transform(cmd.param.Unit.begin(), cmd.param.Unit.end(), cmd.param.Unit.begin(), ::tolower);
+            } else{
+                cout<<"Un parametro es incorrecto"<<endl;
+            }
+        }
+        cmd.identificacionCMD(cmd.param);
+    } else if(comando== "rmdisk"){
+        cmd.param.Comando = "rmdisk";
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">path=") == 0){
+                param = replace_txt(param, ">path=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Path = param;
+            } else {
+                cout<<"Un parametro es incorrecto"<<endl;
+            }
+        }
+        cmd.identificacionCMD(cmd.param);
+    }  else if(comando== "fdisk"){
+        cmd.param.Comando = "fdisk";
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">path=") == 0){
+                param = replace_txt(param, ">path=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Path = param;
+            } else if(param.find(">size=") == 0){
+                param = replace_txt(param, ">size=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Size = param;
+            } else if(param.find(">name=") == 0){
+                param = replace_txt(param, ">name=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Name = param;
+            } else if(param.find(">unit=") == 0){
+                param = replace_txt(param, ">unit=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Unit = param;
+                transform(cmd.param.Unit.begin(), cmd.param.Unit.end(), cmd.param.Unit.begin(), ::tolower);
+            }else if(param.find(">type=") == 0){
+                param = replace_txt(param, ">type=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Type = param;
+                transform(cmd.param.Type.begin(), cmd.param.Type.end(), cmd.param.Type.begin(), ::tolower);
+            } else if(param.find(">fit=") == 0){
+                param = replace_txt(param, ">fit=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Fit = param;
+                transform(cmd.param.Fit.begin(), cmd.param.Fit.end(), cmd.param.Fit.begin(), ::tolower);
+            }else if(param.find(">delete=") == 0){
+                param = replace_txt(param, ">delete=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Delete = param;
+            }else if(param.find(">add=") == 0){
+                param = replace_txt(param, ">add=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Add = param;
+            }    else {
+                cout<<"Un parametro es incorrecto"<<endl;
             }
         }
         cmd.identificacionCMD(cmd.param);
     }
+    else {
+        cout<<"\n ¡¡ Error !!  Comando no reconocido por el sistema"<<endl;
+    }
+
+    cmd.param.Comando = " ";
+    cmd.param.Size = " ";
+    cmd.param.Path = " ";
+    cmd.param.Fit = " ";
+    cmd.param.Unit = " ";
+    cmd.param.Type = " ";
+    cmd.param.Delete = " ";
+    cmd.param.Add = " ";
 }
