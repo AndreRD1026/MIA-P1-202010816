@@ -25,13 +25,13 @@ typedef struct{
 
 
     //Borrar estos
-    string Tamano = " ";
-    string Dimensional = " ";
-    string Id = " ";
-    string Nombre = " ";
-    string Telefono = " ";
-    string Direccion = " ";
-    string X = " ";
+    // string Tamano = " ";
+    // string Dimensional = " ";
+    // string Id = " ";
+    // string Nombre = " ";
+    // string Telefono = " ";
+    // string Direccion = " ";
+    // string X = " ";
 }Parametros;
 
 typedef struct {
@@ -65,12 +65,12 @@ typedef struct {
     char part_name[16]; // Nombre de la particion
 } EBR;
 
-typedef struct{
-    int id;
-    char nombre[15];
-    int telefono;
-    char direccion[15];
-} Ejemplo;
+// typedef struct{
+//     int id;
+//     char nombre[15];
+//     int telefono;
+//     char direccion[15];
+// } Ejemplo;
 
 class Comando{
     public:
@@ -78,12 +78,15 @@ class Comando{
         void identificacionCMD(Parametros p);
         void comando_mkdisk(string tam, string path, string ajuste, string dim);
         void comando_rmdisk(string path);
-        void comando_fdisk(string size, string path, string name, string unit, string type, string fit, string del, string add);
-        void escribir(string id, string nombre, string tel, string dir, string x);
-        void vertodo();
-        void verX(string x);
-        void eliminarX(string x);
-        void mostrar_struct(Ejemplo ejm);
+        void comando_fdisk_creando(string size, string path, string name, string unit, string type, string fit, string del, string add);
+        void comando_fdisk_modificando(string path, string name, string unit, string del, string add);
+
+        //Borrar estos
+        // void escribir(string id, string nombre, string tel, string dir, string x);
+        // void vertodo();
+        // void verX(string x);
+        // void eliminarX(string x);
+        // void mostrar_struct(Ejemplo ejm);
 };
 
 #endif // COMANDO_H

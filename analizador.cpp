@@ -127,6 +127,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
         cout<<"\n ¡¡ Error !!  Comando no reconocido por el sistema"<<endl;
     }
 
+    // Limpiando los parametros
     cmd.param.Comando = " ";
     cmd.param.Size = " ";
     cmd.param.Path = " ";
