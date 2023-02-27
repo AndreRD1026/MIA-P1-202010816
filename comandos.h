@@ -22,16 +22,6 @@ typedef struct{
     string Type = " ";
     string Delete = " ";
     string Add = " ";
-
-
-    //Borrar estos
-    // string Tamano = " ";
-    // string Dimensional = " ";
-    // string Id = " ";
-    // string Nombre = " ";
-    // string Telefono = " ";
-    // string Direccion = " ";
-    // string X = " ";
 }Parametros;
 
 typedef struct {
@@ -80,7 +70,7 @@ class Comando{
         void comando_rmdisk(string path);
         void comando_fdisk_creando(string size, string path, string name, string unit, string type, string fit, string del, string add);
         void comando_fdisk_modificando(string path, string name, string unit, string del, string add);
-
+        void escritura(MBR actualizado, string path);
         //Borrar estos
         // void escribir(string id, string nombre, string tel, string dir, string x);
         // void vertodo();

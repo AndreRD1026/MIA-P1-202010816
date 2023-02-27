@@ -153,7 +153,7 @@ void Comando::comando_mkdisk(string tam, string path, string ajuste, string dim)
             disco.mbr_partition_1.part_status = '0';
             disco.mbr_partition_2.part_status = '0';
             disco.mbr_partition_3.part_status = '0';
-            disco.mbr_partition_3.part_status = '0';
+            disco.mbr_partition_4.part_status = '0';
 
             disco.mbr_partition_1.part_type = '\0';
             disco.mbr_partition_2.part_type = '\0';
@@ -181,7 +181,7 @@ void Comando::comando_mkdisk(string tam, string path, string ajuste, string dim)
             strcpy(disco.mbr_partition_4.part_name, "");
 
             fseek(archivo_binario, 0, SEEK_SET);
-            fwrite(&disco, sizeof(disco), 1, archivo_binario);
+            fwrite(&disco, sizeof(MBR), 1, archivo_binario);
 
             while (limite != size_file)
             {
@@ -246,31 +246,25 @@ void Comando::comando_rmdisk(string path)
     }
 }
 
+
 void Comando::comando_fdisk_creando(string size, string path, string name, string unit, string type, string fit, string del, string add){
     
     int size_file = 0, tamano = atoi(size.c_str());
 
     string ajuste,tipo, nombre, unidad, tipoo;
 
-    //Buscar el archivo
-    MBR disco;
-    FILE *f;
+    MBR lectura;
+    FILE *discolectura;
 
-    if ((f = fopen(path.c_str(), "r+b")) == NULL) {
+    if ((discolectura = fopen(path.c_str(), "r+b")) == NULL) {
         
             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
         
     } else {
-        fseek(f, 0, SEEK_SET);
-        fread(&disco, sizeof (MBR), 1, f);
-        fclose(f);
-
-
-        Partition particion[4];
-        particion[0] = disco.mbr_partition_1;
-        particion[1] = disco.mbr_partition_2;
-        particion[2] = disco.mbr_partition_3;
-        particion[3] = disco.mbr_partition_4;
+        fseek(discolectura, 0, SEEK_SET);
+        fread(&lectura, sizeof (MBR), 1, discolectura);
+        fclose(discolectura);
+    }
 
         if(unit != " "){
             if(unit == "k" || unit == "K"){
@@ -315,33 +309,118 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
             tipo = "P";
         }
 
-
-        //disco.mbr_partition_1.part_name = name.c_str();
-        strcpy(disco.mbr_partition_1.part_name, name.c_str());
-        disco.mbr_partition_1.part_status = '1';
-        disco.mbr_partition_1.part_type = 'P';
-        disco.mbr_partition_1.part_fit = 'W';
-        disco.mbr_partition_1.part_s = tamano;
+        MBR disco = lectura;
 
 
-        fseek(f, 0, SEEK_SET);
-        fwrite(&disco, sizeof (disco), 1, f);
-        fclose(f);
+        //int prtActiva[] = {0,0,0,0};
 
-        cout<<"Actualizada"<<endl;
-    }
-    //return retorno;
+        Partition particion[4];
+        particion[0] = disco.mbr_partition_1;
+        particion[1] = disco.mbr_partition_2;
+        particion[2] = disco.mbr_partition_3;
+        particion[3] = disco.mbr_partition_4;
+
+        if(tipo!="1"){
+            // for (int i = 0; i < 4; i++) {
+            //     if(particion[i].part_s!=0){
+            //         prtActiva[i]=1;
+            //     }
+            // }
+
+        //tamanoDisponible = particiones[3].part_start - (sizeof (disco) + 1);
+        //particiones[particionSeleccionada].part_start=(sizeof (disco)+1);
+        // tamanoDisponible = disco.mbr_tamano - (particiones[2].part_start+particiones[2].part_s + 1);
 
 
+        //Verificando estados 
 
+        cout<<"Pruebas part1:  "<<disco.mbr_partition_1.part_name<<endl;
+        cout<<"Pruebas part1:  "<<disco.mbr_partition_1.part_status<<endl;
+        cout<<"Pruebas part1:  "<<disco.mbr_partition_1.part_fit<<endl;
 
-    // if(tamano>0){
+        string pruebaa, otroo;
+        for (int i = 0; i < 4; i++) {
+            pruebaa=particion[i].part_name;
+            otroo = particion[i].part_status;
+            cout<<"Nombre? "<<pruebaa<<endl;
+            cout<<"Estatus "<<otroo<<endl;
+            //return;
+            }
 
-    // }
-    
-    
-    //cout<<"Fdisk"<<endl;
+        string nombreparticion = "";
+            
+            for (int i = 0; i < 4; i++) {
+                nombreparticion=particion[i].part_name;
+                if(nombreparticion==name){
+                    cout<<"¡¡ Error !! El nombre "<<name<<" ya está ocupado. "<<endl;
+                    return;
+                }
+            }
+
+        if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
+            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+            disco.mbr_partition_1.part_status = '1';
+            disco.mbr_partition_1.part_type = 'P';
+            disco.mbr_partition_1.part_fit = 'W';
+            disco.mbr_partition_1.part_s = tamano;
+            disco.mbr_partition_1.part_start = (sizeof(disco)+1);
+            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+            escritura(disco,path);
+            cout<<"Particion 1 asginada"<<endl;
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
+            strcpy(disco.mbr_partition_2.part_name, name.c_str());
+            disco.mbr_partition_2.part_status = '1';
+            disco.mbr_partition_2.part_type = 'P';
+            disco.mbr_partition_2.part_fit = 'W';
+            disco.mbr_partition_2.part_s = tamano;
+            disco.mbr_partition_2.part_start = (sizeof(disco)+1);
+            cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+            escritura(disco,path);
+            cout<<"Particion 2 asignada"<<endl;
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
+            strcpy(disco.mbr_partition_3.part_name, name.c_str());
+            disco.mbr_partition_3.part_status = '1';
+            disco.mbr_partition_3.part_type = 'P';
+            disco.mbr_partition_3.part_fit = 'W';
+            disco.mbr_partition_3.part_s = tamano;
+            disco.mbr_partition_3.part_start = (sizeof(disco)+1);
+            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+            escritura(disco,path);
+            cout<<"Particion 3 asignada"<<endl;
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '0'){
+            strcpy(disco.mbr_partition_4.part_name, name.c_str());
+            disco.mbr_partition_4.part_status = '1';
+            disco.mbr_partition_4.part_type = 'P';
+            disco.mbr_partition_4.part_fit = 'W';
+            disco.mbr_partition_4.part_s = tamano;
+            disco.mbr_partition_4.part_start = (sizeof(disco)+1);
+            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+            escritura(disco,path);
+            cout<<"Particion 4 asignada"<<endl;
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '1'){
+            cout<<"¡¡ Error !! Ya no hay particiones disponibles"<<endl;
+        }
 }
+}
+
+
+void Comando::escritura(MBR actualizado, string path){
+
+    FILE *discoescritura;
+
+    if ((discoescritura = fopen(path.c_str(), "r+b")) == NULL) {
+        
+            cout<<"Error: no se ha podido al abrir el disco!\n";
+        
+    } else {
+        fseek(discoescritura, 0, SEEK_SET);
+        fwrite(&actualizado, sizeof (MBR), 1, discoescritura);
+        fclose(discoescritura);
+        cout << "" << endl;
+        cout << "*                 Particion creada con exito                   *" << endl;
+        cout << "" << endl;
+    }
+        }
 
 void Comando::comando_fdisk_modificando(string path, string name, string unit, string del, string add){
     cout<<"Modificando"<<endl;
