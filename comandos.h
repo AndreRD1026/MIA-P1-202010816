@@ -55,13 +55,6 @@ typedef struct {
     char part_name[16]; // Nombre de la particion
 } EBR;
 
-// typedef struct{
-//     int id;
-//     char nombre[15];
-//     int telefono;
-//     char direccion[15];
-// } Ejemplo;
-
 class Comando{
     public:
         Parametros param;
@@ -71,12 +64,6 @@ class Comando{
         void comando_fdisk_creando(string size, string path, string name, string unit, string type, string fit, string del, string add);
         void comando_fdisk_modificando(string path, string name, string unit, string del, string add);
         void escritura(MBR actualizado, string path);
-        //Borrar estos
-        // void escribir(string id, string nombre, string tel, string dir, string x);
-        // void vertodo();
-        // void verX(string x);
-        // void eliminarX(string x);
-        // void mostrar_struct(Ejemplo ejm);
 };
 
 #endif // COMANDO_H
