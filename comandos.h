@@ -65,6 +65,7 @@ class Comando{
         void comando_fdisk_modificando(string path, string name, string unit, string del, string add);
         void escritura(MBR actualizado, string path);
         void eliminar(string name, string path);
+        void agregar(string name, string path, string unit, string size);
 };
 
 #endif // COMANDO_H

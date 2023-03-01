@@ -25,6 +25,8 @@ void Comando::identificacionCMD(Parametros p){
 }
 
 
+int espacioinicial1 = 0;
+
 /* 
 
 * ? Falta leer ruta con las comillas
@@ -414,6 +416,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                 disco.mbr_partition_1.part_s = size_file;
                 disco.mbr_partition_1.part_start = (sizeof(disco)+1);
                 tamanoDisponible = disco.mbr_tamano - disco.mbr_partition_1.part_s;
+                espacioinicial1 = size_file;
                 cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
                 cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                 escritura(disco,path);
@@ -1039,7 +1042,6 @@ void Comando::comando_fdisk_modificando(string path, string name, string unit, s
     particion[3] = disco.mbr_partition_4;
 
     if(del != " "){
-        bool encontrado = false;
 
         string nombrebuscado;
         if(name == particion[0].part_name){
@@ -1068,6 +1070,32 @@ void Comando::comando_fdisk_modificando(string path, string name, string unit, s
             cout << "Regresando" << endl;
         }
         cout<<""<<endl;
+    }
+
+    else if(add != " "){
+
+    string nombrebuscado;
+        if(name == particion[0].part_name){
+            nombrebuscado = name;
+            cout<<"Encontrado"<<endl;
+        }else if(name == particion[1].part_name){
+            nombrebuscado = name;
+            cout<<"Encontrado 1"<<endl;
+        } else if(name == particion[2].part_name){
+            nombrebuscado = name;
+            cout<<"Encontrado 2"<<endl;
+        } else if(name == particion[3].part_name){
+            nombrebuscado = name;
+            cout<<"Encontrado 3"<<endl;
+        }else{
+            cout<<"No encontrado"<<endl;
+            return;
+        }
+
+        agregar(name, path, unit, add);
+
+
+
     }
 }
 
@@ -1170,4 +1198,59 @@ void Comando::eliminar(string name, string path){
         cout << "*                 Particion eliminada con exito                *" << endl;
         cout << "" << endl;
     }
+}
+
+
+void Comando::agregar(string name, string path, string unit, string size){
+
+    MBR lectura;
+    FILE *discolectura;
+
+    if ((discolectura = fopen(path.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+    } else {
+        fseek(discolectura, 0, SEEK_SET);
+        fread(&lectura, sizeof (MBR), 1, discolectura);
+        fclose(discolectura);
+    }
+
+
+    MBR disco = lectura;
+    Partition particion[4];
+    particion[0] = disco.mbr_partition_1;
+    particion[1] = disco.mbr_partition_2;
+    particion[2] = disco.mbr_partition_3;
+    particion[3] = disco.mbr_partition_4;
+
+
+    int tamanioParticion1, tamaniolibre, espacioRestante, espacioFinal;
+    int tamano = atoi(size.c_str());
+
+    tamaniolibre = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+
+    tamanioParticion1 = disco.mbr_tamano - (disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s + tamaniolibre);
+
+    cout<<"Tamanio de la particion "<<espacioinicial1<<endl;
+
+    espacioRestante = espacioinicial1 - disco.mbr_partition_1.part_s;
+
+    cout<<"Queda disponible "<<espacioRestante<<endl;
+
+    if(espacioRestante == 0){
+        cout<<"No es posible añadir espacio a la particion"<<endl;
+    }else if (espacioRestante > tamano){
+        espacioFinal = espacioRestante - tamano;
+        if(espacioFinal > 0 && espacioFinal < tamanioParticion1){
+            cout<<"Si se puede agregar espacio"<<endl;
+        }else {
+            cout<<"El tamaño que desea añadir excede al tamaño de la particion"<<endl;
+        }
+    }
+    
+
+
+
+
 }
