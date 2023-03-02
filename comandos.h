@@ -66,6 +66,7 @@ class Comando{
         void escritura(MBR actualizado, string path);
         void eliminar(string name, string path);
         void agregar(string name, string path, string unit, string size);
+        void modificaradd(MBR disco, string path);
 };
 
 #endif // COMANDO_H
