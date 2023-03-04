@@ -260,7 +260,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
             } else if(unit == "m" || unit == "M"){
                 size_file = tamano * 1024;
             } else if (unit == "b" || unit == "B"){
-
+                size_file = (tamano/1000);
             } else{
                 cout<<"¡¡ Error !! La unidad solo puede ser: B , K, M "<<endl;
                 return;
@@ -393,6 +393,19 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             cout<<"Ya existiria un EBR con ese nombre "<<endl;
                             return;
                         }else{
+                            tamanioTotalParticion = particion[0].part_s;
+                            cout<<"Que saca esto? "<<sizeof(EBR)<<endl;
+                            cout<<"Tamanio particion extendida "<<tamanioTotalParticion<<endl;
+                            cout<<"Tamanio particion Logica "<<ParticionLogica.part_s<<endl; 
+                            //EBR partiLogica [5];
+                            int tamaniodentrodeparticion;
+
+                            tamaniodentrodeparticion = tamanioTotalParticion - ParticionLogica.part_s;
+
+                            cout<<"Quedan disponibles "<<tamaniodentrodeparticion<<endl;
+
+
+
                             cout<<"Tocaria codigo aqui "<<endl;
                             return;
                         }
@@ -437,6 +450,16 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             cout<<"Ya existiria un EBR con ese nombre "<<endl;
                             return;
                         }else{
+                            tamanioTotalParticion = particion[1].part_s;
+                            cout<<"Que saca esto? "<<sizeof(EBR)<<endl;
+                            cout<<"Tamanio particion extendida "<<tamanioTotalParticion<<endl;
+                            cout<<"Tamanio particion Logica "<<ParticionLogica.part_s<<endl; 
+                            //EBR partiLogica [5];
+                            int tamaniodentrodeparticion;
+
+                            tamaniodentrodeparticion = tamanioTotalParticion - ParticionLogica.part_s;
+
+                            cout<<"Quedan disponibles "<<tamaniodentrodeparticion<<endl;
                             cout<<"Tocaria codigo aqui "<<endl;
                             return;
                         }
@@ -452,6 +475,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
                         
                     } else {
+                        //int nuevocomienzo = (prueba.part_start + prueba.part_s) + 1 ;
                         fseek(discolecturaE, particion[2].part_start, SEEK_SET);
                         fread(&prueba, sizeof (EBR), 1, discolecturaE);
                         fclose(discolecturaE);
@@ -476,15 +500,142 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
                         return;
                     }
-                    }else if(ParticionLogica.part_status == '1') {
-                        if(ParticionLogica.part_name == name){
-                            cout<<"Ya existiria un EBR con ese nombre "<<endl;
-                            return;
-                        }else{
-                            cout<<"Tocaria codigo aqui "<<endl;
-                            return;
+                    } else if (ParticionLogica.part_status == '1'){
+                        discolecturaE = fopen(path.c_str(), "r+b");
+                        tamanioTotalParticion = (particion[2].part_s - ParticionLogica.part_s);
+                        EBR Anterior = ParticionLogica;
+                        EBR Siguiente;
+
+                        int possiguiente = ParticionLogica.part_next;
+
+                        while(true){
+                            //discolecturaE = fopen(path.c_str(), "r+b");
+                            fseek(discolecturaE, possiguiente, SEEK_SET);
+                            fread(&Siguiente, sizeof(EBR), 1, discolecturaE);
+                            //fclose(discolecturaE);
+
+                            if(Siguiente.part_status == '1'){
+                                if(strcmp(Siguiente.part_name, name.c_str())==0){
+                                    cout<<"Ya existe una particion con este nombre  "<<endl;
+                                    return;
+                                }
+                                possiguiente = Siguiente.part_next;
+                                Anterior = Siguiente;
+                            } else {
+                                if (tamanioTotalParticion >= size_file){
+                                    //discolecturaE = fopen(path.c_str(), "r+b");
+                                    Siguiente.part_start = Anterior.part_start + sizeof(EBR) + Anterior.part_s + 1;
+                                    fseek(discolecturaE, Siguiente.part_start, SEEK_SET);
+                                    Siguiente.part_status == '1';
+                                    Siguiente.part_fit = ajuste.at(0);
+                                    Siguiente.part_s = size_file;
+                                    Siguiente.part_next = -1;
+                                    strcpy(Siguiente.part_name, name.c_str());
+                                    Anterior.part_next = Siguiente.part_start;
+                                    fwrite(&Siguiente, sizeof(EBR),1, discolecturaE);
+                                    fseek(discolecturaE, Anterior.part_start, SEEK_SET);
+                                    fwrite(&Anterior, sizeof(EBR),1,discolecturaE);
+                                    //fclose(discolecturaE);
+                                    cout<<"La particion ha sido asignada "<<endl;
+                                }else{
+                                    cout<<"¡¡ Error !! No hay espacio disponible en la particion "<<endl;
+                                    return;
+                                }
+                            }
+                            break;
                         }
+                        fclose(discolecturaE);
+                        
+                    }else{
+                        cout<<"¡¡ Error !! No hay espacio suficiente para asignar la particion "<<endl;
                     }
+
+                    return;
+
+
+
+
+
+
+                    
+                    // EBR ParticionLogica = prueba;
+                    // EBR aux;
+                    //     while (true)
+                    //     {
+                    //         fseek(discolecturaE, particion[2].part_start, SEEK_SET);
+                    //         fread(&aux, sizeof (EBR), 1, discolecturaE);
+                    //         cout<<"Que saca "<<aux.part_name<<endl;
+                    //         if(ParticionLogica.part_status != '1'){
+                    //     tamanioTotalParticion = particion[2].part_s;
+                    //     inicioParticion = particion[2].part_start;
+                    //     if(tamanioTotalParticion >= size_file){
+                    //         ParticionLogica.part_status = '1';
+                    //         ParticionLogica.part_fit = ajuste.at(0);
+                    //         ParticionLogica.part_start = inicioParticion;
+                    //         ParticionLogica.part_s = size_file;
+                    //         strcpy(ParticionLogica.part_name, name.c_str());
+                    //         // Como es la primera no tiene siguiente
+                    //         ParticionLogica.part_next = -1;
+                    //         escrituraLogica(ParticionLogica, path, inicioParticion);
+                    //         return;
+                    // }else{
+                    //     cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
+                    //     return;
+                    // }
+                    // }else if(ParticionLogica.part_status == '1') {
+                    //     if(ParticionLogica.part_name == name){
+                        
+                    //         cout<<"Ya existiria un EBR con ese nombre "<<endl;
+                    //         return;
+                    //     }else{
+                    //         tamanioTotalParticion = particion[2].part_s;
+                    //         //cout<<"Que saca esto? "<<sizeof(EBR)<<endl;
+                    //         //cout<<"Tamanio particion extendida "<<particion[2].part_s<<endl;
+                    //         //cout<<"Tamanio dos "<<tamanioTotalParticion<<endl;
+                    //         //cout<<"Tamanio particion Logica "<<ParticionLogica.part_s<<endl; 
+                    //         //EBR partiLogica [5];
+                    //         int tamaniodentrodeparticion;
+                    //         tamaniodentrodeparticion = tamanioTotalParticion - ParticionLogica.part_s;
+                    //         cout<<"Quedan disponibles "<<tamaniodentrodeparticion<<endl;
+                    //         if(tamaniodentrodeparticion >= size_file){
+                    //             EBR segundo;
+                    //             int nuevocomienzo = (ParticionLogica.part_start + ParticionLogica.part_s) + 1 ;
+                    //             cout<<"Datos "<<ParticionLogica.part_name<<endl;
+                    //             cout<<"Datos "<<ParticionLogica.part_fit<<endl;
+                    //             cout<<"Datos "<<ParticionLogica.part_next<<endl;
+                    //             cout<<"Datos "<<ParticionLogica.part_s<<endl;
+                    //             cout<<"Datos "<<ParticionLogica.part_start<<endl;
+                    //             //Nuevos datos
+                    //             segundo.part_status = '1';
+                    //             segundo.part_fit = ajuste.at(0);
+                    //             segundo.part_start = nuevocomienzo;
+                    //             segundo.part_s = size_file;
+                    //             strcpy(segundo.part_name, name.c_str());
+                    //             // Como es la primera no tiene siguiente
+                    //             segundo.part_next = -1;
+                    //             escrituraLogica(segundo, path, nuevocomienzo);
+                                
+
+
+                    //             //escrituraLogica(ParticionLogica, path, inicioParticion);
+
+                    //             cout<<"Entra en este if"<<endl;
+                    //         }else{
+                    //             cout<<"¡¡ Error !! EL espacio de la particion es menor a la que intenta agregar"<<endl;
+                    //         }
+
+
+                    //         //cout<<"Tocaria codigo aqui "<<endl;
+                    //         return;
+                    //     }
+                        
+                    // }
+                    //         //cout<<"Deberia salir 2 nombre "<<ParticionLogica.part_name<<endl;
+                    //         fclose(discolecturaE);
+                    //         break;
+                    //     }
+
+                    
                 } else if(particion[3].part_type == 'E'){
 
                     EBR prueba;
@@ -521,10 +672,28 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         return;
                     }
                     }else if(ParticionLogica.part_status == '1') {
+                        while (ParticionLogica.part_status != ' ')
+                        {
+                            cout<<"Deberia salir 2 nombre "<<ParticionLogica.part_name<<endl;
+                            break;
+                        }
+                        
+                        
                         if(ParticionLogica.part_name == name){
                             cout<<"Ya existiria un EBR con ese nombre "<<endl;
                             return;
                         }else{
+                            tamanioTotalParticion = particion[3].part_s;
+
+                            cout<<"Que saca esto? "<<sizeof(EBR)<<endl;
+                            cout<<"Tamanio particion extendida "<<tamanioTotalParticion<<endl;
+                            cout<<"Tamanio particion Logica "<<ParticionLogica.part_s<<endl; 
+                            //EBR partiLogica [5];
+                            int tamaniodentrodeparticion;
+
+                            tamaniodentrodeparticion = tamanioTotalParticion - ParticionLogica.part_s;
+
+                            cout<<"Quedan disponibles "<<tamaniodentrodeparticion<<endl;
                             cout<<"Tocaria codigo aqui "<<endl;
                             return;
                         }
