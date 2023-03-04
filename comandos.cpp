@@ -309,7 +309,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
 
         if(disco.mbr_tamano > size_file){
 
-        if(tipo!="1"){
+        if(tipo!="L"){
         int tamanoDisponibleAntes = 0;
         int tamanoDisponible = 0;
         //Verificando estados 
@@ -345,6 +345,941 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
             }
         }
 
+        string existetipo = "";
+        for (int i=0; i<4; i++){
+            existetipo = particion[i].part_type;
+            if(existetipo != "P" || existetipo != "E"){
+                if(particion[0].part_type == 'P' || particion[0].part_type == 'E'){
+                    cout<<"Entra 1 "<<endl;
+                    disco.mbr_partition_1.part_status = '1';
+                }if(particion[1].part_type == 'P' || particion[1].part_type == 'E'){
+                    cout<<"Entra 2 "<<endl;
+                    disco.mbr_partition_2.part_status = '1';
+                }if(particion[2].part_type == 'P' || particion[2].part_type == 'E'){
+                    cout<<"Entra 3 "<<endl;
+                    disco.mbr_partition_3.part_status = '1';
+                }if(particion[3].part_type == 'P' || particion[3].part_type == 'E'){
+                    cout<<"Entra 4 "<<endl;
+                    disco.mbr_partition_4.part_status = '1';
+                }
+            }
+        }
+
+        if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
+            tamanoDisponibleAntes = disco.mbr_tamano;
+            if(tamanoDisponibleAntes > size_file){
+                strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                disco.mbr_partition_1.part_status = '0';
+                disco.mbr_partition_1.part_type = tipo.at(0);
+                disco.mbr_partition_1.part_fit = ajuste.at(0);
+                disco.mbr_partition_1.part_s = size_file;
+                disco.mbr_partition_1.part_start = (sizeof(disco)+1);
+                tamanoDisponible = disco.mbr_tamano - disco.mbr_partition_1.part_s;
+                cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                escritura(disco,path);
+                cout<<"Particion 1 asginada"<<endl;
+            }else{
+                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                    return;
+                }
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
+            tamanoDisponibleAntes = disco.mbr_tamano - disco.mbr_partition_1.part_s;
+            if(tamanoDisponibleAntes > size_file){
+                strcpy(disco.mbr_partition_2.part_name, name.c_str());
+                disco.mbr_partition_1.part_status = '0';
+                disco.mbr_partition_2.part_status = '0';
+                disco.mbr_partition_2.part_type = tipo.at(0);
+                disco.mbr_partition_2.part_fit = ajuste.at(0);
+                disco.mbr_partition_2.part_s = size_file;
+                disco.mbr_partition_2.part_start = (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
+                tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s);
+                cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                escritura(disco,path);
+                cout<<"Particion 2 asignada"<<endl;
+            }else{
+                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                    return;
+                }
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
+            tamanoDisponibleAntes = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s);
+            if(tamanoDisponibleAntes > size_file){
+                strcpy(disco.mbr_partition_3.part_name, name.c_str());
+                disco.mbr_partition_1.part_status = '0';
+                disco.mbr_partition_2.part_status = '0';
+                disco.mbr_partition_3.part_status = '0';
+                disco.mbr_partition_3.part_type = tipo.at(0);
+                disco.mbr_partition_3.part_fit = ajuste.at(0);
+                disco.mbr_partition_3.part_s = size_file;
+                disco.mbr_partition_3.part_start = (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s);
+                cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                escritura(disco,path);
+                cout<<"Particion 3 asignada"<<endl;
+            }else{
+                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                    return;
+                }
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '0'){
+            tamanoDisponibleAntes = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s);
+            if(tamanoDisponibleAntes > size_file){
+                strcpy(disco.mbr_partition_4.part_name, name.c_str());
+                disco.mbr_partition_1.part_status = '0';
+                disco.mbr_partition_2.part_status = '0';
+                disco.mbr_partition_3.part_status = '0';
+                disco.mbr_partition_4.part_status = '0';
+                disco.mbr_partition_4.part_type = tipo.at(0);
+                disco.mbr_partition_4.part_fit = ajuste.at(0);
+                disco.mbr_partition_4.part_s = size_file;
+                disco.mbr_partition_4.part_start = (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
+                tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s+ disco.mbr_partition_4.part_s);
+                cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                escritura(disco,path);
+                cout<<"Particion 4 asignada"<<endl;
+            }
+        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '1'){
+                
+                int tamanioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start) - 1;
+                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                if(tamanioParticion1 >= size_file){
+                    strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                    disco.mbr_partition_1.part_status = '0';
+                    disco.mbr_partition_2.part_status = '0';
+                    disco.mbr_partition_3.part_status = '0';
+                    disco.mbr_partition_4.part_status = '0';
+                    disco.mbr_partition_1.part_type = tipo.at(0);
+                    disco.mbr_partition_1.part_fit = ajuste.at(0);
+                    disco.mbr_partition_1.part_s = size_file;
+                    disco.mbr_partition_1.part_start =  (sizeof(disco)+1) ;
+                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                    escritura(disco,path);
+                    cout<<"Particion 1 asignada"<<endl;
+            }else{
+                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                    return;
+                }            
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '1'){
+                
+                int tamanioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
+                int espacioRestante2 = tamanioParticion2 - disco.mbr_partition_2.part_s;
+                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_2.part_s<<endl;
+                if(tamanioParticion2 >= size_file){
+                    strcpy(disco.mbr_partition_2.part_name, name.c_str());
+                    disco.mbr_partition_1.part_status = '0';
+                    disco.mbr_partition_2.part_status = '0';
+                    disco.mbr_partition_3.part_status = '0';
+                    disco.mbr_partition_4.part_status = '0';
+                    disco.mbr_partition_2.part_type = tipo.at(0);
+                    disco.mbr_partition_2.part_fit = ajuste.at(0);
+                    disco.mbr_partition_2.part_s = size_file;
+                    disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
+                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                    
+                    escritura(disco,path);
+                    cout<<"Particion 2 asignada"<<endl;
+            }else{
+                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                    return;
+                }
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '1'){
+                
+                int tamanioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
+                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_3.part_s<<endl;
+                if(tamanioParticion3 >= size_file){
+                    strcpy(disco.mbr_partition_3.part_name, name.c_str());
+                    disco.mbr_partition_1.part_status = '0';
+                    disco.mbr_partition_2.part_status = '0';
+                    disco.mbr_partition_3.part_status = '0';
+                    disco.mbr_partition_4.part_status = '0';
+                    disco.mbr_partition_3.part_type = tipo.at(0);
+                    disco.mbr_partition_3.part_fit = ajuste.at(0);
+                    disco.mbr_partition_3.part_s = size_file;
+                    disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                    
+                    escritura(disco,path);
+                    cout<<"Particion 3 asignada"<<endl;
+            }else{
+                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                    return;
+                }
+        }else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '1'){
+
+                int espacioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
+                int espacioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
+                int espaciototalparticion = espacioParticion1 + espacioParticion2;
+                cout<<"Tamanio antes de la particion: "<<espaciototalparticion<<endl;
+                if(espaciototalparticion >= size_file){
+                    strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                    disco.mbr_partition_1.part_status = '0';
+                    disco.mbr_partition_2.part_status = '0';
+                    disco.mbr_partition_3.part_status = '0';
+                    disco.mbr_partition_4.part_status = '0';
+                    disco.mbr_partition_1.part_type = tipo.at(0);
+                    disco.mbr_partition_1.part_fit = ajuste.at(0);
+                    disco.mbr_partition_1.part_s = size_file;
+                    disco.mbr_partition_1.part_start =  (sizeof(disco)+1);
+                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                    escritura(disco,path);
+                    cout<<"Particion 1 asignada"<<endl;
+            }else{
+                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                    return;
+                }
+        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '1'){
+                tamanoDisponibleAntes = disco.mbr_tamano - (disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                int espacioLibre = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                int espaciototalparticion= disco.mbr_tamano - (disco.mbr_partition_4.part_s + espacioLibre);
+                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                if(espaciototalparticion >= size_file){
+                    strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                    disco.mbr_partition_1.part_status = '0';
+                    disco.mbr_partition_2.part_status = '0';
+                    disco.mbr_partition_3.part_status = '0';
+                    disco.mbr_partition_4.part_status = '0';
+                    disco.mbr_partition_1.part_type = tipo.at(0);
+                    disco.mbr_partition_1.part_fit = ajuste.at(0);
+                    disco.mbr_partition_1.part_s = size_file;
+                    disco.mbr_partition_1.part_start =  (sizeof(disco)+1);
+                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                    escritura(disco,path);
+                    cout<<"Particion 1 asignada"<<endl;
+            }else{
+                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                    return;
+                }
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '1'){
+                tamanoDisponibleAntes = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_4.part_s);
+                int espacioLibre = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                int espaciototalparticion= disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_4.part_s + espacioLibre);
+                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_2.part_s<<endl;
+                if(espaciototalparticion >= size_file){
+                    strcpy(disco.mbr_partition_2.part_name, name.c_str());
+                    disco.mbr_partition_1.part_status = '0';
+                    disco.mbr_partition_2.part_status = '0';
+                    disco.mbr_partition_3.part_status = '0';
+                    disco.mbr_partition_4.part_status = '0';
+                    disco.mbr_partition_2.part_type = tipo.at(0);
+                    disco.mbr_partition_2.part_fit = ajuste.at(0);
+                    disco.mbr_partition_2.part_s = size_file;
+                    disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
+                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                    cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
+                    escritura(disco,path);
+                    cout<<"Particion 2 asignada"<<endl;
+            }else{
+                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                    return;
+                }
+        } 
+        else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '1'){
+                
+                int espacioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
+                int espacioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
+                int espacioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
+                int espacioNoUsado = disco.mbr_tamano - (espacioParticion1 + espacioParticion2 + espacioParticion3);
+                int espacioParticion4 = espacioNoUsado;
+                
+                tamanoDisponibleAntes = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_4.part_s);
+                int espacioLibre = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                int espaciototalparticion = espacioParticion2 + espacioParticion3;
+                cout<<"Tamanio antes de la particion: "<<espaciototalparticion<<endl;
+                if(espaciototalparticion >= size_file){
+                    strcpy(disco.mbr_partition_2.part_name, name.c_str());
+                    disco.mbr_partition_1.part_status = '0';
+                    disco.mbr_partition_2.part_status = '0';
+                    disco.mbr_partition_3.part_status = '0';
+                    disco.mbr_partition_4.part_status = '0';
+                    disco.mbr_partition_2.part_type = tipo.at(0);
+                    disco.mbr_partition_2.part_fit = ajuste.at(0);
+                    disco.mbr_partition_2.part_s = size_file;
+                    disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
+                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                    cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
+                    escritura(disco,path);
+                    cout<<"Particion 2 asignada"<<endl;
+            }else{
+                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                    return;
+                }
+        }
+            else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '0'){
+                
+                int tamanioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
+                int tamanioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
+                int tamanioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
+                int espacioNoUsado = disco.mbr_tamano - (tamanioParticion1 + tamanioParticion2 + tamanioParticion3);
+                int tamanioParticion4 = espacioNoUsado;
+
+                cout<<"Tamanio particion 2 "<<tamanioParticion2 <<endl;
+                cout<<"Espacio no usado " << espacioNoUsado<<endl;
+                cout<<"Tamanio Particion 4"<<tamanioParticion4 <<endl;
+                if(ajuste == "B" || ajuste == "b"){
+                    if(tamanioParticion2 < tamanioParticion4){
+                        if (tamanioParticion2 >= size_file){
+                            strcpy(disco.mbr_partition_2.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_2.part_type = tipo.at(0);
+                            disco.mbr_partition_2.part_fit = ajuste.at(0);
+                            disco.mbr_partition_2.part_s = size_file;
+                            disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 2 asignada"<<endl;
+                        }
+                    } else if (tamanioParticion4 < tamanioParticion2){
+                        if (tamanioParticion4 >= size_file){
+                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_4.part_type = tipo.at(0);
+                            disco.mbr_partition_4.part_fit = ajuste.at(0);
+                            disco.mbr_partition_4.part_s = size_file;
+                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 4 asignada"<<endl;
+                        }
+                    } else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                } else if(ajuste == "F" || ajuste == "f"){
+                        if (tamanioParticion2 >= size_file){
+                            strcpy(disco.mbr_partition_2.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_2.part_type = tipo.at(0);
+                            disco.mbr_partition_2.part_fit = ajuste.at(0);
+                            disco.mbr_partition_2.part_s = size_file;
+                            disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 2 asignada"<<endl;
+                        }else if (tamanioParticion4 >= size_file){
+                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_4.part_type = tipo.at(0);
+                            disco.mbr_partition_4.part_fit = ajuste.at(0);
+                            disco.mbr_partition_4.part_s = size_file;
+                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 4 asignada"<<endl;
+                        }else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                    } else if(ajuste == "W" || ajuste == "w"){
+                    if(tamanioParticion4 > tamanioParticion2){
+                        if (tamanioParticion4 >= size_file){
+                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_4.part_type = tipo.at(0);
+                            disco.mbr_partition_4.part_fit = ajuste.at(0);
+                            disco.mbr_partition_4.part_s = size_file;
+                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 4 asignada"<<endl;
+                        }
+                    } else if (tamanioParticion2 > tamanioParticion4){
+                        if (tamanioParticion2 >= size_file){
+                            strcpy(disco.mbr_partition_2.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_2.part_type = tipo.at(0);
+                            disco.mbr_partition_2.part_fit = ajuste.at(0);
+                            disco.mbr_partition_2.part_s = size_file;
+                            disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 2 asignada"<<endl;
+                        } 
+                    } else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                }
+        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '1'){
+                
+                int tamanioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
+                int tamanioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
+                
+                cout<<"Tamanio particion 1 "<<tamanioParticion1 <<endl;
+                //cout<<"Espacio no usado " << espacioLibre<<endl;
+                cout<<"Tamanio Particion 3"<<tamanioParticion3 <<endl;
+                if(ajuste == "B" || ajuste == "b"){
+                    if(tamanioParticion1 < tamanioParticion3){
+                        if (tamanioParticion1 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        }
+                    } else if (tamanioParticion3 < tamanioParticion1){
+                        if (tamanioParticion3 >= size_file){
+                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_3.part_type = tipo.at(0);
+                            disco.mbr_partition_3.part_fit = ajuste.at(0);
+                            disco.mbr_partition_3.part_s = size_file;
+                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 3 asignada"<<endl;
+                        }
+                    } else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                } else if(ajuste == "F" || ajuste == "f"){
+                        if (tamanioParticion1 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        }else if (tamanioParticion3 >= size_file){
+                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_3.part_type = tipo.at(0);
+                            disco.mbr_partition_3.part_fit = ajuste.at(0);
+                            disco.mbr_partition_3.part_s = size_file;
+                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 3 asignada"<<endl;
+                        }else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                    } else if(ajuste == "W" || ajuste == "w"){
+                    if(tamanioParticion3 > tamanioParticion1){
+                        if (tamanioParticion3 >= size_file){
+                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_3.part_type = tipo.at(0);
+                            disco.mbr_partition_3.part_fit = ajuste.at(0);
+                            disco.mbr_partition_3.part_s = size_file;
+                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 3 asignada"<<endl;
+                        }
+                    } else if (tamanioParticion1 > tamanioParticion3){
+                        if (tamanioParticion1 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        } 
+                    } else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                }
+        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '0'){
+                
+                int espacioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
+                int espacioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
+                int tamanioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
+                int espacioNoUsado = disco.mbr_tamano - (espacioParticion1 + espacioParticion2 + tamanioParticion3);
+                int espacioParticion4 = espacioNoUsado;
+                
+                cout<<"Tamanio particion 1 "<<espacioParticion1 <<endl;
+                cout<<"Tamanio Particion 4"<<espacioParticion4 <<endl;
+                if(ajuste == "B" || ajuste == "b"){
+                    if(espacioParticion1 < espacioParticion4){
+                        if (espacioParticion1 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        }
+                    } else if (espacioParticion4 < espacioParticion1){
+                        if (espacioParticion4 >= size_file){
+                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_4.part_type = tipo.at(0);
+                            disco.mbr_partition_4.part_fit = ajuste.at(0);
+                            disco.mbr_partition_4.part_s = size_file;
+                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 4 asignada"<<endl;
+                        }
+                    } else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                } else if(ajuste == "F" || ajuste == "f"){
+                        if (espacioParticion1 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        }else if (espacioParticion4 >= size_file){
+                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_4.part_type = tipo.at(0);
+                            disco.mbr_partition_4.part_fit = ajuste.at(0);
+                            disco.mbr_partition_4.part_s = size_file;
+                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 4 asignada"<<endl;
+                        }else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                    } else if(ajuste == "W" || ajuste == "w"){
+                    if(espacioParticion4 > espacioParticion1){
+                        if (espacioParticion4 >= size_file){
+                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_4.part_type = tipo.at(0);
+                            disco.mbr_partition_4.part_fit = ajuste.at(0);
+                            disco.mbr_partition_4.part_s = size_file;
+                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 4 asignada"<<endl;
+                        }
+                    } else if (espacioParticion1 > espacioParticion4){
+                        if (espacioParticion1 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        } 
+                    } else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                }
+        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '0'){
+                
+                int espacioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
+                int espacioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
+                int espacioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
+                int espacioNoUsado = disco.mbr_tamano - (espacioParticion1 + espacioParticion2 + espacioParticion3);
+                int espacioParticion4 = espacioNoUsado;
+
+                int espacioparticion12 = espacioParticion1 + espacioParticion2;
+                
+                cout<<"Tamanio particion 1 "<<espacioParticion1 <<endl;
+                cout<<"Tamanio Particion 4"<<espacioParticion4 <<endl;
+                if(ajuste == "B" || ajuste == "b"){
+                    if(espacioparticion12 < espacioParticion4){
+                        if (espacioparticion12 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        }
+                    } else if (espacioParticion4 < espacioparticion12){
+                        if (espacioParticion4 >= size_file){
+                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_4.part_type = tipo.at(0);
+                            disco.mbr_partition_4.part_fit = ajuste.at(0);
+                            disco.mbr_partition_4.part_s = size_file;
+                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 4 asignada"<<endl;
+                        }
+                    } else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                } else if(ajuste == "F" || ajuste == "f"){
+                        if (espacioparticion12 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        }else if (espacioParticion4 >= size_file){
+                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_4.part_type = tipo.at(0);
+                            disco.mbr_partition_4.part_fit = ajuste.at(0);
+                            disco.mbr_partition_4.part_s = size_file;
+                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 4 asignada"<<endl;
+                        }else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                    } else if(ajuste == "W" || ajuste == "w"){
+                    if(espacioParticion4 > espacioparticion12){
+                        if (espacioParticion4 >= size_file){
+                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_4.part_type = tipo.at(0);
+                            disco.mbr_partition_4.part_fit = ajuste.at(0);
+                            disco.mbr_partition_4.part_s = size_file;
+                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 4 asignada"<<endl;
+                        }
+                    } else if (espacioparticion12 > espacioParticion4){
+                        if (espacioparticion12 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        } 
+                    } else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                }
+        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
+                
+                int tamanioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
+                int tamanioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
+                int tamanioParticion3 = disco.mbr_tamano - (tamanioParticion1 + tamanioParticion2);
+                
+                cout<<"Tamanio particion 1 "<<tamanioParticion1 <<endl;
+                //cout<<"Espacio no usado " << espacioLibre<<endl;
+                cout<<"Tamanio Particion 3"<<tamanioParticion3 <<endl;
+                if(ajuste == "B" || ajuste == "b"){
+                    if(tamanioParticion1 < tamanioParticion3){
+                        if (tamanioParticion1 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        }
+                    } else if (tamanioParticion3 < tamanioParticion1){
+                        if (tamanioParticion3 >= size_file){
+                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_3.part_type = tipo.at(0);
+                            disco.mbr_partition_3.part_fit = ajuste.at(0);
+                            disco.mbr_partition_3.part_s = size_file;
+                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 3 asignada"<<endl;
+                        }
+                    } else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                } else if(ajuste == "F" || ajuste == "f"){
+                        if (tamanioParticion1 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        }else if (tamanioParticion3 >= size_file){
+                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_3.part_type = tipo.at(0);
+                            disco.mbr_partition_3.part_fit = ajuste.at(0);
+                            disco.mbr_partition_3.part_s = size_file;
+                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 3 asignada"<<endl;
+                        }else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                    } else if(ajuste == "W" || ajuste == "w"){
+                    if(tamanioParticion3 > tamanioParticion1){
+                        if (tamanioParticion3 >= size_file){
+                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_3.part_type = tipo.at(0);
+                            disco.mbr_partition_3.part_fit = ajuste.at(0);
+                            disco.mbr_partition_3.part_s = size_file;
+                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 3 asignada"<<endl;
+                        }
+                    } else if (tamanioParticion1 > tamanioParticion3){
+                        if (tamanioParticion1 >= size_file){
+                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
+                            disco.mbr_partition_1.part_status = '0';
+                            disco.mbr_partition_2.part_status = '0';
+                            disco.mbr_partition_3.part_status = '0';
+                            disco.mbr_partition_4.part_status = '0';
+                            disco.mbr_partition_1.part_type = tipo.at(0);
+                            disco.mbr_partition_1.part_fit = ajuste.at(0);
+                            disco.mbr_partition_1.part_s = size_file;
+                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
+                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
+                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                            escritura(disco,path);
+                            cout<<"Particion 1 asignada"<<endl;
+                        } 
+                    } else{
+                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
+                            return;
+                        }
+                }
+        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '1'){
+            cout<<"¡¡ Error !! Ya no hay particiones disponibles"<<endl;
+            return;
+        }
+    }else{
         string obtenertipo, nombreParticionS;
         int tamanioTotalParticion;
         int inicioParticion;
@@ -371,11 +1306,11 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
 
                     EBR ParticionLogica = prueba;
 
-                    if(ParticionLogica.part_status != '1'){
+                    if(ParticionLogica.part_fit == 'B' || ParticionLogica.part_fit == 'F' || ParticionLogica.part_fit == 'W'){
                         tamanioTotalParticion = particion[0].part_s;
                         inicioParticion = particion[0].part_start;
                         if(tamanioTotalParticion >= size_file){
-                            ParticionLogica.part_status = '1';
+                            ParticionLogica.part_status = '0';
                             ParticionLogica.part_fit = ajuste.at(0);
                             ParticionLogica.part_start = inicioParticion;
                             ParticionLogica.part_s = size_file;
@@ -388,27 +1323,86 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
                         return;
                     }
-                    }else if(ParticionLogica.part_status == '1') {
-                        if(ParticionLogica.part_name == name){
-                            cout<<"Ya existiria un EBR con ese nombre "<<endl;
-                            return;
-                        }else{
-                            tamanioTotalParticion = particion[0].part_s;
-                            cout<<"Que saca esto? "<<sizeof(EBR)<<endl;
-                            cout<<"Tamanio particion extendida "<<tamanioTotalParticion<<endl;
-                            cout<<"Tamanio particion Logica "<<ParticionLogica.part_s<<endl; 
-                            //EBR partiLogica [5];
-                            int tamaniodentrodeparticion;
+                    }else if(ParticionLogica.part_fit == 'B' || ParticionLogica.part_fit == 'F' || ParticionLogica.part_fit == 'W') {
 
-                            tamaniodentrodeparticion = tamanioTotalParticion - ParticionLogica.part_s;
+                        EBR nuevoo;
+                        int inicioPart = particion[0].part_start;
+                        int tDisponible = particion[0].part_s;
 
-                            cout<<"Quedan disponibles "<<tamaniodentrodeparticion<<endl;
+                        discolecturaE = fopen(path.c_str(), "r+b");
+                        fseek(discolecturaE, inicioPart, SEEK_SET);   
+                        fread(&nuevoo, sizeof (EBR), 1, discolecturaE);
+
+                        //Comenzandolo desde 0
+                        
+                        int possiguiente = nuevoo.part_next;
+                        EBR Anterior = nuevoo;
+                        EBR Siguiente;
+
+                        //int possiguiente = ParticionLogica.part_start + ParticionLogica.part_s + 1;
+                        int siguientepos = nuevoo.part_next;
+                        
+                        while (true)
+                        {
+                            //discolecturaE = fopen(path.c_str(), "r+b");
+                            fseek(discolecturaE, siguientepos, SEEK_SET);   
+                            fread(&Siguiente, sizeof (EBR), 1, discolecturaE);
+                            //fclose(discolecturaE);
 
 
+                            cout<<"Pruebas "<<Anterior.part_name<<endl;
+                            cout<<"Pruebas "<<Anterior.part_fit<<endl;
+                            cout<<"Pruebas "<<Anterior.part_start<<endl;
+                            cout<<"Pruebas "<<Anterior.part_status<<endl;
+                            cout<<"Pruebas "<<Anterior.part_s<<endl;
 
-                            cout<<"Tocaria codigo aqui "<<endl;
-                            return;
+                            cout<<"Posiscion siguiente "<<possiguiente<<endl;
+
+                            cout<<"Pruebas "<<Siguiente.part_name<<endl;
+                            cout<<"Pruebas "<<Siguiente.part_fit<<endl;
+                            cout<<"Pruebas "<<Siguiente.part_start<<endl;
+                            cout<<"Pruebas "<<Siguiente.part_status<<endl;
+                            cout<<"Pruebas "<<Siguiente.part_s<<endl;
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                if(strcmp(Siguiente.part_name, name.c_str()) == 0){
+                                    cout<<"¡¡ Error !! Ya existe una particion con ese nombre "<<endl;
+                                    return;
+                                }
+                                possiguiente = Siguiente.part_next;
+                                Anterior = Siguiente;
+
+                            } else {
+                                Siguiente.part_start = Anterior.part_start + sizeof(EBR) + Anterior.part_s + 1;
+                                fseek(discolecturaE , Siguiente.part_start, SEEK_SET);
+                                Siguiente.part_status = '0';
+                                Siguiente.part_fit = ajuste.at(0);
+                                Siguiente.part_s = size_file;
+                                Siguiente.part_next = -1;
+                                strcpy(Siguiente.part_name, name.c_str());
+                                Anterior.part_next = Siguiente.part_start;
+
+                                if(Siguiente.part_start + Siguiente.part_s > tDisponible){
+                                    cout<<"¡¡ Error !! No hay espacio suficiente "<<endl;
+                                    fclose(discolecturaE);
+                                    return;
+                                } else {
+                                    fwrite(&Siguiente, sizeof(EBR), 1, discolecturaE);
+                                    fseek(discolecturaE, Anterior.part_start, SEEK_SET);
+                                    fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
+                                    cout<<" Particion logica agregada "<<endl;
+                                }
+                            }
+
+
+                            break;
                         }
+                        
+                        fclose(discolecturaE);
+                        return;
+
+
+
                     }
                 } else if(particion[1].part_type == 'E'){
 
@@ -475,7 +1469,6 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
                         
                     } else {
-                        //int nuevocomienzo = (prueba.part_start + prueba.part_s) + 1 ;
                         fseek(discolecturaE, particion[2].part_start, SEEK_SET);
                         fread(&prueba, sizeof (EBR), 1, discolecturaE);
                         fclose(discolecturaE);
@@ -501,6 +1494,10 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         return;
                     }
                     } else if (ParticionLogica.part_status == '1'){
+                        if(strcmp(ParticionLogica.part_name, name.c_str())==0){
+                                    cout<<"Ya existe una particion con este nombre  "<<endl;
+                                    return;
+                                }
                         discolecturaE = fopen(path.c_str(), "r+b");
                         tamanioTotalParticion = (particion[2].part_s - ParticionLogica.part_s);
                         EBR Anterior = ParticionLogica;
@@ -514,7 +1511,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             fread(&Siguiente, sizeof(EBR), 1, discolecturaE);
                             //fclose(discolecturaE);
 
-                            if(Siguiente.part_status == '1'){
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
                                 if(strcmp(Siguiente.part_name, name.c_str())==0){
                                     cout<<"Ya existe una particion con este nombre  "<<endl;
                                     return;
@@ -536,7 +1533,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                                     fseek(discolecturaE, Anterior.part_start, SEEK_SET);
                                     fwrite(&Anterior, sizeof(EBR),1,discolecturaE);
                                     //fclose(discolecturaE);
-                                    cout<<"La particion ha sido asignada "<<endl;
+                                    cout<<"La particion logica ha sido asignada "<<endl;
                                 }else{
                                     cout<<"¡¡ Error !! No hay espacio disponible en la particion "<<endl;
                                     return;
@@ -557,7 +1554,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
 
 
 
-                    
+
                     // EBR ParticionLogica = prueba;
                     // EBR aux;
                     //     while (true)
@@ -703,803 +1700,6 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     return;
                 }
         }
-        }
-
-        if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
-            tamanoDisponibleAntes = disco.mbr_tamano;
-            if(tamanoDisponibleAntes > size_file){
-                strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                disco.mbr_partition_1.part_status = '1';
-                disco.mbr_partition_1.part_type = tipo.at(0);
-                disco.mbr_partition_1.part_fit = ajuste.at(0);
-                disco.mbr_partition_1.part_s = size_file;
-                disco.mbr_partition_1.part_start = (sizeof(disco)+1);
-                tamanoDisponible = disco.mbr_tamano - disco.mbr_partition_1.part_s;
-                cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                escritura(disco,path);
-                cout<<"Particion 1 asginada"<<endl;
-            }else{
-                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                    return;
-                }
-        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
-            tamanoDisponibleAntes = disco.mbr_tamano - disco.mbr_partition_1.part_s;
-            if(tamanoDisponibleAntes > size_file){
-                strcpy(disco.mbr_partition_2.part_name, name.c_str());
-                disco.mbr_partition_2.part_status = '1';
-                disco.mbr_partition_2.part_type = tipo.at(0);
-                disco.mbr_partition_2.part_fit = ajuste.at(0);
-                disco.mbr_partition_2.part_s = size_file;
-                disco.mbr_partition_2.part_start = (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
-                tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s);
-                cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                escritura(disco,path);
-                cout<<"Particion 2 asignada"<<endl;
-            }else{
-                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                    return;
-                }
-        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
-            tamanoDisponibleAntes = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s);
-            if(tamanoDisponibleAntes > size_file){
-                strcpy(disco.mbr_partition_3.part_name, name.c_str());
-                disco.mbr_partition_3.part_status = '1';
-                disco.mbr_partition_3.part_type = tipo.at(0);
-                disco.mbr_partition_3.part_fit = ajuste.at(0);
-                disco.mbr_partition_3.part_s = size_file;
-                disco.mbr_partition_3.part_start = (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s);
-                cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                escritura(disco,path);
-                cout<<"Particion 3 asignada"<<endl;
-            }else{
-                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                    return;
-                }
-        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '0'){
-            tamanoDisponibleAntes = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s);
-            if(tamanoDisponibleAntes > size_file){
-                strcpy(disco.mbr_partition_4.part_name, name.c_str());
-                disco.mbr_partition_4.part_status = '1';
-                disco.mbr_partition_4.part_type = tipo.at(0);
-                disco.mbr_partition_4.part_fit = ajuste.at(0);
-                disco.mbr_partition_4.part_s = size_file;
-                disco.mbr_partition_4.part_start = (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
-                tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s+ disco.mbr_partition_4.part_s);
-                cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                escritura(disco,path);
-                cout<<"Particion 4 asignada"<<endl;
-            }
-        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '1'){
-                
-                int tamanioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start) - 1;
-                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                if(tamanioParticion1 >= size_file){
-                    strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                    disco.mbr_partition_1.part_status = '1';
-                    disco.mbr_partition_1.part_type = tipo.at(0);
-                    disco.mbr_partition_1.part_fit = ajuste.at(0);
-                    disco.mbr_partition_1.part_s = size_file;
-                    disco.mbr_partition_1.part_start =  (sizeof(disco)+1) ;
-                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                    escritura(disco,path);
-                    cout<<"Particion 1 asignada"<<endl;
-            }else{
-                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                    return;
-                }            
-        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '1'){
-                
-                int tamanioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
-                int espacioRestante2 = tamanioParticion2 - disco.mbr_partition_2.part_s;
-                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_2.part_s<<endl;
-                if(tamanioParticion2 >= size_file){
-                    strcpy(disco.mbr_partition_2.part_name, name.c_str());
-                    disco.mbr_partition_2.part_status = '1';
-                    disco.mbr_partition_2.part_type = tipo.at(0);
-                    disco.mbr_partition_2.part_fit = ajuste.at(0);
-                    disco.mbr_partition_2.part_s = size_file;
-                    disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
-                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                    
-                    escritura(disco,path);
-                    cout<<"Particion 2 asignada"<<endl;
-            }else{
-                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                    return;
-                }
-        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '1'){
-                
-                int tamanioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
-                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_3.part_s<<endl;
-                if(tamanioParticion3 >= size_file){
-                    strcpy(disco.mbr_partition_3.part_name, name.c_str());
-                    disco.mbr_partition_3.part_status = '1';
-                    disco.mbr_partition_3.part_type = tipo.at(0);
-                    disco.mbr_partition_3.part_fit = ajuste.at(0);
-                    disco.mbr_partition_3.part_s = size_file;
-                    disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                    
-                    escritura(disco,path);
-                    cout<<"Particion 3 asignada"<<endl;
-            }else{
-                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                    return;
-                }
-        }else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '1'){
-
-                int espacioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
-                int espacioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
-                int espaciototalparticion = espacioParticion1 + espacioParticion2;
-                cout<<"Tamanio antes de la particion: "<<espaciototalparticion<<endl;
-                if(espaciototalparticion >= size_file){
-                    strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                    disco.mbr_partition_1.part_status = '1';
-                    disco.mbr_partition_1.part_type = tipo.at(0);
-                    disco.mbr_partition_1.part_fit = ajuste.at(0);
-                    disco.mbr_partition_1.part_s = size_file;
-                    disco.mbr_partition_1.part_start =  (sizeof(disco)+1);
-                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                    escritura(disco,path);
-                    cout<<"Particion 1 asignada"<<endl;
-            }else{
-                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                    return;
-                }
-        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '1'){
-                tamanoDisponibleAntes = disco.mbr_tamano - (disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                int espacioLibre = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                int espaciototalparticion= disco.mbr_tamano - (disco.mbr_partition_4.part_s + espacioLibre);
-                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                if(espaciototalparticion >= size_file){
-                    strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                    disco.mbr_partition_1.part_status = '1';
-                    disco.mbr_partition_1.part_type = tipo.at(0);
-                    disco.mbr_partition_1.part_fit = ajuste.at(0);
-                    disco.mbr_partition_1.part_s = size_file;
-                    disco.mbr_partition_1.part_start =  (sizeof(disco)+1);
-                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                    escritura(disco,path);
-                    cout<<"Particion 1 asignada"<<endl;
-            }else{
-                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                    return;
-                }
-        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '1'){
-                tamanoDisponibleAntes = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_4.part_s);
-                int espacioLibre = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                int espaciototalparticion= disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_4.part_s + espacioLibre);
-                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_2.part_s<<endl;
-                if(espaciototalparticion >= size_file){
-                    strcpy(disco.mbr_partition_2.part_name, name.c_str());
-                    disco.mbr_partition_2.part_status = '1';
-                    disco.mbr_partition_2.part_type = tipo.at(0);
-                    disco.mbr_partition_2.part_fit = ajuste.at(0);
-                    disco.mbr_partition_2.part_s = size_file;
-                    disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
-                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
-                    escritura(disco,path);
-                    cout<<"Particion 2 asignada"<<endl;
-            }else{
-                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                    return;
-                }
-        } 
-        else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '1'){
-                
-                int espacioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
-                int espacioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
-                int espacioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
-                int espacioNoUsado = disco.mbr_tamano - (espacioParticion1 + espacioParticion2 + espacioParticion3);
-                int espacioParticion4 = espacioNoUsado;
-                
-                tamanoDisponibleAntes = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_4.part_s);
-                int espacioLibre = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                int espaciototalparticion = espacioParticion2 + espacioParticion3;
-                cout<<"Tamanio antes de la particion: "<<espaciototalparticion<<endl;
-                if(espaciototalparticion >= size_file){
-                    strcpy(disco.mbr_partition_2.part_name, name.c_str());
-                    disco.mbr_partition_2.part_status = '1';
-                    disco.mbr_partition_2.part_type = tipo.at(0);
-                    disco.mbr_partition_2.part_fit = ajuste.at(0);
-                    disco.mbr_partition_2.part_s = size_file;
-                    disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
-                    tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                    cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
-                    escritura(disco,path);
-                    cout<<"Particion 2 asignada"<<endl;
-            }else{
-                    cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                    return;
-                }
-        }
-            else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '0'){
-                
-                int tamanioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
-                int tamanioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
-                int tamanioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
-                int espacioNoUsado = disco.mbr_tamano - (tamanioParticion1 + tamanioParticion2 + tamanioParticion3);
-                int tamanioParticion4 = espacioNoUsado;
-
-                cout<<"Tamanio particion 2 "<<tamanioParticion2 <<endl;
-                cout<<"Espacio no usado " << espacioNoUsado<<endl;
-                cout<<"Tamanio Particion 4"<<tamanioParticion4 <<endl;
-                if(ajuste == "B" || ajuste == "b"){
-                    if(tamanioParticion2 < tamanioParticion4){
-                        if (tamanioParticion2 >= size_file){
-                            strcpy(disco.mbr_partition_2.part_name, name.c_str());
-                            disco.mbr_partition_2.part_status = '1';
-                            disco.mbr_partition_2.part_type = tipo.at(0);
-                            disco.mbr_partition_2.part_fit = ajuste.at(0);
-                            disco.mbr_partition_2.part_s = size_file;
-                            disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 2 asignada"<<endl;
-                        }
-                    } else if (tamanioParticion4 < tamanioParticion2){
-                        if (tamanioParticion4 >= size_file){
-                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
-                            disco.mbr_partition_4.part_status = '1';
-                            disco.mbr_partition_4.part_type = tipo.at(0);
-                            disco.mbr_partition_4.part_fit = ajuste.at(0);
-                            disco.mbr_partition_4.part_s = size_file;
-                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
-                        }
-                    } else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                } else if(ajuste == "F" || ajuste == "f"){
-                        if (tamanioParticion2 >= size_file){
-                            strcpy(disco.mbr_partition_2.part_name, name.c_str());
-                            disco.mbr_partition_2.part_status = '1';
-                            disco.mbr_partition_2.part_type = tipo.at(0);
-                            disco.mbr_partition_2.part_fit = ajuste.at(0);
-                            disco.mbr_partition_2.part_s = size_file;
-                            disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 2 asignada"<<endl;
-                        }else if (tamanioParticion4 >= size_file){
-                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
-                            disco.mbr_partition_4.part_status = '1';
-                            disco.mbr_partition_4.part_type = tipo.at(0);
-                            disco.mbr_partition_4.part_fit = ajuste.at(0);
-                            disco.mbr_partition_4.part_s = size_file;
-                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
-                        }else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                    } else if(ajuste == "W" || ajuste == "w"){
-                    if(tamanioParticion4 > tamanioParticion2){
-                        if (tamanioParticion4 >= size_file){
-                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
-                            disco.mbr_partition_4.part_status = '1';
-                            disco.mbr_partition_4.part_type = tipo.at(0);
-                            disco.mbr_partition_4.part_fit = ajuste.at(0);
-                            disco.mbr_partition_4.part_s = size_file;
-                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
-                        }
-                    } else if (tamanioParticion2 > tamanioParticion4){
-                        if (tamanioParticion2 >= size_file){
-                            strcpy(disco.mbr_partition_2.part_name, name.c_str());
-                            disco.mbr_partition_2.part_status = '1';
-                            disco.mbr_partition_2.part_type = tipo.at(0);
-                            disco.mbr_partition_2.part_fit = ajuste.at(0);
-                            disco.mbr_partition_2.part_s = size_file;
-                            disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 2 asignada"<<endl;
-                        } 
-                    } else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                }
-        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '1'){
-                
-                int tamanioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
-                int tamanioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
-                
-                cout<<"Tamanio particion 1 "<<tamanioParticion1 <<endl;
-                //cout<<"Espacio no usado " << espacioLibre<<endl;
-                cout<<"Tamanio Particion 3"<<tamanioParticion3 <<endl;
-                if(ajuste == "B" || ajuste == "b"){
-                    if(tamanioParticion1 < tamanioParticion3){
-                        if (tamanioParticion1 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        }
-                    } else if (tamanioParticion3 < tamanioParticion1){
-                        if (tamanioParticion3 >= size_file){
-                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
-                            disco.mbr_partition_3.part_status = '1';
-                            disco.mbr_partition_3.part_type = tipo.at(0);
-                            disco.mbr_partition_3.part_fit = ajuste.at(0);
-                            disco.mbr_partition_3.part_s = size_file;
-                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
-                        }
-                    } else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                } else if(ajuste == "F" || ajuste == "f"){
-                        if (tamanioParticion1 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        }else if (tamanioParticion3 >= size_file){
-                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
-                            disco.mbr_partition_3.part_status = '1';
-                            disco.mbr_partition_3.part_type = tipo.at(0);
-                            disco.mbr_partition_3.part_fit = ajuste.at(0);
-                            disco.mbr_partition_3.part_s = size_file;
-                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
-                        }else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                    } else if(ajuste == "W" || ajuste == "w"){
-                    if(tamanioParticion3 > tamanioParticion1){
-                        if (tamanioParticion3 >= size_file){
-                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
-                            disco.mbr_partition_3.part_status = '1';
-                            disco.mbr_partition_3.part_type = tipo.at(0);
-                            disco.mbr_partition_3.part_fit = ajuste.at(0);
-                            disco.mbr_partition_3.part_s = size_file;
-                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
-                        }
-                    } else if (tamanioParticion1 > tamanioParticion3){
-                        if (tamanioParticion1 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        } 
-                    } else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                }
-        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '0'){
-                
-                int espacioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
-                int espacioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
-                int tamanioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
-                int espacioNoUsado = disco.mbr_tamano - (espacioParticion1 + espacioParticion2 + tamanioParticion3);
-                int espacioParticion4 = espacioNoUsado;
-                
-                cout<<"Tamanio particion 1 "<<espacioParticion1 <<endl;
-                cout<<"Tamanio Particion 4"<<espacioParticion4 <<endl;
-                if(ajuste == "B" || ajuste == "b"){
-                    if(espacioParticion1 < espacioParticion4){
-                        if (espacioParticion1 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        }
-                    } else if (espacioParticion4 < espacioParticion1){
-                        if (espacioParticion4 >= size_file){
-                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
-                            disco.mbr_partition_4.part_status = '1';
-                            disco.mbr_partition_4.part_type = tipo.at(0);
-                            disco.mbr_partition_4.part_fit = ajuste.at(0);
-                            disco.mbr_partition_4.part_s = size_file;
-                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
-                        }
-                    } else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                } else if(ajuste == "F" || ajuste == "f"){
-                        if (espacioParticion1 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        }else if (espacioParticion4 >= size_file){
-                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
-                            disco.mbr_partition_4.part_status = '1';
-                            disco.mbr_partition_4.part_type = tipo.at(0);
-                            disco.mbr_partition_4.part_fit = ajuste.at(0);
-                            disco.mbr_partition_4.part_s = size_file;
-                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
-                        }else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                    } else if(ajuste == "W" || ajuste == "w"){
-                    if(espacioParticion4 > espacioParticion1){
-                        if (espacioParticion4 >= size_file){
-                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
-                            disco.mbr_partition_4.part_status = '1';
-                            disco.mbr_partition_4.part_type = tipo.at(0);
-                            disco.mbr_partition_4.part_fit = ajuste.at(0);
-                            disco.mbr_partition_4.part_s = size_file;
-                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
-                        }
-                    } else if (espacioParticion1 > espacioParticion4){
-                        if (espacioParticion1 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        } 
-                    } else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                }
-        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '0' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '0'){
-                
-                int espacioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
-                int espacioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
-                int espacioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
-                int espacioNoUsado = disco.mbr_tamano - (espacioParticion1 + espacioParticion2 + espacioParticion3);
-                int espacioParticion4 = espacioNoUsado;
-
-                int espacioparticion12 = espacioParticion1 + espacioParticion2;
-                
-                cout<<"Tamanio particion 1 "<<espacioParticion1 <<endl;
-                cout<<"Tamanio Particion 4"<<espacioParticion4 <<endl;
-                if(ajuste == "B" || ajuste == "b"){
-                    if(espacioparticion12 < espacioParticion4){
-                        if (espacioparticion12 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        }
-                    } else if (espacioParticion4 < espacioparticion12){
-                        if (espacioParticion4 >= size_file){
-                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
-                            disco.mbr_partition_4.part_status = '1';
-                            disco.mbr_partition_4.part_type = tipo.at(0);
-                            disco.mbr_partition_4.part_fit = ajuste.at(0);
-                            disco.mbr_partition_4.part_s = size_file;
-                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
-                        }
-                    } else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                } else if(ajuste == "F" || ajuste == "f"){
-                        if (espacioparticion12 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        }else if (espacioParticion4 >= size_file){
-                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
-                            disco.mbr_partition_4.part_status = '1';
-                            disco.mbr_partition_4.part_type = tipo.at(0);
-                            disco.mbr_partition_4.part_fit = ajuste.at(0);
-                            disco.mbr_partition_4.part_s = size_file;
-                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
-                        }else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                    } else if(ajuste == "W" || ajuste == "w"){
-                    if(espacioParticion4 > espacioparticion12){
-                        if (espacioParticion4 >= size_file){
-                            strcpy(disco.mbr_partition_4.part_name, name.c_str());
-                            disco.mbr_partition_4.part_status = '1';
-                            disco.mbr_partition_4.part_type = tipo.at(0);
-                            disco.mbr_partition_4.part_fit = ajuste.at(0);
-                            disco.mbr_partition_4.part_s = size_file;
-                            disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
-                        }
-                    } else if (espacioparticion12 > espacioParticion4){
-                        if (espacioparticion12 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        } 
-                    } else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                }
-        } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '0' && disco.mbr_partition_4.part_status == '0'){
-                
-                int tamanioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
-                int tamanioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
-                int tamanioParticion3 = disco.mbr_tamano - (tamanioParticion1 + tamanioParticion2);
-                
-                cout<<"Tamanio particion 1 "<<tamanioParticion1 <<endl;
-                //cout<<"Espacio no usado " << espacioLibre<<endl;
-                cout<<"Tamanio Particion 3"<<tamanioParticion3 <<endl;
-                if(ajuste == "B" || ajuste == "b"){
-                    if(tamanioParticion1 < tamanioParticion3){
-                        if (tamanioParticion1 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        }
-                    } else if (tamanioParticion3 < tamanioParticion1){
-                        if (tamanioParticion3 >= size_file){
-                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
-                            disco.mbr_partition_3.part_status = '1';
-                            disco.mbr_partition_3.part_type = tipo.at(0);
-                            disco.mbr_partition_3.part_fit = ajuste.at(0);
-                            disco.mbr_partition_3.part_s = size_file;
-                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
-                        }
-                    } else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                } else if(ajuste == "F" || ajuste == "f"){
-                        if (tamanioParticion1 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        }else if (tamanioParticion3 >= size_file){
-                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
-                            disco.mbr_partition_3.part_status = '1';
-                            disco.mbr_partition_3.part_type = tipo.at(0);
-                            disco.mbr_partition_3.part_fit = ajuste.at(0);
-                            disco.mbr_partition_3.part_s = size_file;
-                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
-                        }else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                    } else if(ajuste == "W" || ajuste == "w"){
-                    if(tamanioParticion3 > tamanioParticion1){
-                        if (tamanioParticion3 >= size_file){
-                            strcpy(disco.mbr_partition_3.part_name, name.c_str());
-                            disco.mbr_partition_3.part_status = '1';
-                            disco.mbr_partition_3.part_type = tipo.at(0);
-                            disco.mbr_partition_3.part_fit = ajuste.at(0);
-                            disco.mbr_partition_3.part_s = size_file;
-                            disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
-                        }
-                    } else if (tamanioParticion1 > tamanioParticion3){
-                        if (tamanioParticion1 >= size_file){
-                            strcpy(disco.mbr_partition_1.part_name, name.c_str());
-                            disco.mbr_partition_1.part_status = '1';
-                            disco.mbr_partition_1.part_type = tipo.at(0);
-                            disco.mbr_partition_1.part_fit = ajuste.at(0);
-                            disco.mbr_partition_1.part_s = size_file;
-                            disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
-                            tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
-                            cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
-                            escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
-                        } 
-                    } else{
-                            cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
-                            return;
-                        }
-                }
-        } else if(disco.mbr_partition_1.part_status == '1' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '1'){
-            cout<<"¡¡ Error !! Ya no hay particiones disponibles"<<endl;
         }
     } 
     } else {
