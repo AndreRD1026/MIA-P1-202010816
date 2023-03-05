@@ -1280,33 +1280,34 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
             return;
         }
     }else{
-        string obtenertipo, nombreParticionS;
+
+        //Cuando la particion es tipo Logica
         int tamanioTotalParticion;
         int inicioParticion;
         if(tipo == "L" || tipo == "l"){
 
-        string obtenerTipo;
+        int inicioLogica = particion[0].part_start;
+        int inicioLogica2 = particion[1].part_start;
+        int inicioLogica3 = particion[2].part_start;
+        int inicioLogica4 = particion[3].part_start;
 
         for(int i=0; i < 4; i++){
                 if(particion[0].part_type == 'E'){
-                    
+                
                     EBR prueba;
-
                     FILE *discolecturaE;
 
                     if ((discolecturaE = fopen(path.c_str(), "r+b")) == NULL) {
-                        
                             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
-                        
                     } else {
-                        fseek(discolecturaE, particion[0].part_start, SEEK_SET);
+                        fseek(discolecturaE, inicioLogica, SEEK_SET);
                         fread(&prueba, sizeof (EBR), 1, discolecturaE);
                         fclose(discolecturaE);
                     }
 
                     EBR ParticionLogica = prueba;
 
-                    if(ParticionLogica.part_fit == 'B' || ParticionLogica.part_fit == 'F' || ParticionLogica.part_fit == 'W'){
+                    if(ParticionLogica.part_status != '0'){
                         tamanioTotalParticion = particion[0].part_s;
                         inicioParticion = particion[0].part_start;
                         if(tamanioTotalParticion >= size_file){
@@ -1323,58 +1324,35 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
                         return;
                     }
-                    }else if(ParticionLogica.part_fit == 'B' || ParticionLogica.part_fit == 'F' || ParticionLogica.part_fit == 'W') {
-
-                        EBR nuevoo;
-                        int inicioPart = particion[0].part_start;
-                        int tDisponible = particion[0].part_s;
-
+                    }else if(ParticionLogica.part_status == '0') {
+                        EBR Primero;
+                        int inicioLogica1 = particion[0].part_start;
                         discolecturaE = fopen(path.c_str(), "r+b");
-                        fseek(discolecturaE, inicioPart, SEEK_SET);   
-                        fread(&nuevoo, sizeof (EBR), 1, discolecturaE);
-
-                        //Comenzandolo desde 0
-                        
-                        int possiguiente = nuevoo.part_next;
-                        EBR Anterior = nuevoo;
+                        fseek(discolecturaE, inicioLogica1, SEEK_SET);
+                        fread(&Primero, sizeof(EBR), 1, discolecturaE);
+                        int tamanioTotal = particion[0].part_start + particion[0].part_s;
+                        EBR Anterior;
+                        Anterior = Primero;
                         EBR Siguiente;
+                        int possig = Primero.part_next;
 
-                        //int possiguiente = ParticionLogica.part_start + ParticionLogica.part_s + 1;
-                        int siguientepos = nuevoo.part_next;
-                        
-                        while (true)
-                        {
-                            //discolecturaE = fopen(path.c_str(), "r+b");
-                            fseek(discolecturaE, siguientepos, SEEK_SET);   
-                            fread(&Siguiente, sizeof (EBR), 1, discolecturaE);
-                            //fclose(discolecturaE);
-
-
-                            cout<<"Pruebas "<<Anterior.part_name<<endl;
-                            cout<<"Pruebas "<<Anterior.part_fit<<endl;
-                            cout<<"Pruebas "<<Anterior.part_start<<endl;
-                            cout<<"Pruebas "<<Anterior.part_status<<endl;
-                            cout<<"Pruebas "<<Anterior.part_s<<endl;
-
-                            cout<<"Posiscion siguiente "<<possiguiente<<endl;
-
-                            cout<<"Pruebas "<<Siguiente.part_name<<endl;
-                            cout<<"Pruebas "<<Siguiente.part_fit<<endl;
-                            cout<<"Pruebas "<<Siguiente.part_start<<endl;
-                            cout<<"Pruebas "<<Siguiente.part_status<<endl;
-                            cout<<"Pruebas "<<Siguiente.part_s<<endl;
+                        while(true){
+                            fseek(discolecturaE, possig, SEEK_SET);
+                            fread(&Siguiente, sizeof(EBR), 1, discolecturaE);
 
                             if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
                                 if(strcmp(Siguiente.part_name, name.c_str()) == 0){
-                                    cout<<"¡¡ Error !! Ya existe una particion con ese nombre "<<endl;
-                                    return;
-                                }
-                                possiguiente = Siguiente.part_next;
+                                cout<<"¡¡ Error !! Ya existe una particion con ese nombre "<<endl;
+                                return;
+                                
+                            }
+                                possig = Siguiente.part_next;
                                 Anterior = Siguiente;
-
-                            } else {
+                            }
+                            else {
                                 Siguiente.part_start = Anterior.part_start + sizeof(EBR) + Anterior.part_s + 1;
-                                fseek(discolecturaE , Siguiente.part_start, SEEK_SET);
+                                cout<<"La siguiente seria "<<Siguiente.part_start<<endl;
+                                fseek(discolecturaE, Siguiente.part_start, SEEK_SET);
                                 Siguiente.part_status = '0';
                                 Siguiente.part_fit = ajuste.at(0);
                                 Siguiente.part_s = size_file;
@@ -1382,51 +1360,44 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                                 strcpy(Siguiente.part_name, name.c_str());
                                 Anterior.part_next = Siguiente.part_start;
 
-                                if(Siguiente.part_start + Siguiente.part_s > tDisponible){
-                                    cout<<"¡¡ Error !! No hay espacio suficiente "<<endl;
+                                if(Siguiente.part_start + Siguiente.part_s > tamanioTotal){
+                                    cout<<"¡¡ Error !! El tamanio de la particion logica supera al de la extendida "<<endl;
                                     fclose(discolecturaE);
                                     return;
-                                } else {
+                                }else{
                                     fwrite(&Siguiente, sizeof(EBR), 1, discolecturaE);
                                     fseek(discolecturaE, Anterior.part_start, SEEK_SET);
                                     fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
-                                    cout<<" Particion logica agregada "<<endl;
+                                    cout << "" << endl;
+                                    cout << "*                 Particion logica creada con exito            *" << endl;
+                                    cout << "" << endl;
                                 }
                             }
-
-
                             break;
                         }
-                        
                         fclose(discolecturaE);
                         return;
-
-
-
                     }
                 } else if(particion[1].part_type == 'E'){
 
                     EBR prueba;
-
                     FILE *discolecturaE;
 
                     if ((discolecturaE = fopen(path.c_str(), "r+b")) == NULL) {
-                        
                             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
-                        
                     } else {
-                        fseek(discolecturaE, particion[1].part_start, SEEK_SET);
+                        fseek(discolecturaE, inicioLogica2, SEEK_SET);
                         fread(&prueba, sizeof (EBR), 1, discolecturaE);
                         fclose(discolecturaE);
                     }
 
                     EBR ParticionLogica = prueba;
 
-                    if(ParticionLogica.part_status != '1'){
+                    if(ParticionLogica.part_status != '0'){
                         tamanioTotalParticion = particion[1].part_s;
                         inicioParticion = particion[1].part_start;
                         if(tamanioTotalParticion >= size_file){
-                            ParticionLogica.part_status = '1';
+                            ParticionLogica.part_status = '0';
                             ParticionLogica.part_fit = ajuste.at(0);
                             ParticionLogica.part_start = inicioParticion;
                             ParticionLogica.part_s = size_file;
@@ -1439,223 +1410,79 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
                         return;
                     }
-                    }else if(ParticionLogica.part_status == '1') {
-                        if(ParticionLogica.part_name == name){
-                            cout<<"Ya existiria un EBR con ese nombre "<<endl;
-                            return;
-                        }else{
-                            tamanioTotalParticion = particion[1].part_s;
-                            cout<<"Que saca esto? "<<sizeof(EBR)<<endl;
-                            cout<<"Tamanio particion extendida "<<tamanioTotalParticion<<endl;
-                            cout<<"Tamanio particion Logica "<<ParticionLogica.part_s<<endl; 
-                            //EBR partiLogica [5];
-                            int tamaniodentrodeparticion;
-
-                            tamaniodentrodeparticion = tamanioTotalParticion - ParticionLogica.part_s;
-
-                            cout<<"Quedan disponibles "<<tamaniodentrodeparticion<<endl;
-                            cout<<"Tocaria codigo aqui "<<endl;
-                            return;
-                        }
-                    }
-                } else if(particion[2].part_type == 'E'){
-
-                    EBR prueba;
-
-                    FILE *discolecturaE;
-
-                    if ((discolecturaE = fopen(path.c_str(), "r+b")) == NULL) {
-                        
-                            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
-                        
-                    } else {
-                        fseek(discolecturaE, particion[2].part_start, SEEK_SET);
-                        fread(&prueba, sizeof (EBR), 1, discolecturaE);
-                        fclose(discolecturaE);
-                    }
-
-                    EBR ParticionLogica = prueba;
-
-                    if(ParticionLogica.part_status != '1'){
-                        tamanioTotalParticion = particion[2].part_s;
-                        inicioParticion = particion[2].part_start;
-                        if(tamanioTotalParticion >= size_file){
-                            ParticionLogica.part_status = '1';
-                            ParticionLogica.part_fit = ajuste.at(0);
-                            ParticionLogica.part_start = inicioParticion;
-                            ParticionLogica.part_s = size_file;
-                            strcpy(ParticionLogica.part_name, name.c_str());
-                            // Como es la primera no tiene siguiente
-                            ParticionLogica.part_next = -1;
-                            escrituraLogica(ParticionLogica, path, inicioParticion);
-                            return;
-                    }else{
-                        cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
-                        return;
-                    }
-                    } else if (ParticionLogica.part_status == '1'){
-                        if(strcmp(ParticionLogica.part_name, name.c_str())==0){
-                                    cout<<"Ya existe una particion con este nombre  "<<endl;
-                                    return;
-                                }
+                    }else if(ParticionLogica.part_status == '0') {
+                        EBR Primero;
+                        int inicioLogica1 = particion[1].part_start;
                         discolecturaE = fopen(path.c_str(), "r+b");
-                        tamanioTotalParticion = (particion[2].part_s - ParticionLogica.part_s);
-                        EBR Anterior = ParticionLogica;
+                        fseek(discolecturaE, inicioLogica1, SEEK_SET);
+                        fread(&Primero, sizeof(EBR), 1, discolecturaE);
+                        int tamanioTotal = particion[1].part_start + particion[1].part_s;
+                        EBR Anterior;
+                        Anterior = Primero;
                         EBR Siguiente;
-
-                        int possiguiente = ParticionLogica.part_next;
+                        int possig = Primero.part_next;
 
                         while(true){
-                            //discolecturaE = fopen(path.c_str(), "r+b");
-                            fseek(discolecturaE, possiguiente, SEEK_SET);
+                            fseek(discolecturaE, possig, SEEK_SET);
                             fread(&Siguiente, sizeof(EBR), 1, discolecturaE);
-                            //fclose(discolecturaE);
 
                             if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
-                                if(strcmp(Siguiente.part_name, name.c_str())==0){
-                                    cout<<"Ya existe una particion con este nombre  "<<endl;
-                                    return;
-                                }
-                                possiguiente = Siguiente.part_next;
+                                if(strcmp(Siguiente.part_name, name.c_str()) == 0){
+                                cout<<"¡¡ Error !! Ya existe una particion con ese nombre "<<endl;
+                                return;
+                            }
+                                possig = Siguiente.part_next;
                                 Anterior = Siguiente;
-                            } else {
-                                if (tamanioTotalParticion >= size_file){
-                                    //discolecturaE = fopen(path.c_str(), "r+b");
-                                    Siguiente.part_start = Anterior.part_start + sizeof(EBR) + Anterior.part_s + 1;
-                                    fseek(discolecturaE, Siguiente.part_start, SEEK_SET);
-                                    Siguiente.part_status == '1';
-                                    Siguiente.part_fit = ajuste.at(0);
-                                    Siguiente.part_s = size_file;
-                                    Siguiente.part_next = -1;
-                                    strcpy(Siguiente.part_name, name.c_str());
-                                    Anterior.part_next = Siguiente.part_start;
-                                    fwrite(&Siguiente, sizeof(EBR),1, discolecturaE);
-                                    fseek(discolecturaE, Anterior.part_start, SEEK_SET);
-                                    fwrite(&Anterior, sizeof(EBR),1,discolecturaE);
-                                    //fclose(discolecturaE);
-                                    cout<<"La particion logica ha sido asignada "<<endl;
-                                }else{
-                                    cout<<"¡¡ Error !! No hay espacio disponible en la particion "<<endl;
+                            }
+                            else {
+                                Siguiente.part_start = Anterior.part_start + sizeof(EBR) + Anterior.part_s + 1;
+                                cout<<"La siguiente seria "<<Siguiente.part_start<<endl;
+                                fseek(discolecturaE, Siguiente.part_start, SEEK_SET);
+                                Siguiente.part_status = '0';
+                                Siguiente.part_fit = ajuste.at(0);
+                                Siguiente.part_s = size_file;
+                                Siguiente.part_next = -1;
+                                strcpy(Siguiente.part_name, name.c_str());
+                                Anterior.part_next = Siguiente.part_start;
+
+                                if(Siguiente.part_start + Siguiente.part_s > tamanioTotal){
+                                    cout<<"¡¡ Error !! El tamanio de la particion logica supera al de la extendida "<<endl;
+                                    fclose(discolecturaE);
                                     return;
+                                }else{
+                                    fwrite(&Siguiente, sizeof(EBR), 1, discolecturaE);
+                                    fseek(discolecturaE, Anterior.part_start, SEEK_SET);
+                                    fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
+                                    cout << "" << endl;
+                                    cout << "*                 Particion logica creada con exito            *" << endl;
+                                    cout << "" << endl;
                                 }
                             }
                             break;
                         }
                         fclose(discolecturaE);
-                        
-                    }else{
-                        cout<<"¡¡ Error !! No hay espacio suficiente para asignar la particion "<<endl;
+                        return;
                     }
-
-                    return;
-
-
-
-
-
-
-
-                    // EBR ParticionLogica = prueba;
-                    // EBR aux;
-                    //     while (true)
-                    //     {
-                    //         fseek(discolecturaE, particion[2].part_start, SEEK_SET);
-                    //         fread(&aux, sizeof (EBR), 1, discolecturaE);
-                    //         cout<<"Que saca "<<aux.part_name<<endl;
-                    //         if(ParticionLogica.part_status != '1'){
-                    //     tamanioTotalParticion = particion[2].part_s;
-                    //     inicioParticion = particion[2].part_start;
-                    //     if(tamanioTotalParticion >= size_file){
-                    //         ParticionLogica.part_status = '1';
-                    //         ParticionLogica.part_fit = ajuste.at(0);
-                    //         ParticionLogica.part_start = inicioParticion;
-                    //         ParticionLogica.part_s = size_file;
-                    //         strcpy(ParticionLogica.part_name, name.c_str());
-                    //         // Como es la primera no tiene siguiente
-                    //         ParticionLogica.part_next = -1;
-                    //         escrituraLogica(ParticionLogica, path, inicioParticion);
-                    //         return;
-                    // }else{
-                    //     cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
-                    //     return;
-                    // }
-                    // }else if(ParticionLogica.part_status == '1') {
-                    //     if(ParticionLogica.part_name == name){
-                        
-                    //         cout<<"Ya existiria un EBR con ese nombre "<<endl;
-                    //         return;
-                    //     }else{
-                    //         tamanioTotalParticion = particion[2].part_s;
-                    //         //cout<<"Que saca esto? "<<sizeof(EBR)<<endl;
-                    //         //cout<<"Tamanio particion extendida "<<particion[2].part_s<<endl;
-                    //         //cout<<"Tamanio dos "<<tamanioTotalParticion<<endl;
-                    //         //cout<<"Tamanio particion Logica "<<ParticionLogica.part_s<<endl; 
-                    //         //EBR partiLogica [5];
-                    //         int tamaniodentrodeparticion;
-                    //         tamaniodentrodeparticion = tamanioTotalParticion - ParticionLogica.part_s;
-                    //         cout<<"Quedan disponibles "<<tamaniodentrodeparticion<<endl;
-                    //         if(tamaniodentrodeparticion >= size_file){
-                    //             EBR segundo;
-                    //             int nuevocomienzo = (ParticionLogica.part_start + ParticionLogica.part_s) + 1 ;
-                    //             cout<<"Datos "<<ParticionLogica.part_name<<endl;
-                    //             cout<<"Datos "<<ParticionLogica.part_fit<<endl;
-                    //             cout<<"Datos "<<ParticionLogica.part_next<<endl;
-                    //             cout<<"Datos "<<ParticionLogica.part_s<<endl;
-                    //             cout<<"Datos "<<ParticionLogica.part_start<<endl;
-                    //             //Nuevos datos
-                    //             segundo.part_status = '1';
-                    //             segundo.part_fit = ajuste.at(0);
-                    //             segundo.part_start = nuevocomienzo;
-                    //             segundo.part_s = size_file;
-                    //             strcpy(segundo.part_name, name.c_str());
-                    //             // Como es la primera no tiene siguiente
-                    //             segundo.part_next = -1;
-                    //             escrituraLogica(segundo, path, nuevocomienzo);
-                                
-
-
-                    //             //escrituraLogica(ParticionLogica, path, inicioParticion);
-
-                    //             cout<<"Entra en este if"<<endl;
-                    //         }else{
-                    //             cout<<"¡¡ Error !! EL espacio de la particion es menor a la que intenta agregar"<<endl;
-                    //         }
-
-
-                    //         //cout<<"Tocaria codigo aqui "<<endl;
-                    //         return;
-                    //     }
-                        
-                    // }
-                    //         //cout<<"Deberia salir 2 nombre "<<ParticionLogica.part_name<<endl;
-                    //         fclose(discolecturaE);
-                    //         break;
-                    //     }
-
-                    
-                } else if(particion[3].part_type == 'E'){
+                } else if(particion[2].part_type == 'E'){
 
                     EBR prueba;
-
                     FILE *discolecturaE;
 
                     if ((discolecturaE = fopen(path.c_str(), "r+b")) == NULL) {
-                        
                             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
-                        
                     } else {
-                        fseek(discolecturaE, particion[3].part_start, SEEK_SET);
+                        fseek(discolecturaE, inicioLogica3, SEEK_SET);
                         fread(&prueba, sizeof (EBR), 1, discolecturaE);
                         fclose(discolecturaE);
                     }
 
                     EBR ParticionLogica = prueba;
 
-                    if(ParticionLogica.part_status != '1'){
-                        tamanioTotalParticion = particion[3].part_s;
-                        inicioParticion = particion[3].part_start;
+                    if(ParticionLogica.part_status != '0'){
+                        tamanioTotalParticion = particion[2].part_s;
+                        inicioParticion = particion[2].part_start;
                         if(tamanioTotalParticion >= size_file){
-                            ParticionLogica.part_status = '1';
+                            ParticionLogica.part_status = '0';
                             ParticionLogica.part_fit = ajuste.at(0);
                             ParticionLogica.part_start = inicioParticion;
                             ParticionLogica.part_s = size_file;
@@ -1668,32 +1495,143 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
                         return;
                     }
-                    }else if(ParticionLogica.part_status == '1') {
-                        while (ParticionLogica.part_status != ' ')
-                        {
-                            cout<<"Deberia salir 2 nombre "<<ParticionLogica.part_name<<endl;
+                    }else if(ParticionLogica.part_status == '0') {
+                        EBR Primero;
+                        int inicioLogica1 = particion[2].part_start;
+                        discolecturaE = fopen(path.c_str(), "r+b");
+                        fseek(discolecturaE, inicioLogica1, SEEK_SET);
+                        fread(&Primero, sizeof(EBR), 1, discolecturaE);
+                        int tamanioTotal = particion[2].part_start + particion[2].part_s;
+                        EBR Anterior;
+                        Anterior = Primero;
+                        EBR Siguiente;
+                        int possig = Primero.part_next;
+
+                        while(true){
+                            fseek(discolecturaE, possig, SEEK_SET);
+                            fread(&Siguiente, sizeof(EBR), 1, discolecturaE);
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                if(strcmp(Siguiente.part_name, name.c_str()) == 0){
+                                cout<<"¡¡ Error !! Ya existe una particion con ese nombre "<<endl;
+                                return;
+                            }
+                                possig = Siguiente.part_next;
+                                Anterior = Siguiente;
+                            }
+                            else {
+                                Siguiente.part_start = Anterior.part_start + sizeof(EBR) + Anterior.part_s + 1;
+                                cout<<"La siguiente seria "<<Siguiente.part_start<<endl;
+                                fseek(discolecturaE, Siguiente.part_start, SEEK_SET);
+                                Siguiente.part_status = '0';
+                                Siguiente.part_fit = ajuste.at(0);
+                                Siguiente.part_s = size_file;
+                                Siguiente.part_next = -1;
+                                strcpy(Siguiente.part_name, name.c_str());
+                                Anterior.part_next = Siguiente.part_start;
+
+                                if(Siguiente.part_start + Siguiente.part_s > tamanioTotal){
+                                    cout<<"¡¡ Error !! El tamanio de la particion logica supera al de la extendida "<<endl;
+                                    fclose(discolecturaE);
+                                    return;
+                                }else{
+                                    fwrite(&Siguiente, sizeof(EBR), 1, discolecturaE);
+                                    fseek(discolecturaE, Anterior.part_start, SEEK_SET);
+                                    fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
+                                    cout << "" << endl;
+                                    cout << "*                 Particion logica creada con exito            *" << endl;
+                                    cout << "" << endl;
+                                }
+                            }
                             break;
                         }
-                        
-                        
-                        if(ParticionLogica.part_name == name){
-                            cout<<"Ya existiria un EBR con ese nombre "<<endl;
+                        fclose(discolecturaE);
+                        return;
+                    }                    
+                } else if(particion[3].part_type == 'E'){
+
+                    EBR prueba;
+                    FILE *discolecturaE;
+
+                    if ((discolecturaE = fopen(path.c_str(), "r+b")) == NULL) {
+                            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+                    } else {
+                        fseek(discolecturaE, inicioLogica2, SEEK_SET);
+                        fread(&prueba, sizeof (EBR), 1, discolecturaE);
+                        fclose(discolecturaE);
+                    }
+
+                    EBR ParticionLogica = prueba;
+
+                    if(ParticionLogica.part_status != '0'){
+                        tamanioTotalParticion = particion[3].part_s;
+                        inicioParticion = particion[3].part_start;
+                        if(tamanioTotalParticion >= size_file){
+                            ParticionLogica.part_status = '0';
+                            ParticionLogica.part_fit = ajuste.at(0);
+                            ParticionLogica.part_start = inicioParticion;
+                            ParticionLogica.part_s = size_file;
+                            strcpy(ParticionLogica.part_name, name.c_str());
+                            // Como es la primera no tiene siguiente
+                            ParticionLogica.part_next = -1;
+                            escrituraLogica(ParticionLogica, path, inicioParticion);
                             return;
-                        }else{
-                            tamanioTotalParticion = particion[3].part_s;
+                    }else{
+                        cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
+                        return;
+                    }
+                    }else if(ParticionLogica.part_status == '0') {
+                        EBR Primero;
+                        int inicioLogica1 = particion[3].part_start;
+                        discolecturaE = fopen(path.c_str(), "r+b");
+                        fseek(discolecturaE, inicioLogica4, SEEK_SET);
+                        fread(&Primero, sizeof(EBR), 1, discolecturaE);
+                        int tamanioTotal = particion[3].part_start + particion[3].part_s;
+                        EBR Anterior;
+                        Anterior = Primero;
+                        EBR Siguiente;
+                        int possig = Primero.part_next;
 
-                            cout<<"Que saca esto? "<<sizeof(EBR)<<endl;
-                            cout<<"Tamanio particion extendida "<<tamanioTotalParticion<<endl;
-                            cout<<"Tamanio particion Logica "<<ParticionLogica.part_s<<endl; 
-                            //EBR partiLogica [5];
-                            int tamaniodentrodeparticion;
+                        while(true){
+                            fseek(discolecturaE, possig, SEEK_SET);
+                            fread(&Siguiente, sizeof(EBR), 1, discolecturaE);
 
-                            tamaniodentrodeparticion = tamanioTotalParticion - ParticionLogica.part_s;
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                if(strcmp(Siguiente.part_name, name.c_str()) == 0){
+                                cout<<"¡¡ Error !! Ya existe una particion con ese nombre "<<endl;
+                                return;
+                            }
+                                possig = Siguiente.part_next;
+                                Anterior = Siguiente;
+                            }
+                            else {
+                                Siguiente.part_start = Anterior.part_start + sizeof(EBR) + Anterior.part_s + 1;
+                                cout<<"La siguiente seria "<<Siguiente.part_start<<endl;
+                                fseek(discolecturaE, Siguiente.part_start, SEEK_SET);
+                                Siguiente.part_status = '0';
+                                Siguiente.part_fit = ajuste.at(0);
+                                Siguiente.part_s = size_file;
+                                Siguiente.part_next = -1;
+                                strcpy(Siguiente.part_name, name.c_str());
+                                Anterior.part_next = Siguiente.part_start;
 
-                            cout<<"Quedan disponibles "<<tamaniodentrodeparticion<<endl;
-                            cout<<"Tocaria codigo aqui "<<endl;
-                            return;
+                                if(Siguiente.part_start + Siguiente.part_s > tamanioTotal){
+                                    cout<<"¡¡ Error !! El tamanio de la particion logica supera al de la extendida "<<endl;
+                                    fclose(discolecturaE);
+                                    return;
+                                }else{
+                                    fwrite(&Siguiente, sizeof(EBR), 1, discolecturaE);
+                                    fseek(discolecturaE, Anterior.part_start, SEEK_SET);
+                                    fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
+                                    cout << "" << endl;
+                                    cout << "*                 Particion logica creada con exito            *" << endl;
+                                    cout << "" << endl;
+                                }
+                            }
+                            break;
                         }
+                        fclose(discolecturaE);
+                        return;
                     }
                 } else {
                     cout<<"¡¡ Error !! Primero debe crear una particion Extendida "<<endl;
@@ -1705,9 +1643,6 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
     } else {
             cout<<"¡¡ Error !! EL tamanio del disco en insuficiente para el tamanio de la particion"<<endl;
         }
-
-
-
 } 
 
 void Comando::escritura(MBR actualizado, string path){
@@ -1775,18 +1710,18 @@ void Comando::comando_fdisk_modificando(string path, string name, string unit, s
         string nombrebuscado;
         if(name == particion[0].part_name){
             nombrebuscado = name;
-            cout<<"Encontrado"<<endl;
+            //cout<<"Encontrado"<<endl;
         }else if(name == particion[1].part_name){
             nombrebuscado = name;
-            cout<<"Encontrado 1"<<endl;
+            //cout<<"Encontrado 1"<<endl;
         } else if(name == particion[2].part_name){
             nombrebuscado = name;
-            cout<<"Encontrado 2"<<endl;
+            //cout<<"Encontrado 2"<<endl;
         } else if(name == particion[3].part_name){
             nombrebuscado = name;
-            cout<<"Encontrado 3"<<endl;
+            //cout<<"Encontrado 3"<<endl;
         }else{
-            cout<<"No encontrado"<<endl;
+            //cout<<"No encontrado"<<endl;
             return;
         }
 
@@ -1820,11 +1755,7 @@ void Comando::comando_fdisk_modificando(string path, string name, string unit, s
             cout<<"No encontrado"<<endl;
             return;
         }
-
         agregar(name, path, unit, add);
-
-
-
     }
 }
 
@@ -1858,17 +1789,50 @@ void Comando::eliminar(string name, string path){
             nombreparticion=particion[i].part_name;
             if(nombreparticion==name){
                 if(nombreparticion == particion[0].part_name){
-                    cout<<"Tamano: "<<particion[i].part_s<<endl;
-                    cout<<"Inicio: "<<particion[i].part_start<<endl;
-                    cout<<"Tipo: "<<particion[i].part_type<<endl;
-                    cout<<"Ajuste: "<<particion[i].part_fit<<endl;
-                    cout<<"Nombre: "<<particion[i].part_name<<endl;
-                    disco.mbr_partition_1.part_status = '0';
-                    disco.mbr_partition_1.part_type = '\0';
-                    disco.mbr_partition_1.part_fit = '\0';
-                    //disco.mbr_partition_1.part_start = 0;
-                    //disco.mbr_partition_1.part_s = 0;
-                    strcpy(disco.mbr_partition_1.part_name, "");
+
+                    if(particion[0].part_type == 'E'){
+                        //Buscar logicas
+                        EBR buscar;
+                        EBR actualizo;
+
+                        if ((discolectura = fopen(path.c_str(), "r+b")) == NULL) {
+                            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+                        
+                    } else {
+                        fseek(discolectura, particion[0].part_start, SEEK_SET);
+                        fread(&buscar, sizeof (EBR), 1, discolectura);
+                        
+                        buscar.part_fit = '\0';
+                        buscar.part_status = '0';
+                        buscar.part_s = 0;
+                        buscar.part_start = 0;
+                        stpcpy(buscar.part_name, " ");
+
+                        fwrite(&buscar, sizeof(EBR), 1, discolectura);
+                        fclose(discolectura);
+                        disco.mbr_partition_1.part_status = '0';
+                        disco.mbr_partition_1.part_type = '\0';
+                        disco.mbr_partition_1.part_fit = '\0';
+                        //disco.mbr_partition_1.part_start = 0;
+                        //disco.mbr_partition_1.part_s = 0;
+                        strcpy(disco.mbr_partition_1.part_name, "                ");
+                    }
+                    }else {
+                        cout<<"Tamano: "<<particion[i].part_s<<endl;
+                        cout<<"Inicio: "<<particion[i].part_start<<endl;
+                        cout<<"Tipo: "<<particion[i].part_type<<endl;
+                        cout<<"Ajuste: "<<particion[i].part_fit<<endl;
+                        cout<<"Nombre: "<<particion[i].part_name<<endl;
+                        disco.mbr_partition_1.part_status = '0';
+                        disco.mbr_partition_1.part_type = '\0';
+                        disco.mbr_partition_1.part_fit = '\0';
+                        //disco.mbr_partition_1.part_start = 0;
+                        //disco.mbr_partition_1.part_s = 0;
+                        strcpy(disco.mbr_partition_1.part_name, "");
+                    }
+
+
+                    
                 } else if(nombreparticion == particion[1].part_name){
                     cout<<"Tamano: "<<particion[i].part_s<<endl;
                     cout<<"Inicio: "<<particion[i].part_start<<endl;
@@ -1989,10 +1953,10 @@ void Comando::agregar(string name, string path, string unit, string size){
     espacioRestante3 = tamanioParticion3 - disco.mbr_partition_3.part_s;
     espacioRestante4 = espacioNoUsado;
 
-    cout<<"Espacio restante en particion 1 "<<espacioRestante1<<endl;
-    cout<<"Espacio restante en particion 2 "<<espacioRestante2<<endl;
-    cout<<"Espacio restante en particion 3 "<<espacioRestante3<<endl;
-    cout<<"Espacio restante en particion 4 "<<espacioRestante4<<endl;
+    // cout<<"Espacio restante en particion 1 "<<espacioRestante1<<endl;
+    // cout<<"Espacio restante en particion 2 "<<espacioRestante2<<endl;
+    // cout<<"Espacio restante en particion 3 "<<espacioRestante3<<endl;
+    // cout<<"Espacio restante en particion 4 "<<espacioRestante4<<endl;
 
     string nombreparticion = "";
         for (int i = 0; i < 4; i++) {
