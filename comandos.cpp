@@ -1307,7 +1307,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
 
                     EBR ParticionLogica = prueba;
 
-                    if(ParticionLogica.part_status != '0'){
+                    if(ParticionLogica.part_fit != 'B' && ParticionLogica.part_fit != 'F' && ParticionLogica.part_fit != 'W'){
                         tamanioTotalParticion = particion[0].part_s;
                         inicioParticion = particion[0].part_start;
                         if(tamanioTotalParticion >= size_file){
@@ -1324,7 +1324,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
                         return;
                     }
-                    }else if(ParticionLogica.part_status == '0') {
+                    }else if(ParticionLogica.part_fit == 'B' || ParticionLogica.part_fit == 'F' || ParticionLogica.part_fit == 'W') {
                         EBR Primero;
                         int inicioLogica1 = particion[0].part_start;
                         discolecturaE = fopen(path.c_str(), "r+b");
@@ -1393,7 +1393,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
 
                     EBR ParticionLogica = prueba;
 
-                    if(ParticionLogica.part_status != '0'){
+                    if(ParticionLogica.part_fit != 'B' && ParticionLogica.part_fit != 'F' && ParticionLogica.part_fit != 'W'){
                         tamanioTotalParticion = particion[1].part_s;
                         inicioParticion = particion[1].part_start;
                         if(tamanioTotalParticion >= size_file){
@@ -1410,11 +1410,11 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
                         return;
                     }
-                    }else if(ParticionLogica.part_status == '0') {
+                    }else if(ParticionLogica.part_fit == 'B' || ParticionLogica.part_fit == 'F' || ParticionLogica.part_fit == 'W') {
                         EBR Primero;
-                        int inicioLogica1 = particion[1].part_start;
+                        int inicioLogica2 = particion[1].part_start;
                         discolecturaE = fopen(path.c_str(), "r+b");
-                        fseek(discolecturaE, inicioLogica1, SEEK_SET);
+                        fseek(discolecturaE, inicioLogica2, SEEK_SET);
                         fread(&Primero, sizeof(EBR), 1, discolecturaE);
                         int tamanioTotal = particion[1].part_start + particion[1].part_s;
                         EBR Anterior;
@@ -1478,7 +1478,10 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
 
                     EBR ParticionLogica = prueba;
 
-                    if(ParticionLogica.part_status != '0'){
+                    cout<<"AJuste "<<ParticionLogica.part_fit<<endl;
+
+                    if(ParticionLogica.part_fit != 'B' && ParticionLogica.part_fit != 'F' && ParticionLogica.part_fit != 'W'){
+                        cout<<"Entra aqui "<<endl;
                         tamanioTotalParticion = particion[2].part_s;
                         inicioParticion = particion[2].part_start;
                         if(tamanioTotalParticion >= size_file){
@@ -1495,11 +1498,11 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
                         return;
                     }
-                    }else if(ParticionLogica.part_status == '0') {
+                    }else if(ParticionLogica.part_fit == 'B' || ParticionLogica.part_fit == 'F' || ParticionLogica.part_fit == 'W') {
                         EBR Primero;
-                        int inicioLogica1 = particion[2].part_start;
+                        int inicioLogica3 = particion[2].part_start;
                         discolecturaE = fopen(path.c_str(), "r+b");
-                        fseek(discolecturaE, inicioLogica1, SEEK_SET);
+                        fseek(discolecturaE, inicioLogica3, SEEK_SET);
                         fread(&Primero, sizeof(EBR), 1, discolecturaE);
                         int tamanioTotal = particion[2].part_start + particion[2].part_s;
                         EBR Anterior;
@@ -1556,14 +1559,14 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     if ((discolecturaE = fopen(path.c_str(), "r+b")) == NULL) {
                             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
                     } else {
-                        fseek(discolecturaE, inicioLogica2, SEEK_SET);
+                        fseek(discolecturaE, inicioLogica4, SEEK_SET);
                         fread(&prueba, sizeof (EBR), 1, discolecturaE);
                         fclose(discolecturaE);
                     }
 
                     EBR ParticionLogica = prueba;
 
-                    if(ParticionLogica.part_status != '0'){
+                    if(ParticionLogica.part_fit != 'B' && ParticionLogica.part_fit != 'F' && ParticionLogica.part_fit != 'W'){
                         tamanioTotalParticion = particion[3].part_s;
                         inicioParticion = particion[3].part_start;
                         if(tamanioTotalParticion >= size_file){
@@ -1580,7 +1583,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                         cout<<"¡¡ Error !! El tamanio de la particion logica supera a la particion Extendida "<<endl;
                         return;
                     }
-                    }else if(ParticionLogica.part_status == '0') {
+                    }else if(ParticionLogica.part_fit == 'B' || ParticionLogica.part_fit == 'F' || ParticionLogica.part_fit == 'W') {
                         EBR Primero;
                         int inicioLogica1 = particion[3].part_start;
                         discolecturaE = fopen(path.c_str(), "r+b");
@@ -1722,6 +1725,7 @@ void Comando::comando_fdisk_modificando(string path, string name, string unit, s
             //cout<<"Encontrado 3"<<endl;
         }else{
             //cout<<"No encontrado"<<endl;
+            cout<<"¡¡ Error !! NO se encuentra ninguna particion con ese nombre "<<endl;
             return;
         }
 
@@ -1783,115 +1787,271 @@ void Comando::eliminar(string name, string path){
     particion[2] = disco.mbr_partition_3;
     particion[3] = disco.mbr_partition_4;
 
+    int inicioLogica = disco.mbr_partition_1.part_start;
+    int inicioLogica2 = disco.mbr_partition_2.part_start;
+    int inicioLogica3 = disco.mbr_partition_3.part_start;
+    int inicioLogica4 = disco.mbr_partition_4.part_start;
+
     // Volvemos a su configuracion inicial los ajustes
     string nombreparticion = "";
         for (int i = 0; i < 4; i++) {
+
+            if(particion[i].part_status == '0'){
+
             nombreparticion=particion[i].part_name;
             if(nombreparticion==name){
+                
                 if(nombreparticion == particion[0].part_name){
 
                     if(particion[0].part_type == 'E'){
-                        //Buscar logicas
-                        EBR buscar;
-                        EBR actualizo;
+                        EBR Logica;
+                        FILE *discolecturaE;
 
-                        if ((discolectura = fopen(path.c_str(), "r+b")) == NULL) {
-                            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
-                        
-                    } else {
-                        fseek(discolectura, particion[0].part_start, SEEK_SET);
-                        fread(&buscar, sizeof (EBR), 1, discolectura);
-                        
-                        buscar.part_fit = '\0';
-                        buscar.part_status = '0';
-                        buscar.part_s = 0;
-                        buscar.part_start = 0;
-                        stpcpy(buscar.part_name, " ");
+                        if((discolecturaE = fopen(path.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, inicioLogica, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
 
-                        fwrite(&buscar, sizeof(EBR), 1, discolectura);
-                        fclose(discolectura);
-                        disco.mbr_partition_1.part_status = '0';
-                        disco.mbr_partition_1.part_type = '\0';
-                        disco.mbr_partition_1.part_fit = '\0';
-                        //disco.mbr_partition_1.part_start = 0;
-                        //disco.mbr_partition_1.part_s = 0;
-                        strcpy(disco.mbr_partition_1.part_name, "                ");
-                    }
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                // Volvemos a su configuracion inicial
+                                Anterior.part_fit = '\0';
+                                Anterior.part_next = 0;
+                                Anterior.part_s = 0;
+                                Anterior.part_start = 0;
+                                Anterior.part_status = '0';
+                                memset(Anterior.part_name,0,16);
+
+                                Siguiente.part_fit = '\0';
+                                Siguiente.part_next = 0;
+                                Siguiente.part_s = 0;
+                                Siguiente.part_start = 0;
+                                Siguiente.part_status = '0';
+                                memset(Siguiente.part_name,0,16);
+
+                                fseek(discolecturaE, posig, SEEK_SET);
+                                fwrite(&Siguiente, sizeof(EBR), 1, discolecturaE);
+                                fseek(discolecturaE, inicioLogica, SEEK_SET);
+                                fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
+
+                                disco.mbr_partition_1.part_status = '0';
+                                disco.mbr_partition_1.part_type = '\0';
+                                disco.mbr_partition_1.part_fit = '\0';
+                                //disco.mbr_partition_1.part_start = 0;
+                                //disco.mbr_partition_1.part_s = 0;
+                                memset(disco.mbr_partition_1.part_name,0,16);
+                                fseek(discolecturaE, 0, SEEK_SET);
+                                fwrite(&disco, sizeof (MBR), 1, discolecturaE);
+                                fclose(discolecturaE);
+                            }
+
+                        }
                     }else {
-                        cout<<"Tamano: "<<particion[i].part_s<<endl;
-                        cout<<"Inicio: "<<particion[i].part_start<<endl;
-                        cout<<"Tipo: "<<particion[i].part_type<<endl;
-                        cout<<"Ajuste: "<<particion[i].part_fit<<endl;
-                        cout<<"Nombre: "<<particion[i].part_name<<endl;
                         disco.mbr_partition_1.part_status = '0';
                         disco.mbr_partition_1.part_type = '\0';
                         disco.mbr_partition_1.part_fit = '\0';
                         //disco.mbr_partition_1.part_start = 0;
                         //disco.mbr_partition_1.part_s = 0;
-                        strcpy(disco.mbr_partition_1.part_name, "");
+                        memset(disco.mbr_partition_1.part_name,0,16);
+                        actualizardisco(disco, path);
                     }
-
-
-                    
                 } else if(nombreparticion == particion[1].part_name){
-                    cout<<"Tamano: "<<particion[i].part_s<<endl;
-                    cout<<"Inicio: "<<particion[i].part_start<<endl;
-                    cout<<"Tipo: "<<particion[i].part_type<<endl;
-                    cout<<"Ajuste: "<<particion[i].part_fit<<endl;
-                    cout<<"Nombre: "<<particion[i].part_name<<endl;
-                    disco.mbr_partition_2.part_status = '0';
-                    disco.mbr_partition_2.part_type = '\0';
-                    disco.mbr_partition_2.part_fit = '\0';
-                    //disco.mbr_partition_2.part_start = 0;
-                    //disco.mbr_partition_1.part_s = 0;
-                    strcpy(disco.mbr_partition_2.part_name, "");
+                    
+                    if(particion[1].part_type == 'E'){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(path.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, inicioLogica2, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                // Volvemos a su configuracion inicial
+                                Anterior.part_fit = '\0';
+                                Anterior.part_next = 0;
+                                Anterior.part_s = 0;
+                                Anterior.part_start = 0;
+                                Anterior.part_status = '0';
+                                memset(Anterior.part_name,0,16);
+
+                                Siguiente.part_fit = '\0';
+                                Siguiente.part_next = 0;
+                                Siguiente.part_s = 0;
+                                Siguiente.part_start = 0;
+                                Siguiente.part_status = '0';
+                                memset(Siguiente.part_name,0,16);
+
+                                fseek(discolecturaE, posig, SEEK_SET);
+                                fwrite(&Siguiente, sizeof(EBR), 1, discolecturaE);
+                                fseek(discolecturaE, inicioLogica2, SEEK_SET);
+                                fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
+
+                                disco.mbr_partition_2.part_status = '0';
+                                disco.mbr_partition_2.part_type = '\0';
+                                disco.mbr_partition_2.part_fit = '\0';
+                                //disco.mbr_partition_2.part_start = 0;
+                                //disco.mbr_partition_2.part_s = 0;
+                                memset(disco.mbr_partition_2.part_name,0,16);
+                                fseek(discolecturaE, 0, SEEK_SET);
+                                fwrite(&disco, sizeof (MBR), 1, discolecturaE);
+                                fclose(discolecturaE);
+                            }
+
+                        }
+                    }else {
+                        disco.mbr_partition_2.part_status = '0';
+                        disco.mbr_partition_2.part_type = '\0';
+                        disco.mbr_partition_2.part_fit = '\0';
+                        //disco.mbr_partition_2.part_start = 0;
+                        //disco.mbr_partition_2.part_s = 0;
+                        memset(disco.mbr_partition_2.part_name,0,16);
+                        actualizardisco(disco, path);
+                    }
                 } else if(nombreparticion == particion[2].part_name){
-                    cout<<"Tamano: "<<particion[i].part_s<<endl;
-                    cout<<"Inicio: "<<particion[i].part_start<<endl;
-                    cout<<"Tipo: "<<particion[i].part_type<<endl;
-                    cout<<"Ajuste: "<<particion[i].part_fit<<endl;
-                    cout<<"Nombre: "<<particion[i].part_name<<endl;
-                    disco.mbr_partition_3.part_status = '0';
-                    disco.mbr_partition_3.part_type = '\0';
-                    disco.mbr_partition_3.part_fit = '\0';
-                    //disco.mbr_partition_3.part_start = 0;
-                    //disco.mbr_partition_1.part_s = 0;
-                    strcpy(disco.mbr_partition_3.part_name, "");
+                    
+                    if(particion[2].part_type == 'E'){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(path.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, inicioLogica3, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                // Volvemos a su configuracion inicial
+                                Anterior.part_fit = '\0';
+                                Anterior.part_next = 0;
+                                Anterior.part_s = 0;
+                                Anterior.part_start = 0;
+                                Anterior.part_status = '0';
+                                memset(Anterior.part_name,0,16);
+
+                                Siguiente.part_fit = '\0';
+                                Siguiente.part_next = 0;
+                                Siguiente.part_s = 0;
+                                Siguiente.part_start = 0;
+                                Siguiente.part_status = '0';
+                                memset(Siguiente.part_name,0,16);
+
+                                fseek(discolecturaE, posig, SEEK_SET);
+                                fwrite(&Siguiente, sizeof(EBR), 1, discolecturaE);
+                                fseek(discolecturaE, inicioLogica3, SEEK_SET);
+                                fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
+
+                                disco.mbr_partition_3.part_status = '0';
+                                disco.mbr_partition_3.part_type = '\0';
+                                disco.mbr_partition_3.part_fit = '\0';
+                                //disco.mbr_partition_3.part_start = 0;
+                                //disco.mbr_partition_3.part_s = 0;
+                                memset(disco.mbr_partition_3.part_name,0,16);
+                                fseek(discolecturaE, 0, SEEK_SET);
+                                fwrite(&disco, sizeof (MBR), 1, discolecturaE);
+                                fclose(discolecturaE);
+                            }
+                        }
+                    }else {
+                        disco.mbr_partition_3.part_status = '0';
+                        disco.mbr_partition_3.part_type = '\0';
+                        disco.mbr_partition_3.part_fit = '\0';
+                        //disco.mbr_partition_3.part_start = 0;
+                        //disco.mbr_partition_3.part_s = 0;
+                        memset(disco.mbr_partition_3.part_name,0,16);
+                        actualizardisco(disco, path);
+                    }
                 } else if(nombreparticion == particion[3].part_name){
-                    cout<<"Tamano: "<<particion[i].part_s<<endl;
-                    cout<<"Inicio: "<<particion[i].part_start<<endl;
-                    cout<<"Tipo: "<<particion[i].part_type<<endl;
-                    cout<<"Ajuste: "<<particion[i].part_fit<<endl;
-                    cout<<"Nombre: "<<particion[i].part_name<<endl;
-                    disco.mbr_partition_4.part_status = '0';
-                    disco.mbr_partition_4.part_type = '\0';
-                    disco.mbr_partition_4.part_fit = '\0';
-                    //disco.mbr_partition_4.part_start = 0;
-                    //disco.mbr_partition_1.part_s = 0;
-                    strcpy(disco.mbr_partition_4.part_name, "");
+
+                    if(particion[3].part_type == 'E'){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(path.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, inicioLogica4, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                // Volvemos a su configuracion inicial
+                                Anterior.part_fit = '\0';
+                                Anterior.part_next = 0;
+                                Anterior.part_s = 0;
+                                Anterior.part_start = 0;
+                                Anterior.part_status = '0';
+                                memset(Anterior.part_name,0,16);
+
+                                Siguiente.part_fit = '\0';
+                                Siguiente.part_next = 0;
+                                Siguiente.part_s = 0;
+                                Siguiente.part_start = 0;
+                                Siguiente.part_status = '0';
+                                memset(Siguiente.part_name,0,16);
+
+                                fseek(discolecturaE, posig, SEEK_SET);
+                                fwrite(&Siguiente, sizeof(EBR), 1, discolecturaE);
+                                fseek(discolecturaE, inicioLogica4, SEEK_SET);
+                                fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
+
+                                disco.mbr_partition_4.part_status = '0';
+                                disco.mbr_partition_4.part_type = '\0';
+                                disco.mbr_partition_4.part_fit = '\0';
+                                //disco.mbr_partition_4.part_start = 0;
+                                //disco.mbr_partition_4.part_s = 0;
+                                memset(disco.mbr_partition_4.part_name,0,16);
+                                fseek(discolecturaE, 0, SEEK_SET);
+                                fwrite(&disco, sizeof (MBR), 1, discolecturaE);
+                                fclose(discolecturaE);
+                            }
+
+                        }
+                    }else {
+                        disco.mbr_partition_4.part_status = '0';
+                        disco.mbr_partition_4.part_type = '\0';
+                        disco.mbr_partition_4.part_fit = '\0';
+                        //disco.mbr_partition_4.part_start = 0;
+                        //disco.mbr_partition_4.part_s = 0;
+                        memset(disco.mbr_partition_4.part_name,0,16);
+                        actualizardisco(disco, path);
+                    }
                 }
             }
+            }else{
+                cout<<"¡¡ Error !! La particion debe ser desmontada primero"<<endl;
+                return;
+            }
         }
-
-    // Actualizando disco
-    MBR actualizado = disco;
-
-    FILE *discoescritura;
-
-    if ((discoescritura = fopen(path.c_str(), "r+b")) == NULL) {
-        
-            cout<<"¡¡ Error !! no se ha podido acceder al disco!\n";
-        
-    } else {
-        fseek(discoescritura, 0, SEEK_SET);
-        fwrite(&actualizado, sizeof (MBR), 1, discoescritura);
-        fclose(discoescritura);
-        cout << "" << endl;
-        cout << "*                 Particion eliminada con exito                *" << endl;
-        cout << "" << endl;
-    }
 }
-
 
 void Comando::agregar(string name, string path, string unit, string size){
 
@@ -1942,7 +2102,6 @@ void Comando::agregar(string name, string path, string unit, string size){
             size_file = tamano;
         }
 
-
     tamanioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start ) - 1 ;
     tamanioParticion2 = (disco.mbr_partition_3.part_start - disco.mbr_partition_2.part_start ) - 1 ;
     tamanioParticion3 = (disco.mbr_partition_4.part_start - disco.mbr_partition_3.part_start ) - 1 ;
@@ -1952,11 +2111,6 @@ void Comando::agregar(string name, string path, string unit, string size){
     espacioRestante2 = tamanioParticion2 - disco.mbr_partition_2.part_s;
     espacioRestante3 = tamanioParticion3 - disco.mbr_partition_3.part_s;
     espacioRestante4 = espacioNoUsado;
-
-    // cout<<"Espacio restante en particion 1 "<<espacioRestante1<<endl;
-    // cout<<"Espacio restante en particion 2 "<<espacioRestante2<<endl;
-    // cout<<"Espacio restante en particion 3 "<<espacioRestante3<<endl;
-    // cout<<"Espacio restante en particion 4 "<<espacioRestante4<<endl;
 
     string nombreparticion = "";
         for (int i = 0; i < 4; i++) {
@@ -2076,6 +2230,24 @@ void Comando::modificaradd(MBR disco, string path){
         fclose(discoescritura);
         cout << "" << endl;
         cout << "*                 Particion modificada con exito                *" << endl;
+        cout << "" << endl;
+    }
+}
+
+void Comando:: actualizardisco(MBR disco, string path){
+    MBR actualizado = disco;
+    FILE *discoescritura;
+
+    if ((discoescritura = fopen(path.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !! no se ha podido acceder al disco!\n";
+        
+    } else {
+        fseek(discoescritura, 0, SEEK_SET);
+        fwrite(&actualizado, sizeof (MBR), 1, discoescritura);
+        fclose(discoescritura);
+        cout << "" << endl;
+        cout << "*                 Particion eliminada con exito                *" << endl;
         cout << "" << endl;
     }
 }
