@@ -122,6 +122,23 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             }
         }
         cmd.identificacionCMD(cmd.param);
+    } else if (comando == "mount"){
+        cmd.param.Comando = "mount";
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">path=") == 0){
+                param = replace_txt(param, ">path=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Path = param;
+            }else if(param.find(">name=") == 0){
+                param = replace_txt(param, ">name=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Name = param;
+            } else {
+                cout<<"Un parametro es incorrecto"<<endl;
+            }
+        }
+        cmd.identificacionCMD(cmd.param);
     }
     else {
         cout<<"\n ¡¡ Error !!  Comando no reconocido por el sistema"<<endl;

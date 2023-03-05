@@ -21,6 +21,12 @@ void Comando::identificacionCMD(Parametros p){
         } else {
             cout << "Error al crear una particion en el Disco "<<endl;
         }
+    }else if(p.Comando=="mount"){ // Se identifica el tipo de comando
+        if(p.Path != " " && p.Name != " "){ // Se validan los parametros para el comando
+            comando_mount(p.Path, p.Name);
+        }else{
+            cout << "Error para montar el Disco: Parametros obligatorios no definidos " << endl;
+        }
     }
 }
 
@@ -2250,4 +2256,8 @@ void Comando:: actualizardisco(MBR disco, string path){
         cout << "*                 Particion eliminada con exito                *" << endl;
         cout << "" << endl;
     }
+}
+
+void Comando:: comando_mount(string path, string name){
+    cout<<"Comando mount"<<endl;
 }

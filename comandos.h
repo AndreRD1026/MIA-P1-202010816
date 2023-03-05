@@ -69,6 +69,7 @@ class Comando{
         void agregar(string name, string path, string unit, string size);
         void modificaradd(MBR disco, string path);
         void actualizardisco(MBR disco, string path);
+        void comando_mount(string path, string name);
 };
 
 #endif // COMANDO_H
