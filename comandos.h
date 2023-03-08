@@ -9,6 +9,7 @@
 #include <cstdlib>
 #include <string>
 #include <string.h>
+#include "NodoMount.h"
 
 using namespace std;
 
@@ -22,6 +23,7 @@ typedef struct{
     string Type = " ";
     string Delete = " ";
     string Add = " ";
+    string ID = " ";
 }Parametros;
 
 typedef struct {
@@ -58,6 +60,12 @@ typedef struct {
 class Comando{
     public:
         Parametros param;
+        nodoMount *primeroMount;
+        nodoMount *ultimoMount;
+        Comando(){
+            primeroMount == NULL;
+            ultimoMount == NULL;
+        }
         void identificacionCMD(Parametros p);
         void comando_mkdisk(string tam, string path, string ajuste, string dim);
         void comando_rmdisk(string path);
@@ -70,6 +78,9 @@ class Comando{
         void modificaradd(MBR disco, string path);
         void actualizardisco(MBR disco, string path);
         void comando_mount(string path, string name);
+        void montado(string id, string path, string nombreparticion);
+        void verlista();
+        void comando_unmount(string id);
 };
 
 #endif // COMANDO_H

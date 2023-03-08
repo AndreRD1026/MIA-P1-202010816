@@ -139,6 +139,18 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             }
         }
         cmd.identificacionCMD(cmd.param);
+    }else if (comando == "unmount"){
+        cmd.param.Comando = "unmount";
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">id=") == 0){
+                param = replace_txt(param, ">id=", "");
+                cmd.param.ID = param;
+            }else {
+                cout<<"Un parametro es incorrecto"<<endl;
+            }
+        }
+        cmd.identificacionCMD(cmd.param);
     }
     else {
         cout<<"\n ¡¡ Error !!  Comando no reconocido por el sistema"<<endl;
@@ -154,4 +166,5 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
     cmd.param.Delete = " ";
     cmd.param.Add = " ";
     cmd.param.Name = " ";
+    cmd.param.ID = " ";
 }
