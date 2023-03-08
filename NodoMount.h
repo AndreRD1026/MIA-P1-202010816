@@ -9,8 +9,10 @@ public:
     std::string ruta;
     std::string nombreparticion ;
 	nodoMount *siguienteMontado;
+    nodoMount *anteriorMontado;
     nodoMount(){
         siguienteMontado = NULL;
+        anteriorMontado = NULL;
         id = ' ';
         ruta = ' ';
         nombreparticion = ' ';

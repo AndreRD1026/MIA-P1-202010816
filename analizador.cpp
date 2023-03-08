@@ -139,7 +139,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             }
         }
         cmd.identificacionCMD(cmd.param);
-    }else if (comando == "unmount"){
+    } else if (comando == "unmount"){
         cmd.param.Comando = "unmount";
         for(int i=0; i<parametros.size(); i++){
             param = parametros.at(i);
@@ -147,6 +147,24 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
                 param = replace_txt(param, ">id=", "");
                 cmd.param.ID = param;
             }else {
+                cout<<"Un parametro es incorrecto"<<endl;
+            }
+        }
+        cmd.identificacionCMD(cmd.param);
+    } else if (comando == "mkfs"){
+        cmd.param.Comando = "mkfs";
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">id=") == 0){
+                param = replace_txt(param, ">id=", "");
+                cmd.param.ID = param;
+            }else if(param.find(">type=") == 0){
+                param = replace_txt(param, ">type=", "");
+                cmd.param.Type = param;
+            }else if(param.find(">fs=") == 0){
+                param = replace_txt(param, ">fs=", "");
+                cmd.param.Fs = param;
+            } else {
                 cout<<"Un parametro es incorrecto"<<endl;
             }
         }

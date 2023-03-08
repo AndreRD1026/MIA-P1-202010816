@@ -24,6 +24,7 @@ typedef struct{
     string Delete = " ";
     string Add = " ";
     string ID = " ";
+    string Fs = " ";
 }Parametros;
 
 typedef struct {
@@ -79,8 +80,10 @@ class Comando{
         void actualizardisco(MBR disco, string path);
         void comando_mount(string path, string name);
         void montado(string id, string path, string nombreparticion);
-        void verlista();
         void comando_unmount(string id);
+        void desmontado(string id);
+        void verlista();
+        void comando_mkfs(string id);
 };
 
 #endif // COMANDO_H
