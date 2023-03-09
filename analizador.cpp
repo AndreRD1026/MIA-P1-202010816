@@ -185,4 +185,5 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
     cmd.param.Add = " ";
     cmd.param.Name = " ";
     cmd.param.ID = " ";
+    cmd.param.Fs = " ";
 }

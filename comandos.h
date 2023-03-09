@@ -58,6 +58,63 @@ typedef struct {
     char part_name[16]; // Nombre de la particion
 } EBR;
 
+
+// Estructuras para EXT2 Y EXT3
+
+typedef struct {
+    int s_filesystem_type; // Guarda el número que identifica el sistema de archivos utilizado
+    int s_inodes_count; // Guarda el número total de inodos
+    int s_blocks_count; // Guarda el número total de bloques
+    int s_free_blocks_count; // Contiene el número de bloques libres
+    int s_free_inodes_count; // Contiene el número de inodos libres
+    time_t s_mtime; // Última fecha en el que el sistema fue montado
+    time_t s_umtime; // Última fecha en que el sistema fue desmontado
+    int s_mnt_count; // Indica cuantas veces se ha montado el sistema
+    int s_magic; // Valor que identifica al sistema de archivos, tendrá el valor 0xEF53
+    int s_inode_s; // Tamaño del inodo
+    int s_block_s; // Tamaño del bloque
+    int s_firts_ino; // Primer inodo libre
+    int s_first_blo; // Primer bloque libre
+    int s_bm_inode_start; // Guardará el inicio del bitmap de inodos
+    int s_bm_block_start; // Guardará el inicio del bitmap de bloques
+    int s_inode_start; // Guardará el inicio de la tabla de inodos
+    int s_block_start; // Guardará el inicio de la tabla de bloques
+} SuperBloque;
+
+
+typedef struct {
+    int i_uid; // UID del usuario propietario del archivo o carpeta
+    int I_gid; // GID del grupo al que pertenece el archivo o carpeta.
+    int i_s; // Tamaño del archivo en bytes
+    time_t i_atime; // Última fecha en que se leyó el inodo sin modificarlo
+    time_t i_ctime; // Fecha en la que se creó el inodo
+    time_t i_mtime; // Última fecha en la que se modifica el inodo
+    int i_block; // Array en los que los primeros 12 registros son bloques directos.
+    char i_type; // ndica si es archivo o carpeta. 1 = Archivo y 0 = Carpeta
+    int i_perm; // Guardará los permisos del archivo o carpeta.
+} Inodos;
+
+
+typedef struct {
+    char b_name[12]; // Nombre de la carpeta o archivo
+    int b_inodo; // Apuntador hacia un inodo asociado al archivo o carpeta
+} Content;
+
+
+typedef struct {
+    Content b_content[4];
+} BloqueCarpeta;
+
+
+typedef struct {
+    char b_content[64]; // Array con el contenido del archivo
+}BloqueArchivos;
+
+
+typedef struct {
+    int b_pointers[16]; // Array con los apuntadores a bloques (de archivo o carpeta)
+}BloqueApuntadores;
+
 class Comando{
     public:
         Parametros param;
@@ -79,11 +136,11 @@ class Comando{
         void modificaradd(MBR disco, string path);
         void actualizardisco(MBR disco, string path);
         void comando_mount(string path, string name);
-        void montado(string id, string path, string nombreparticion);
+        void montado(string id, string path, string nombreparticion, int tamaniopart);
         void comando_unmount(string id);
         void desmontado(string id);
         void verlista();
-        void comando_mkfs(string id);
+        void comando_mkfs(string id, string type, string fs);
 };
 
 #endif // COMANDO_H
