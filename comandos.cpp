@@ -2663,8 +2663,6 @@ void Comando:: comando_mkfs(string id, string type, string fs){
     }   
 }
 
-// Con este comando estoy llorando sangre :(
-
 void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
     // Se crea el SuperBloque
 
@@ -2737,7 +2735,28 @@ void Comando:: comando_rep(string namerep, string path, string id, string rutaa)
 
 void Comando:: reporte_mbr(string nombresalida, string path, string id){
     nodoMount *actual = primeroMount;
+    string pathdisco = " ";
+    int tamanoMBR;
+    int dskmbr;
+    time_t fechacreacionmbr;
+    string dot = "";
     bool encontrado = false;
+
+    MBR lectura;
+    FILE* discolectura;
+
+    string rutap = "" ;
+    int inicio = 0;
+        int fin = path.find("/");
+        string delimitador = "/";
+
+        while (fin != -1)
+        {
+            rutap += path.substr(inicio, fin - inicio);
+            rutap += "/";
+            inicio = fin + delimitador.size();
+            fin = path.find("/", inicio);
+        }
 
     if(actual == NULL){
         cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
@@ -2746,12 +2765,430 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
         while(actual != NULL){
         if(actual->id == id){
             encontrado = true;
+            pathdisco = actual->ruta;
 
-            cout<<"Que datos salen: "<<actual->nombreparticion<<endl;
-            cout<<"Que datos salen: "<<actual->id<<endl;
-            cout<<"Que datos salen: "<<actual->ruta<<endl;
-            cout<<"Que datos salen: "<<ctime(&actual->horamontado)<<endl;
-            cout<<"Que datos salen: "<<actual->tamanioparticion<<endl;   
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+            } else {
+                fseek(discolectura, 0, SEEK_SET);
+                fread(&lectura, sizeof (MBR), 1, discolectura);
+                fclose(discolectura);
+
+                MBR disco = lectura;
+                Partition particion[4];
+                particion[0] = disco.mbr_partition_1;
+                particion[1] = disco.mbr_partition_2;
+                particion[2] = disco.mbr_partition_3;
+                particion[3] = disco.mbr_partition_4;
+
+                tamanoMBR = (disco.mbr_tamano * 1024);
+                dskmbr = disco.mbr_dsk_signature;
+                fechacreacionmbr = disco.mbr_fecha_creacion;
+
+                
+                dot = dot + "digraph G {\n";
+                dot = dot + "parent [\n";
+                dot = dot + "shape=plaintext\n";
+                dot = dot + "label=<\n";
+                dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
+                dot = dot + "<tr><td bgcolor=\"hotpink\" colspan=\"3\">REPORTE DE MBR</td></tr>\n";
+                dot = dot + "<tr><td port='tamanio'>mbr_tamano</td><td port='size'>" + to_string(tamanoMBR) + "</td></tr>\n";
+                dot = dot +  "<tr><td bgcolor=\"hotpink2\" port=\'fecha\'>mbr_fecha</td><td bgcolor=\"hotpink2\" port=\'size\'>" + (ctime(&fechacreacionmbr) ) + "</td></tr>\n";
+                dot = dot +  "<tr><td port='dsk'>mbr_dsk</td><td port='size'>" + to_string(dskmbr) +"</td></tr>\n";
+                if(particion[0].part_fit != ' '){
+                    if(particion[0].part_type == 'P'){
+                        string statt = " ";
+                        string typp = " ";
+                        string fiit = " ";
+                        string nombrep = " ";
+
+                        statt = particion[0].part_status;
+                        typp = particion[0].part_type;
+                        fiit = particion[0].part_fit;
+                        int sttart = particion[0].part_start;
+                        int ss = (particion[0].part_s *1024);
+                        nombrep = particion[0].part_name;
+
+                        dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+                        dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statt + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='type'>part_type</td><td bgcolor=\"khaki2\" port='size'>"+ typp + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='fit'>part_fit</td><td port='size'>"+ fiit + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='start'>part_start</td><td bgcolor=\"khaki2\" port='size'>"+ to_string(sttart) + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='s'>part_s</td><td port='size'>"+ to_string(ss) + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='name'>part_name</td><td bgcolor=\"khaki2\" port='size'>"+ nombrep + "</td></tr>\n";
+                }else if (particion[0].part_type == 'E'){
+                        string statt = " ";
+                        string typp = " ";
+                        string fiit = " ";
+                        string nombrep = " ";
+
+                        statt = particion[0].part_status;
+                        typp = particion[0].part_type;
+                        fiit = particion[0].part_fit;
+                        int sttart = particion[0].part_start;
+                        int ss = (particion[0].part_s *1024);
+                        nombrep = particion[0].part_name;
+
+                        dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+                        dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statt + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='type'>part_type</td><td bgcolor=\"khaki2\" port='size'>"+ typp + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='fit'>part_fit</td><td port='size'>"+ fiit + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='start'>part_start</td><td bgcolor=\"khaki2\" port='size'>"+ to_string(sttart) + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='s'>part_s</td><td port='size'>"+ to_string(ss) + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='name'>part_name</td><td bgcolor=\"khaki2\" port='size'>"+ nombrep + "</td></tr>\n";
+
+
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[0].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                statusa = Anterior.part_status;
+                                fitlog = Anterior.part_fit;
+                                nombrelog = Anterior.part_name;
+                                int neext = Anterior.part_next;
+                                int sss = (Anterior.part_s *1024);
+                                int startlog = Anterior.part_start;
+
+                                dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
+                                dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='fit'>part_fit</td><td bgcolor=\"lightblue2\" port='size'>"+ fitlog + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='s'>part_s</td><td bgcolor=\"lightblue2\" port='size'>"+ to_string(sss) + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='name'>part_name</td><td bgcolor=\"lightblue2\" port='size'>"+ nombrelog + "</td></tr>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                statusa1 = Siguiente.part_status;
+                                fitlog1 = Siguiente.part_fit;
+                                nombrelog1 = Siguiente.part_name;
+                                int neext1 = Siguiente.part_next;
+                                int sss1 = (Siguiente.part_s * 1024);
+                                int startlog1 = Siguiente.part_start;
+
+                                dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
+                                dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='fit'>part_fit</td><td bgcolor=\"lightblue2\" port='size'>"+ fitlog1 + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='s'>part_s</td><td bgcolor=\"lightblue2\" port='size'>"+ to_string(sss1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='name'>part_name</td><td bgcolor=\"lightblue2\" port='size'>"+ nombrelog1 + "</td></tr>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                        }
+                }
+            }
+            if(particion[1].part_fit != ' '){
+                    if(particion[1].part_type == 'P'){
+                        string statt = " ";
+                        string typp = " ";
+                        string fiit = " ";
+                        string nombrep = " ";
+
+                        statt = particion[1].part_status;
+                        typp = particion[1].part_type;
+                        fiit = particion[1].part_fit;
+                        int sttart = particion[1].part_start;
+                        int ss = (particion[1].part_s *1024);
+                        nombrep = particion[1].part_name;
+
+                        dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+                        dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statt + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='type'>part_type</td><td bgcolor=\"khaki2\" port='size'>"+ typp + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='fit'>part_fit</td><td port='size'>"+ fiit + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='start'>part_start</td><td bgcolor=\"khaki2\" port='size'>"+ to_string(sttart) + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='s'>part_s</td><td port='size'>"+ to_string(ss) + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='name'>part_name</td><td bgcolor=\"khaki2\" port='size'>"+ nombrep + "</td></tr>\n";
+                }else if (particion[1].part_type == 'E'){
+                        string statt = " ";
+                        string typp = " ";
+                        string fiit = " ";
+                        string nombrep = " ";
+
+                        statt = particion[1].part_status;
+                        typp = particion[1].part_type;
+                        fiit = particion[1].part_fit;
+                        int sttart = particion[1].part_start;
+                        int ss = (particion[1].part_s *1024);
+                        nombrep = particion[1].part_name;
+
+                        dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+                        dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statt + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='type'>part_type</td><td bgcolor=\"khaki2\" port='size'>"+ typp + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='fit'>part_fit</td><td port='size'>"+ fiit + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='start'>part_start</td><td bgcolor=\"khaki2\" port='size'>"+ to_string(sttart) + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='s'>part_s</td><td port='size'>"+ to_string(ss) + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='name'>part_name</td><td bgcolor=\"khaki2\" port='size'>"+ nombrep + "</td></tr>\n";
+
+
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[1].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                statusa = Anterior.part_status;
+                                fitlog = Anterior.part_fit;
+                                nombrelog = Anterior.part_name;
+                                int neext = Anterior.part_next;
+                                int sss = (Anterior.part_s *1024);
+                                int startlog = Anterior.part_start;
+
+                                dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
+                                dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='fit'>part_fit</td><td bgcolor=\"lightblue2\" port='size'>"+ fitlog + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='s'>part_s</td><td bgcolor=\"lightblue2\" port='size'>"+ to_string(sss) + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='name'>part_name</td><td bgcolor=\"lightblue2\" port='size'>"+ nombrelog + "</td></tr>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                statusa1 = Siguiente.part_status;
+                                fitlog1 = Siguiente.part_fit;
+                                nombrelog1 = Siguiente.part_name;
+                                int neext1 = Siguiente.part_next;
+                                int sss1 = (Siguiente.part_s * 1024);
+                                int startlog1 = Siguiente.part_start;
+
+                                dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
+                                dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='fit'>part_fit</td><td bgcolor=\"lightblue2\" port='size'>"+ fitlog1 + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='s'>part_s</td><td bgcolor=\"lightblue2\" port='size'>"+ to_string(sss1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='name'>part_name</td><td bgcolor=\"lightblue2\" port='size'>"+ nombrelog1 + "</td></tr>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                        }
+                }
+            }
+            if(particion[2].part_fit != ' '){
+                    if(particion[2].part_type == 'P'){
+                        string statt = " ";
+                        string typp = " ";
+                        string fiit = " ";
+                        string nombrep = " ";
+
+                        statt = particion[2].part_status;
+                        typp = particion[2].part_type;
+                        fiit = particion[2].part_fit;
+                        int sttart = particion[2].part_start;
+                        int ss = (particion[2].part_s *1024);
+                        nombrep = particion[2].part_name;
+
+                        dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+                        dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statt + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='type'>part_type</td><td bgcolor=\"khaki2\" port='size'>"+ typp + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='fit'>part_fit</td><td port='size'>"+ fiit + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='start'>part_start</td><td bgcolor=\"khaki2\" port='size'>"+ to_string(sttart) + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='s'>part_s</td><td port='size'>"+ to_string(ss) + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='name'>part_name</td><td bgcolor=\"khaki2\" port='size'>"+ nombrep + "</td></tr>\n";
+                }else if (particion[2].part_type == 'E'){
+                        string statt = " ";
+                        string typp = " ";
+                        string fiit = " ";
+                        string nombrep = " ";
+
+                        statt = particion[2].part_status;
+                        typp = particion[2].part_type;
+                        fiit = particion[2].part_fit;
+                        int sttart = particion[2].part_start;
+                        int ss = (particion[2].part_s *1024);
+                        nombrep = particion[2].part_name;
+
+                        dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+                        dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statt + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='type'>part_type</td><td bgcolor=\"khaki2\" port='size'>"+ typp + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='fit'>part_fit</td><td port='size'>"+ fiit + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='start'>part_start</td><td bgcolor=\"khaki2\" port='size'>"+ to_string(sttart) + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='s'>part_s</td><td port='size'>"+ to_string(ss) + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='name'>part_name</td><td bgcolor=\"khaki2\" port='size'>"+ nombrep + "</td></tr>\n";
+
+
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[2].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                statusa = Anterior.part_status;
+                                fitlog = Anterior.part_fit;
+                                nombrelog = Anterior.part_name;
+                                int neext = Anterior.part_next;
+                                int sss = (Anterior.part_s *1024);
+                                int startlog = Anterior.part_start;
+
+                                dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
+                                dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='fit'>part_fit</td><td bgcolor=\"lightblue2\" port='size'>"+ fitlog + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='s'>part_s</td><td bgcolor=\"lightblue2\" port='size'>"+ to_string(sss) + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='name'>part_name</td><td bgcolor=\"lightblue2\" port='size'>"+ nombrelog + "</td></tr>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                statusa1 = Siguiente.part_status;
+                                fitlog1 = Siguiente.part_fit;
+                                nombrelog1 = Siguiente.part_name;
+                                int neext1 = Siguiente.part_next;
+                                int sss1 = (Siguiente.part_s * 1024);
+                                int startlog1 = Siguiente.part_start;
+
+                                dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
+                                dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='fit'>part_fit</td><td bgcolor=\"lightblue2\" port='size'>"+ fitlog1 + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='s'>part_s</td><td bgcolor=\"lightblue2\" port='size'>"+ to_string(sss1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='name'>part_name</td><td bgcolor=\"lightblue2\" port='size'>"+ nombrelog1 + "</td></tr>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                        }
+                }
+            }
+            if(particion[3].part_fit != ' '){
+                    if(particion[3].part_type == 'P'){
+                        string statt = " ";
+                        string typp = " ";
+                        string fiit = " ";
+                        string nombrep = " ";
+
+                        statt = particion[3].part_status;
+                        typp = particion[3].part_type;
+                        fiit = particion[3].part_fit;
+                        int sttart = particion[3].part_start;
+                        int ss = (particion[3].part_s *1024);
+                        nombrep = particion[3].part_name;
+
+                        dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+                        dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statt + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='type'>part_type</td><td bgcolor=\"khaki2\" port='size'>"+ typp + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='fit'>part_fit</td><td port='size'>"+ fiit + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='start'>part_start</td><td bgcolor=\"khaki2\" port='size'>"+ to_string(sttart) + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='s'>part_s</td><td port='size'>"+ to_string(ss) + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='name'>part_name</td><td bgcolor=\"khaki2\" port='size'>"+ nombrep + "</td></tr>\n";
+                }else if (particion[3].part_type == 'E'){
+                        string statt = " ";
+                        string typp = " ";
+                        string fiit = " ";
+                        string nombrep = " ";
+
+                        statt = particion[3].part_status;
+                        typp = particion[3].part_type;
+                        fiit = particion[3].part_fit;
+                        int sttart = particion[3].part_start;
+                        int ss = (particion[3].part_s *1024);
+                        nombrep = particion[3].part_name;
+
+                        dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+                        dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statt + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='type'>part_type</td><td bgcolor=\"khaki2\" port='size'>"+ typp + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='fit'>part_fit</td><td port='size'>"+ fiit + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='start'>part_start</td><td bgcolor=\"khaki2\" port='size'>"+ to_string(sttart) + "</td></tr>\n";
+                        dot = dot +  "<tr><td port='s'>part_s</td><td port='size'>"+ to_string(ss) + "</td></tr>\n";
+                        dot = dot +  "<tr><td bgcolor=\"khaki2\" port='name'>part_name</td><td bgcolor=\"khaki2\" port='size'>"+ nombrep + "</td></tr>\n";
+
+
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[3].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                statusa = Anterior.part_status;
+                                fitlog = Anterior.part_fit;
+                                nombrelog = Anterior.part_name;
+                                int neext = Anterior.part_next;
+                                int sss = (Anterior.part_s *1024);
+                                int startlog = Anterior.part_start;
+
+                                dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
+                                dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='fit'>part_fit</td><td bgcolor=\"lightblue2\" port='size'>"+ fitlog + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='s'>part_s</td><td bgcolor=\"lightblue2\" port='size'>"+ to_string(sss) + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='name'>part_name</td><td bgcolor=\"lightblue2\" port='size'>"+ nombrelog + "</td></tr>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                statusa1 = Siguiente.part_status;
+                                fitlog1 = Siguiente.part_fit;
+                                nombrelog1 = Siguiente.part_name;
+                                int neext1 = Siguiente.part_next;
+                                int sss1 = (Siguiente.part_s * 1024);
+                                int startlog1 = Siguiente.part_start;
+
+                                dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
+                                dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='fit'>part_fit</td><td bgcolor=\"lightblue2\" port='size'>"+ fitlog1 + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='s'>part_s</td><td bgcolor=\"lightblue2\" port='size'>"+ to_string(sss1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext1) + "</td></tr>\n";
+                                dot = dot +  "<tr><td bgcolor=\"lightblue2\" port='name'>part_name</td><td bgcolor=\"lightblue2\" port='size'>"+ nombrelog1 + "</td></tr>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                        }
+                }
+            }
             break;
         }
         actual = actual->siguienteMontado;
@@ -2760,51 +3197,18 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
     cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
     return;
     }
-    }   
-    // time_t pruebas;
-    // pruebas = std::time(0);
-    // //cout<<"HOla "<<endl;
-    // string dot = "";
+    }
+    dot = dot + "</table>\n";
+    dot = dot + ">];\n";
+    dot = dot + "}";
+    ofstream file;
+    file.open("ReporteMBR.dot");
+    file << dot;
+    file.close();
 
-    // dot = dot + "digraph H {\n";
-    // dot = dot + "parent [\n";
-    // dot = dot + "shape=plaintext\n";
-    // dot = dot + "label=<\n";
-    // dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
-    // dot = dot + "<tr><td colspan=\"3\">REPORTE DE MBR</td></tr>\n";
-    // dot = dot + "<tr><td port='tamanio'>mbr_tamano</td><td port='size'>1521221215t</td></tr>\n";
-    // dot = dot +  "<tr><td port=\'fecha\'>mbr_fecha</td><td port=\'size\'>" + (ctime(&pruebas) ) + "</td></tr>\n";
-    // dot = dot +  "<tr><td port='dsk'>mbr_dsk</td><td port='size'>1521221215t</td></tr>\n";
-    // dot = dot +  "<tr><td colspan=\"3\">PARTICION</td></tr>\n";
-    // dot = dot +  "<tr><td port='tamanio'>mbr_tamano</td><td port='size'>1521221215t</td></tr>\n";
-    // dot = dot +  "<tr><td port='fecha'>mbr_fecha</td><td port='size'>15/03/2023</td></tr>\n";
-    // dot = dot + "<tr><td port='dsk'>mbr_dsk</td><td port='size'>1521221215t</td></tr>\n";
-    // dot = dot + "</table>\n";
-    // dot = dot + ">];\n";
-
-    // dot = dot + "parent2 [\n";
-    // dot = dot + "shape=plaintext\n";
-    // dot = dot + "label=<\n";
-    // dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
-    // dot = dot + "<tr><td colspan=\"3\">REPORTE DE EBR</td></tr>\n";
-    // dot = dot + "<tr><td port='tamanio'>mbr_tamano</td><td port='size'>1521221215t</td></tr>\n";
-    // dot = dot +  "<tr><td port='fecha'>mbr_fecha</td><td port='size'>15/03/2023</td></tr>\n";
-    // dot = dot +  "<tr><td port='dsk'>mbr_dsk</td><td port='size'>1521221215t</td></tr>\n";
-    // dot = dot +  "<tr><td colspan=\"3\">PARTICION</td></tr>\n";
-    // dot = dot +  "<tr><td port='tamanio'>mbr_tamano</td><td port='size'>1521221215t</td></tr>\n";
-    // dot = dot +  "<tr><td port='fecha'>mbr_fecha</td><td port='size'>15/03/2023</td></tr>\n";
-    // dot = dot + "<tr><td port='dsk'>mbr_dsk</td><td port='size'>1521221215t</td></tr>\n";
-    // dot = dot + "</table>\n";
-    // dot = dot + ">];\n";
-    // dot = dot + "}";
-
-
-
-
-    // ofstream file;
-    // file.open("PruebaReporte.dot");
-    // file << dot;
-    // file.close();
-    // system(("dot -Tpng PruebaReporte.dot -o  /home/andre/Desktop/ReporteMBR.png"));
-
+    string crear = "mkdir -p " + rutap;
+    system(crear.c_str());
+    string salida = "dot -Tpng ReporteMBR.dot -o " + rutap + nombresalida + ".png";
+    system(salida.c_str()); 
+}
 }
