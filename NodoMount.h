@@ -8,6 +8,8 @@ public:
 	std::string id;
     std::string ruta;
     std::string nombreparticion;
+    std::string tipoparticion;
+    int inicioparticion;
     int tamanioparticion;
     time_t horamontado;
 	nodoMount *siguienteMontado;
@@ -18,6 +20,8 @@ public:
         id = ' ';
         ruta = ' ';
         nombreparticion = ' ';
+        tipoparticion = ' ';
+        inicioparticion = 0;
         tamanioparticion = 0;
     }
 private:

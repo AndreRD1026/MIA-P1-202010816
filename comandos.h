@@ -25,6 +25,7 @@ typedef struct{
     string Add = " ";
     string ID = " ";
     string Fs = " ";
+    string Ruta = " ";
 }Parametros;
 
 typedef struct {
@@ -115,6 +116,8 @@ typedef struct {
     int b_pointers[16]; // Array con los apuntadores a bloques (de archivo o carpeta)
 }BloqueApuntadores;
 
+
+//Aqui van todas las acciones de los comandos
 class Comando{
     public:
         Parametros param;
@@ -136,11 +139,19 @@ class Comando{
         void modificaradd(MBR disco, string path);
         void actualizardisco(MBR disco, string path);
         void comando_mount(string path, string name);
-        void montado(string id, string path, string nombreparticion, int tamaniopart);
+        void montado(string id, string path, string nombreparticion,string tipoparticion,int inicioparticion, int tamaniopart);
         void comando_unmount(string id);
         void desmontado(string id);
         void verlista();
         void comando_mkfs(string id, string type, string fs);
+        void crear_ext2(nodoMount *particion ,int n, int tipop);
+
+
+
+        void comando_rep(string name, string path, string id, string ruta);
+        void reporte_mbr(string nombresalida, string path, string id);
+        
 };
 
 #endif // COMANDO_H
+

@@ -41,6 +41,12 @@ void Comando::identificacionCMD(Parametros p){
         }else{
             cout << "Error para desmontar el Disco: Parametros obligatorios no definidos " << endl;
         }
+    }else if(p.Comando=="rep"){ // Se identifica el tipo de comando
+        if(p.Name != " " && p.Path != " " && p.ID != " "){ // Se validan los parametros para el comando
+            comando_rep(p.Name,p.Path,p.ID,p.Ruta);
+        }else{
+            cout << "Error para crear reporte: Parametros obligatorios no definidos " << endl;
+        }
     }
 }
 
@@ -2285,6 +2291,8 @@ void Comando:: comando_mount(string path, string name){
     string numeroparticion = "";
     string nombredisco = "";
     string idnuevo = "";
+    int inicioPart;
+    string tipoPart;
     int tamaniop = 0;
 
     if ((discolectura = fopen(path.c_str(), "r+b")) == NULL) {
@@ -2311,6 +2319,8 @@ void Comando:: comando_mount(string path, string name){
             nombrebuscado = name;
             idnuevo = ultimodigito + numeroparticion + extension;
             tamaniop = particion[0].part_s;
+            inicioPart = particion[0].part_start;
+            tipoPart = particion[0].part_type;
             if ((discolectura = fopen(path.c_str(), "r+b")) == NULL) {
             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
             } else {
@@ -2318,7 +2328,7 @@ void Comando:: comando_mount(string path, string name){
                 disco.mbr_partition_1.part_status = '1';
                 fwrite(&disco, sizeof(MBR), 1, discolectura);
                 fclose(discolectura);
-                montado(idnuevo,path,nombrebuscado, tamaniop);
+                montado(idnuevo,path,nombrebuscado,tipoPart,inicioPart, tamaniop);
                 }
             }else{
                 cout<<"¡¡ Error !! La particion ya se encuentra montada "<<endl;
@@ -2329,6 +2339,8 @@ void Comando:: comando_mount(string path, string name){
             nombrebuscado = name;
             idnuevo = ultimodigito + numeroparticion + extension;
             tamaniop = particion[1].part_s;
+            inicioPart = particion[1].part_start;
+            tipoPart = particion[1].part_type;
             if ((discolectura = fopen(path.c_str(), "r+b")) == NULL) {
             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
             } else {
@@ -2336,7 +2348,7 @@ void Comando:: comando_mount(string path, string name){
                 disco.mbr_partition_2.part_status = '1';
                 fwrite(&disco, sizeof(MBR), 1, discolectura);
                 fclose(discolectura);
-                montado(idnuevo,path,nombrebuscado,tamaniop);
+                montado(idnuevo,path,nombrebuscado,tipoPart,inicioPart,tamaniop);
                 }
             }else{
                 cout<<"¡¡ Error !! La particion ya se encuentra montada "<<endl;
@@ -2347,6 +2359,8 @@ void Comando:: comando_mount(string path, string name){
             nombrebuscado = name;
             idnuevo = ultimodigito + numeroparticion + extension;
             tamaniop = particion[2].part_s;
+            inicioPart = particion[2].part_start;
+            tipoPart = particion[2].part_type;
             if ((discolectura = fopen(path.c_str(), "r+b")) == NULL) {
             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
             } else {
@@ -2354,7 +2368,7 @@ void Comando:: comando_mount(string path, string name){
                 disco.mbr_partition_3.part_status = '1';
                 fwrite(&disco, sizeof(MBR), 1, discolectura);
                 fclose(discolectura);
-                montado(idnuevo,path,nombrebuscado,tamaniop);
+                montado(idnuevo,path,nombrebuscado,tipoPart,inicioPart,tamaniop);
                 }
                 
             }else{
@@ -2366,6 +2380,8 @@ void Comando:: comando_mount(string path, string name){
             nombrebuscado = name;
             idnuevo = ultimodigito + numeroparticion + extension;
             tamaniop = particion[3].part_s;
+            inicioPart = particion[3].part_start;
+            tipoPart = particion[3].part_type;
             if ((discolectura = fopen(path.c_str(), "r+b")) == NULL) {
             cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
             } else {
@@ -2373,7 +2389,7 @@ void Comando:: comando_mount(string path, string name){
                 disco.mbr_partition_4.part_status = '1';
                 fwrite(&disco, sizeof(MBR), 1, discolectura);
                 fclose(discolectura);
-                montado(idnuevo,path,nombrebuscado,tamaniop);
+                montado(idnuevo,path,nombrebuscado,tipoPart,inicioPart,tamaniop);
                 }
             }else{
                 cout<<"¡¡ Error !! La particion ya se encuentra montada "<<endl;
@@ -2385,11 +2401,13 @@ void Comando:: comando_mount(string path, string name){
     }
 }
 
-void Comando:: montado(string id, string path, string nombreparticion, int tamaniopart){
+void Comando:: montado(string id, string path, string nombreparticion, string tipoparticion, int inicioparticion ,int tamaniopart){
     nodoMount *nuevomontaje = new nodoMount();
     nuevomontaje->id = id;
     nuevomontaje->ruta = path;
     nuevomontaje->nombreparticion = nombreparticion;
+    nuevomontaje->tipoparticion = tipoparticion;
+    nuevomontaje->inicioparticion = inicioparticion;
     nuevomontaje->tamanioparticion = tamaniopart;
     nuevomontaje->horamontado = std::time(0);
 
@@ -2436,6 +2454,7 @@ void Comando:: comando_unmount(string id){
                         disco.mbr_partition_1.part_status = '0';
                         fwrite(&disco, sizeof(MBR), 1, discolectura);
                         desmontado(actual->id);
+                        fclose(discolectura);
                     }else{
                         cout<<"¡¡ Error !! Primero debe montar la particion "<<endl;
                     }
@@ -2446,6 +2465,7 @@ void Comando:: comando_unmount(string id){
                         disco.mbr_partition_2.part_status = '0';
                         fwrite(&disco, sizeof(MBR), 1, discolectura);
                         desmontado(actual->id);
+                        fclose(discolectura);
                     }else{
                         cout<<"¡¡ Error !! Primero debe montar la particion "<<endl;
                     }
@@ -2456,6 +2476,7 @@ void Comando:: comando_unmount(string id){
                         disco.mbr_partition_3.part_status = '0';
                         fwrite(&disco, sizeof(MBR), 1, discolectura);
                         desmontado(actual->id);
+                        fclose(discolectura);
                     }else{
                         cout<<"¡¡ Error !! Primero debe montar la particion "<<endl;
                     }
@@ -2466,6 +2487,7 @@ void Comando:: comando_unmount(string id){
                         disco.mbr_partition_4.part_status = '0';
                         fwrite(&disco, sizeof(MBR), 1, discolectura);
                         desmontado(actual->id);
+                        fclose(discolectura);
                     }else{
                         cout<<"¡¡ Error !! Primero debe montar la particion "<<endl;
                     }
@@ -2543,16 +2565,21 @@ if (primeroMount == ultimoMount) {
 }
 
 void Comando:: verlista(){
+    string h;
+    string hora;
     nodoMount *actualmount = primeroMount;
     if(primeroMount!=NULL){
         cout<<"Particiones montadas actualmente "<<endl;
-        cout <<"| ID            |"<<endl;
-        cout<<"Hora? "<<std::ctime(&primeroMount->horamontado);
+        cout <<"| ID " << setw(15) <<"|" << "| Fecha y hora "<<setw(15) << "|"<<endl;
+        //cout<<"Hora? "<<std::ctime(&primeroMount->horamontado);
+        h = std::ctime(&primeroMount->horamontado);
+
+        
+        
 
         while (actualmount!=NULL)
         {
-            cout<<"| "<<actualmount->id<<" |"<<endl;
-            cout<<"Hora? "<<std::ctime(&actualmount->horamontado);
+            cout<<"| "<<actualmount->id<<setw(4)<<"|" << "| "<< ctime(&actualmount->horamontado) << " |"<<endl;
             actualmount = actualmount->siguienteMontado;
         }
         }else{
@@ -2584,6 +2611,7 @@ void Comando:: comando_mkfs(string id, string type, string fs){
     }
 
     nodoMount *actual = primeroMount;
+    bool encontrado = false;
 
     if(actual == NULL){
         cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
@@ -2591,11 +2619,12 @@ void Comando:: comando_mkfs(string id, string type, string fs){
     }else{
         while(actual != NULL){
         if(actual->id == id){
+            encontrado = true;
 
             cout<<"Que datos salen: "<<actual->nombreparticion<<endl;
             cout<<"Que datos salen: "<<actual->id<<endl;
             cout<<"Que datos salen: "<<actual->ruta<<endl;
-            cout<<"Que datos salen: "<<actual->horamontado<<endl;
+            cout<<"Que datos salen: "<<ctime(&actual->horamontado)<<endl;
             cout<<"Que datos salen: "<<actual->tamanioparticion<<endl;   
 
             tparticion = actual->tamanioparticion;
@@ -2618,18 +2647,164 @@ void Comando:: comando_mkfs(string id, string type, string fs){
                 //Obteniendo el numero de Inodos
 
                 //Formato EXT2
+                crear_ext2(actual, n_e, 2);
             }
             if(sistemaarchivos == "3fs"){
 
             }
-
-            
             break;
-        
         }
         actual = actual->siguienteMontado;
     }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
     }
+    }   
+}
 
-    
+// Con este comando estoy llorando sangre :(
+
+void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
+    // Se crea el SuperBloque
+
+    SuperBloque SP;
+        SP.s_filesystem_type = 2;
+        SP.s_inodes_count = n;
+        SP.s_blocks_count = 3*n;
+        SP.s_free_blocks_count = 3*n-2;
+        SP.s_free_inodes_count = n-2;
+        SP.s_mtime = actual->horamontado;
+        SP.s_umtime = actual->horamontado;
+        SP.s_mnt_count = 1;
+        SP.s_magic = 0XEF53;
+        SP.s_inode_s = sizeof(Inodos);
+        SP.s_block_s = sizeof(BloqueCarpeta);
+        SP.s_firts_ino = (actual->inicioparticion + sizeof(SuperBloque) +  3* n + n);
+        SP.s_first_blo = SP.s_firts_ino + n * sizeof(Inodos);
+        SP.s_bm_inode_start = actual->inicioparticion + sizeof(SuperBloque);
+        SP.s_bm_block_start = SP.s_bm_inode_start + n;
+        SP.s_inode_start = SP.s_firts_ino;
+        SP.s_block_start = SP.s_inode_start + n *sizeof(Inodos);
+
+
+    //Se crea el Bitmap de Inodos
+
+
+    // cout<<"Entra al ext2 "<<endl;
+    // cout<<"Que sale ? "<<actual->id<<endl;
+    // cout<<"Que sale ? "<<actual->nombreparticion<<endl;
+    // cout<<"Que sale ? "<<actual->ruta<<endl;
+    // cout<<"Que sale ? "<<actual->tipoparticion<<endl;
+    // cout<<"Que sale ? "<<actual->tamanioparticion<<endl;
+    // cout<<"Que sale ? "<<actual->inicioparticion<<endl;
+    // cout<<"Que sale ? "<<ctime(&actual->horamontado)<<endl;
+
+
+}
+
+void Comando:: comando_rep(string namerep, string path, string id, string rutaa){
+        string ruta = " ";
+        int inicio = 0;
+        int fin = path.find("/");
+        string delimitador = "/";
+
+        while (fin != -1)
+        {
+            ruta += path.substr(inicio, fin - inicio);
+            ruta += "/";
+            inicio = fin + delimitador.size();
+            fin = path.find("/", inicio);
+        }
+        string name = path.substr(path.find_last_of("/") + 1);
+        string extension = name.substr(0, name.find("."));
+        int pos = name.find(".");
+        name.erase(0, 1 + pos);
+
+        if(namerep == "mbr"){
+            cout<<"*        Generando reporte          * "<<endl;
+            reporte_mbr(extension, path, id);
+        }else if(namerep == "disk"){
+            cout<<"Disk encontrado "<<endl;
+            return;
+        }
+        else{
+            cout<<"¡¡ Error !! No se reconoce ese reporte "<<endl;
+            return;
+        }
+}
+
+
+void Comando:: reporte_mbr(string nombresalida, string path, string id){
+    nodoMount *actual = primeroMount;
+    bool encontrado = false;
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(actual->id == id){
+            encontrado = true;
+
+            cout<<"Que datos salen: "<<actual->nombreparticion<<endl;
+            cout<<"Que datos salen: "<<actual->id<<endl;
+            cout<<"Que datos salen: "<<actual->ruta<<endl;
+            cout<<"Que datos salen: "<<ctime(&actual->horamontado)<<endl;
+            cout<<"Que datos salen: "<<actual->tamanioparticion<<endl;   
+            break;
+        }
+        actual = actual->siguienteMontado;
+    }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
+    }
+    }   
+    // time_t pruebas;
+    // pruebas = std::time(0);
+    // //cout<<"HOla "<<endl;
+    // string dot = "";
+
+    // dot = dot + "digraph H {\n";
+    // dot = dot + "parent [\n";
+    // dot = dot + "shape=plaintext\n";
+    // dot = dot + "label=<\n";
+    // dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
+    // dot = dot + "<tr><td colspan=\"3\">REPORTE DE MBR</td></tr>\n";
+    // dot = dot + "<tr><td port='tamanio'>mbr_tamano</td><td port='size'>1521221215t</td></tr>\n";
+    // dot = dot +  "<tr><td port=\'fecha\'>mbr_fecha</td><td port=\'size\'>" + (ctime(&pruebas) ) + "</td></tr>\n";
+    // dot = dot +  "<tr><td port='dsk'>mbr_dsk</td><td port='size'>1521221215t</td></tr>\n";
+    // dot = dot +  "<tr><td colspan=\"3\">PARTICION</td></tr>\n";
+    // dot = dot +  "<tr><td port='tamanio'>mbr_tamano</td><td port='size'>1521221215t</td></tr>\n";
+    // dot = dot +  "<tr><td port='fecha'>mbr_fecha</td><td port='size'>15/03/2023</td></tr>\n";
+    // dot = dot + "<tr><td port='dsk'>mbr_dsk</td><td port='size'>1521221215t</td></tr>\n";
+    // dot = dot + "</table>\n";
+    // dot = dot + ">];\n";
+
+    // dot = dot + "parent2 [\n";
+    // dot = dot + "shape=plaintext\n";
+    // dot = dot + "label=<\n";
+    // dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
+    // dot = dot + "<tr><td colspan=\"3\">REPORTE DE EBR</td></tr>\n";
+    // dot = dot + "<tr><td port='tamanio'>mbr_tamano</td><td port='size'>1521221215t</td></tr>\n";
+    // dot = dot +  "<tr><td port='fecha'>mbr_fecha</td><td port='size'>15/03/2023</td></tr>\n";
+    // dot = dot +  "<tr><td port='dsk'>mbr_dsk</td><td port='size'>1521221215t</td></tr>\n";
+    // dot = dot +  "<tr><td colspan=\"3\">PARTICION</td></tr>\n";
+    // dot = dot +  "<tr><td port='tamanio'>mbr_tamano</td><td port='size'>1521221215t</td></tr>\n";
+    // dot = dot +  "<tr><td port='fecha'>mbr_fecha</td><td port='size'>15/03/2023</td></tr>\n";
+    // dot = dot + "<tr><td port='dsk'>mbr_dsk</td><td port='size'>1521221215t</td></tr>\n";
+    // dot = dot + "</table>\n";
+    // dot = dot + ">];\n";
+    // dot = dot + "}";
+
+
+
+
+    // ofstream file;
+    // file.open("PruebaReporte.dot");
+    // file << dot;
+    // file.close();
+    // system(("dot -Tpng PruebaReporte.dot -o  /home/andre/Desktop/ReporteMBR.png"));
+
 }
