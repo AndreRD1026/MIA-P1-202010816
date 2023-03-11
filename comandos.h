@@ -117,6 +117,17 @@ typedef struct {
 }BloqueApuntadores;
 
 
+typedef struct {
+    char status;
+}BitMapInodo;
+
+typedef struct {
+    char status;
+}BitMapBloque;
+
+
+
+
 //Aqui van todas las acciones de los comandos
 class Comando{
     public:
@@ -145,8 +156,9 @@ class Comando{
         void verlista();
         void comando_mkfs(string id, string type, string fs);
         void crear_ext2(nodoMount *particion ,int n, int tipop);
-        void crear_ext3();
-
+        void Escribir_SuperBloque(string path, SuperBloque SP, int inicio);
+        void Escribir_BitMapInodos(string path, BitMapInodo bmI[], int inicio, int n);
+        void Escribir_BitMapBloques(string path, BitMapBloque bmB[], int inicio, int n);
 
         void comando_rep(string name, string path, string id, string ruta);
         void reporte_mbr(string nombresalida, string path, string id);

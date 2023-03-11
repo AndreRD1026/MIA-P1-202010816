@@ -2691,7 +2691,7 @@ void Comando:: comando_mkfs(string id, string type, string fs){
                 double n; // Numero de Inodos y bloques
                 double n_e; // Numero de estructuras
 
-                n = (partb-sizeof(SuperBloque))/(4+sizeof(Inodos)+(3*64));
+                n = (partb-sizeof(SuperBloque))/(4+sizeof(Inodos)+3*64);
 
                 n_e = floor(n);
 
@@ -2729,8 +2729,8 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
         SP.s_blocks_count = 3*n;
         SP.s_free_blocks_count = 3*n-2;
         SP.s_free_inodes_count = n-2;
-        SP.s_mtime = actual->horamontado;
-        SP.s_umtime = actual->horamontado;
+        SP.s_mtime = (actual->horamontado);
+        SP.s_umtime = (actual->horamontado);
         SP.s_mnt_count = 1;
         SP.s_magic = 0XEF53;
         SP.s_inode_s = sizeof(Inodos);
@@ -2742,9 +2742,42 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
         SP.s_inode_start = SP.s_firts_ino;
         SP.s_block_start = SP.s_inode_start + n *sizeof(Inodos);
 
+        Escribir_SuperBloque(actual->ruta, SP, actual->inicioparticion);
+
+        cout<<"Escribe ? " <<endl;
+
 
     //Se crea el Bitmap de Inodos
 
+    BitMapInodo bmInodo[n];
+    BitMapInodo siguientes;
+
+        bmInodo[0].status = '1';
+        bmInodo[1].status = '1';
+
+        siguientes.status = '0';
+
+        for(int i =2; i<n;i++){
+            bmInodo[i]= siguientes;
+        }
+
+        Escribir_BitMapInodos(actual->ruta,bmInodo, SP.s_bm_inode_start, n);
+
+        cout<< "Escribe? "<<endl;
+
+    BitMapBloque bmBloque[n*3];
+    BitMapBloque siguientesM;
+
+        bmBloque[0].status = '1';
+        bmBloque[1].status = '1';
+
+        siguientesM.status = '0';
+
+        for(int i=2; i<n*3;i++){
+            bmBloque[i] = siguientesM;
+        }
+
+        Escribir_BitMapBloques(actual->ruta, bmBloque, SP.s_bm_block_start, n*3);
 
     // cout<<"Entra al ext2 "<<endl;
     // cout<<"Que sale ? "<<actual->id<<endl;
@@ -2757,6 +2790,59 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
 
 
 }
+
+
+
+
+
+
+void Comando:: Escribir_SuperBloque(string path, SuperBloque SP , int inicio){
+    FILE *escribirSP;
+
+     if ((escribirSP = fopen(path.c_str(), "r+b")) == NULL){
+            cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
+            return;
+        }
+
+        fseek(escribirSP, inicio, SEEK_SET);
+        fwrite(&SP, sizeof(SuperBloque), 1 , escribirSP);
+        fclose(escribirSP);
+}
+
+
+void Comando:: Escribir_BitMapInodos(string path, BitMapInodo bmInodo[], int inicio, int n){
+    FILE *escrituraBMI;
+
+    if ((escrituraBMI = fopen(path.c_str(), "r+b")) == NULL){
+            cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
+            return;
+        }
+        for(int i=0; i<n;i++){
+        fseek(escrituraBMI, inicio+i*(sizeof(BitMapInodo)), SEEK_SET);
+        fwrite(&bmInodo[i], sizeof(BitMapInodo), 1 , escrituraBMI);
+        }
+        fclose(escrituraBMI);
+}
+
+
+void Comando:: Escribir_BitMapBloques(string path, BitMapBloque bmBloque[], int inicio, int n){
+    FILE *escrituraBMB;
+
+    if ((escrituraBMB = fopen(path.c_str(), "r+b")) == NULL){
+            cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
+            return;
+        }
+        for(int i=0; i<n;i++){
+        fseek(escrituraBMB, inicio+i , SEEK_SET);
+        fwrite(&bmBloque[i], sizeof(BitMapBloque), 1 , escrituraBMB);
+        }
+        fclose(escrituraBMB);
+
+}
+
+
+
+
 
 void Comando:: comando_rep(string namerep, string path, string id, string rutaa){
         string ruta = " ";

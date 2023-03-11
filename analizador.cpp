@@ -49,6 +49,17 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             } else if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
                 param = replace_txt(param, "\"", "");
+                //string nuevo = param;
+
+                //cout<< "que sale? "<<nuevo<<endl;
+
+                // if (param.substr(0, 1) == "\"") {
+                //     cout << "La cadena comienza con comillas dobles." << endl;
+                //     string ruta = nuevo.substr(1, nuevo.length() - 2);
+                //     cout << "Y ahora? "<<ruta<<endl;
+                // } else {
+                //     cout << "La cadena no comienza con comillas dobles." << endl;
+                // }
                 cmd.param.Path = param;
             } else if(param.find(">fit=") == 0){
                 param = replace_txt(param, ">fit=", "");
