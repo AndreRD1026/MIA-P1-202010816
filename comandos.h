@@ -145,11 +145,12 @@ class Comando{
         void verlista();
         void comando_mkfs(string id, string type, string fs);
         void crear_ext2(nodoMount *particion ,int n, int tipop);
-
+        void crear_ext3();
 
 
         void comando_rep(string name, string path, string id, string ruta);
         void reporte_mbr(string nombresalida, string path, string id);
+        void reporte_disk(string nombresalida, string path, string id);
         
 };
 

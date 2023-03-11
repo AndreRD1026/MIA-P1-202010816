@@ -1828,12 +1828,16 @@ void Comando::eliminar(string name, string path){
     string nombreparticion = "";
         for (int i = 0; i < 4; i++) {
 
-            if(particion[i].part_status == '0'){
-
+            if(particion[0].part_status == '0' || particion[1].part_status == '0' || particion[2].part_status == '0' || particion[3].part_status == '0'){
+                
             nombreparticion=particion[i].part_name;
             if(nombreparticion==name){
                 
                 if(nombreparticion == particion[0].part_name){
+                    if(particion[0].part_status == '1'){
+                    cout<<"¡¡ Error !! La particion debe ser desmontada primero"<<endl;
+                    return;
+                    }
 
                     if(particion[0].part_type == 'E'){
                         EBR Logica;
@@ -1882,6 +1886,14 @@ void Comando::eliminar(string name, string path){
                                 fseek(discolecturaE, 0, SEEK_SET);
                                 fwrite(&disco, sizeof (MBR), 1, discolecturaE);
                                 fclose(discolecturaE);
+                            }else{
+                                disco.mbr_partition_1.part_status = '0';
+                                disco.mbr_partition_1.part_type = '\0';
+                                disco.mbr_partition_1.part_fit = '\0';
+                                //disco.mbr_partition_1.part_start = 0;
+                                //disco.mbr_partition_1.part_s = 0;
+                                memset(disco.mbr_partition_1.part_name,0,16);
+                                actualizardisco(disco, path);
                             }
 
                         }
@@ -1895,6 +1907,10 @@ void Comando::eliminar(string name, string path){
                         actualizardisco(disco, path);
                     }
                 } else if(nombreparticion == particion[1].part_name){
+                    if (particion[1].part_status == '1'){
+                    cout<<"¡¡ Error !! La particion debe ser desmontada primero"<<endl;
+                    return;
+                    }
                     
                     if(particion[1].part_type == 'E'){
                         EBR Logica;
@@ -1943,6 +1959,14 @@ void Comando::eliminar(string name, string path){
                                 fseek(discolecturaE, 0, SEEK_SET);
                                 fwrite(&disco, sizeof (MBR), 1, discolecturaE);
                                 fclose(discolecturaE);
+                            }else{
+                                disco.mbr_partition_2.part_status = '0';
+                                disco.mbr_partition_2.part_type = '\0';
+                                disco.mbr_partition_2.part_fit = '\0';
+                                //disco.mbr_partition_2.part_start = 0;
+                                //disco.mbr_partition_2.part_s = 0;
+                                memset(disco.mbr_partition_2.part_name,0,16);
+                                actualizardisco(disco, path);
                             }
 
                         }
@@ -1956,6 +1980,10 @@ void Comando::eliminar(string name, string path){
                         actualizardisco(disco, path);
                     }
                 } else if(nombreparticion == particion[2].part_name){
+                    if (particion[2].part_status == '1'){
+                    cout<<"¡¡ Error !! La particion debe ser desmontada primero"<<endl;
+                    return;
+                    }
                     
                     if(particion[2].part_type == 'E'){
                         EBR Logica;
@@ -2004,6 +2032,14 @@ void Comando::eliminar(string name, string path){
                                 fseek(discolecturaE, 0, SEEK_SET);
                                 fwrite(&disco, sizeof (MBR), 1, discolecturaE);
                                 fclose(discolecturaE);
+                            }else{
+                                    disco.mbr_partition_3.part_status = '0';
+                                    disco.mbr_partition_3.part_type = '\0';
+                                    disco.mbr_partition_3.part_fit = '\0';
+                                    //disco.mbr_partition_3.part_start = 0;
+                                    //disco.mbr_partition_3.part_s = 0;
+                                    memset(disco.mbr_partition_3.part_name,0,16);
+                                    actualizardisco(disco, path);
                             }
                         }
                     }else {
@@ -2016,6 +2052,10 @@ void Comando::eliminar(string name, string path){
                         actualizardisco(disco, path);
                     }
                 } else if(nombreparticion == particion[3].part_name){
+                    if (particion[3].part_status == '1'){
+                    cout<<"¡¡ Error !! La particion debe ser desmontada primero"<<endl;
+                    return;
+                    }
 
                     if(particion[3].part_type == 'E'){
                         EBR Logica;
@@ -2064,6 +2104,14 @@ void Comando::eliminar(string name, string path){
                                 fseek(discolecturaE, 0, SEEK_SET);
                                 fwrite(&disco, sizeof (MBR), 1, discolecturaE);
                                 fclose(discolecturaE);
+                            }else{
+                                    disco.mbr_partition_4.part_status = '0';
+                                    disco.mbr_partition_4.part_type = '\0';
+                                    disco.mbr_partition_4.part_fit = '\0';
+                                    //disco.mbr_partition_4.part_start = 0;
+                                    //disco.mbr_partition_4.part_s = 0;
+                                    memset(disco.mbr_partition_4.part_name,0,16);
+                                    actualizardisco(disco, path);
                             }
 
                         }
@@ -2149,33 +2197,45 @@ void Comando::agregar(string name, string path, string unit, string size){
             nombreparticion=particion[i].part_name;
             if(nombreparticion==name){
                 if(nombreparticion == particion[0].part_name){
-                    if (espacioRestante1 == 0 || espacioRestante1 < size_file){
-                        cout<<"¡¡ Error !!  No hay espacio suficiente para agregar tamaño a la particion"<<endl;
-                    } else if (espacioRestante1 >= size_file){
+                    if(size_file < 0){
                         espacioFinal1 = disco.mbr_partition_1.part_s + size_file;
-                        cout<<"Tamanio final suma "<<espacioFinal1<<endl;
-                        cout<<"Tamanio de la particion "<<tamanioParticion1<<endl;
-                        if(espacioFinal1 <= tamanioParticion1 && espacioFinal1 > 0){
-                            if(size_file > 0){
-                                cout<<"Se han agregado "<<size<<" "<<unidad<<" a la particion"<<endl;
-                                disco.mbr_partition_1.part_s = espacioFinal1;
-                                modificaradd(disco, path);
-                            } else {
-                                int positivo;
-                                positivo = stoi(size);
-                                positivo = (positivo * -1);
-                                cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
+                        int positivo;
+                        positivo = stoi(size);
+                        positivo = (positivo * -1);
+                        cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
+                        disco.mbr_partition_1.part_s = espacioFinal1;
+                        modificaradd(disco, path);
+                    }else {
+                        if (espacioRestante1 == 0 || espacioRestante1 < size_file){
+                        cout << "¡¡ Error !!  No hay espacio suficiente para agregar tamaño a la particion" << endl;
+                        } else if (espacioRestante1 >= size_file){
+                        espacioFinal1 = disco.mbr_partition_1.part_s + size_file;
+                        cout << "Tamanio final suma " << espacioFinal1 << endl;
+                        cout << "Tamanio de la particion " << tamanioParticion1 << endl;
+                        if (espacioFinal1 <= tamanioParticion1 && espacioFinal1 > 0){
+                            if (size_file > 0){
+                                cout << "Se han agregado " << size << " " << unidad << " a la particion" << endl;
                                 disco.mbr_partition_1.part_s = espacioFinal1;
                                 modificaradd(disco, path);
                             }
-                        }else {
-                            cout<<"¡¡ Error !!  El tamaño que desea agregar es mayor al tamaño disponible"<<endl;
+                        }
+                        }else{
+                        cout << "¡¡ Error !!  El tamaño que desea agregar es mayor al tamaño disponible" << endl;
                         }
                     }
                 } else if(nombreparticion == particion[1].part_name){
-                    if (espacioRestante2 == 0 || espacioRestante2 < size_file){
+                    if(size_file < 0){
+                        espacioFinal2 = disco.mbr_partition_2.part_s + size_file;
+                        int positivo;
+                        positivo = stoi(size);
+                        positivo = (positivo * -1);
+                        cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
+                        disco.mbr_partition_2.part_s = espacioFinal2;
+                        modificaradd(disco, path);
+                    }else{
+                        if (espacioRestante2 == 0 || espacioRestante2 < size_file){
                         cout<<"¡¡ Error !!  No hay espacio suficiente para agregar tamaño a la particion"<<endl;
-                    } else if (espacioRestante2 >= size_file){
+                        } else if (espacioRestante2 >= size_file){
                         espacioFinal2 = disco.mbr_partition_2.part_s + size_file;
                         cout<<"Tamanio final suma "<<espacioFinal2<<endl;
                         cout<<"Tamanio de la particion "<<tamanioParticion2<<endl;
@@ -2184,62 +2244,62 @@ void Comando::agregar(string name, string path, string unit, string size){
                                 cout<<"Se han agregado "<<size<<" "<<unidad<<" a la particion"<<endl;
                                 disco.mbr_partition_2.part_s = espacioFinal2;
                                 modificaradd(disco, path);
-                            } else {
-                                int positivo;
-                                positivo = stoi(size);
-                                positivo = (positivo * -1);
-                                cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
-                                disco.mbr_partition_2.part_s = espacioFinal2;
-                                modificaradd(disco, path);
                             }
+                    }
                         }else {
                             cout<<"¡¡ Error !!  El tamaño que desea agregar es mayor al tamaño disponible"<<endl;
                         }
                     }
                 } else if(nombreparticion == particion[2].part_name){
-                    if (espacioRestante3 == 0 || espacioRestante3 < size_file){
-                        cout<<"¡¡ Error !!  No hay espacio suficiente para agregar tamaño a la particion"<<endl;
-                    } else if (espacioRestante3 >= size_file){
+                        if(size_file < 0){
                         espacioFinal3 = disco.mbr_partition_3.part_s + size_file;
-                        cout<<"Tamanio final suma "<<espacioFinal3<<endl;
-                        cout<<"Tamanio de la particion "<<tamanioParticion3<<endl;
-                        if(espacioFinal3 <= tamanioParticion3 && espacioFinal3 > 0){
-                            if(size_file > 0){
-                                cout<<"Se han agregado "<<size<<" "<<unidad<<" a la particion"<<endl;
-                                disco.mbr_partition_3.part_s = espacioFinal3;
-                                modificaradd(disco, path);
-                            } else {
-                                int positivo;
-                                positivo = stoi(size);
-                                positivo = (positivo * -1);
-                                cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
-                                disco.mbr_partition_2.part_s = espacioFinal3;
-                                modificaradd(disco, path);
-                            }
+                        int positivo;
+                        positivo = stoi(size);
+                        positivo = (positivo * -1);
+                        cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
+                        disco.mbr_partition_3.part_s = espacioFinal3;
+                        modificaradd(disco, path);
+                    }else{
+                        if (espacioRestante3 == 0 || espacioRestante3 < size_file){
+                            cout<<"¡¡ Error !!  No hay espacio suficiente para agregar tamaño a la particion"<<endl;
+                        } else if (espacioRestante3 >= size_file){
+                            espacioFinal3 = disco.mbr_partition_3.part_s + size_file;
+                            cout<<"Tamanio final suma "<<espacioFinal3<<endl;
+                            cout<<"Tamanio de la particion "<<tamanioParticion3<<endl;
+                            if(espacioFinal3 <= tamanioParticion3 && espacioFinal3 > 0){
+                                if(size_file > 0){
+                                    cout<<"Se han agregado "<<size<<" "<<unidad<<" a la particion"<<endl;
+                                    disco.mbr_partition_3.part_s = espacioFinal3;
+                                    modificaradd(disco, path);
+                                }
+                    }
                         }else {
                             cout<<"¡¡ Error !!  El tamaño que desea agregar es mayor al tamaño disponible"<<endl;
                         }
                     }
                 } else if(nombreparticion == particion[3].part_name){
-                    if (espacioRestante4 == 0 || espacioRestante4 < size_file){
-                        cout<<"¡¡ Error !! No hay espacio suficiente para agregar tamaño a la particion"<<endl;
-                    } else if (espacioRestante4 >= size_file){
+                    if(size_file < 0){
                         espacioFinal4 = disco.mbr_partition_4.part_s + size_file;
-                        cout<<"Tamanio final suma "<<espacioFinal4<<endl;
-                        cout<<"Tamanio de la particion "<<tamanioParticion4<<endl;
-                        if(espacioFinal4 <= tamanioParticion4 && espacioFinal4 > 0){
-                            if(size_file > 0){
-                                cout<<"Se han agregado "<<size<<" "<<unidad<<" a la particion"<<endl;
-                                disco.mbr_partition_4.part_s = espacioFinal4;
-                                modificaradd(disco, path);
-                            } else {
-                                int positivo;
-                                positivo = stoi(size);
-                                positivo = (positivo * -1);
-                                cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
-                                disco.mbr_partition_4.part_s = espacioFinal4;
-                                modificaradd(disco, path);
-                            }
+                        int positivo;
+                        positivo = stoi(size);
+                        positivo = (positivo * -1);
+                        cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
+                        disco.mbr_partition_4.part_s = espacioFinal4;
+                        modificaradd(disco, path);
+                    }else{
+                        if (espacioRestante4 == 0 || espacioRestante4 < size_file){
+                            cout<<"¡¡ Error !! No hay espacio suficiente para agregar tamaño a la particion"<<endl;
+                        } else if (espacioRestante4 >= size_file){
+                            espacioFinal4 = disco.mbr_partition_4.part_s + size_file;
+                            cout<<"Tamanio final suma "<<espacioFinal4<<endl;
+                            cout<<"Tamanio de la particion "<<tamanioParticion4<<endl;
+                            if(espacioFinal4 <= tamanioParticion4 && espacioFinal4 > 0){
+                                if(size_file > 0){
+                                    cout<<"Se han agregado "<<size<<" "<<unidad<<" a la particion"<<endl;
+                                    disco.mbr_partition_4.part_s = espacioFinal4;
+                                    modificaradd(disco, path);
+                                }
+                    }
                         }else {
                             cout<<"¡¡ Error !!  El tamaño que desea agregar es mayor al tamaño disponible"<<endl;
                         }
@@ -2574,9 +2634,6 @@ void Comando:: verlista(){
         //cout<<"Hora? "<<std::ctime(&primeroMount->horamontado);
         h = std::ctime(&primeroMount->horamontado);
 
-        
-        
-
         while (actualmount!=NULL)
         {
             cout<<"| "<<actualmount->id<<setw(4)<<"|" << "| "<< ctime(&actualmount->horamontado) << " |"<<endl;
@@ -2720,11 +2777,9 @@ void Comando:: comando_rep(string namerep, string path, string id, string rutaa)
         name.erase(0, 1 + pos);
 
         if(namerep == "mbr"){
-            cout<<"*        Generando reporte          * "<<endl;
             reporte_mbr(extension, path, id);
         }else if(namerep == "disk"){
-            cout<<"Disk encontrado "<<endl;
-            return;
+            reporte_disk(extension,path, id);
         }
         else{
             cout<<"¡¡ Error !! No se reconoce ese reporte "<<endl;
@@ -2905,7 +2960,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                         statt = particion[1].part_status;
                         typp = particion[1].part_type;
                         fiit = particion[1].part_fit;
-                        int sttart = particion[1].part_start;
+                        int sttart = (particion[0].part_start + (particion[0].part_s *1024) + 1);
                         int ss = (particion[1].part_s *1024);
                         nombrep = particion[1].part_name;
 
@@ -2925,7 +2980,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                         statt = particion[1].part_status;
                         typp = particion[1].part_type;
                         fiit = particion[1].part_fit;
-                        int sttart = particion[1].part_start;
+                        int sttart = (particion[0].part_start + (particion[0].part_s *1024) + 1);
                         int ss = (particion[1].part_s *1024);
                         nombrep = particion[1].part_name;
 
@@ -2961,7 +3016,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 nombrelog = Anterior.part_name;
                                 int neext = Anterior.part_next;
                                 int sss = (Anterior.part_s *1024);
-                                int startlog = Anterior.part_start;
+                                int startlog = (particion[0].part_start + (particion[0].part_s *1024) + 1);
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
@@ -2978,7 +3033,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 nombrelog1 = Siguiente.part_name;
                                 int neext1 = Siguiente.part_next;
                                 int sss1 = (Siguiente.part_s * 1024);
-                                int startlog1 = Siguiente.part_start;
+                                int startlog1 = startlog + (Anterior.part_s *1024 ) + 1;
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
@@ -3003,7 +3058,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                         statt = particion[2].part_status;
                         typp = particion[2].part_type;
                         fiit = particion[2].part_fit;
-                        int sttart = particion[2].part_start;
+                        int sttart = (particion[0].part_start + (particion[0].part_s *1024) + (particion[1].part_s * 1024) + 1);
                         int ss = (particion[2].part_s *1024);
                         nombrep = particion[2].part_name;
 
@@ -3023,7 +3078,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                         statt = particion[2].part_status;
                         typp = particion[2].part_type;
                         fiit = particion[2].part_fit;
-                        int sttart = particion[2].part_start;
+                        int sttart = (particion[0].part_start + (particion[0].part_s *1024) + (particion[1].part_s * 1024) + 1);
                         int ss = (particion[2].part_s *1024);
                         nombrep = particion[2].part_name;
 
@@ -3059,7 +3114,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 nombrelog = Anterior.part_name;
                                 int neext = Anterior.part_next;
                                 int sss = (Anterior.part_s *1024);
-                                int startlog = Anterior.part_start;
+                                int startlog = (particion[0].part_start + (particion[0].part_s *1024) + (particion[1].part_s * 1024) + 1);
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
@@ -3076,7 +3131,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 nombrelog1 = Siguiente.part_name;
                                 int neext1 = Siguiente.part_next;
                                 int sss1 = (Siguiente.part_s * 1024);
-                                int startlog1 = Siguiente.part_start;
+                                int startlog1 = startlog + (Anterior.part_s * 1024) + 1;
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
@@ -3101,7 +3156,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                         statt = particion[3].part_status;
                         typp = particion[3].part_type;
                         fiit = particion[3].part_fit;
-                        int sttart = particion[3].part_start;
+                        int sttart = (particion[0].part_start + (particion[0].part_s *1024) + (particion[1].part_s * 1024) + (particion[2].part_s * 1024) + 1);
                         int ss = (particion[3].part_s *1024);
                         nombrep = particion[3].part_name;
 
@@ -3121,7 +3176,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                         statt = particion[3].part_status;
                         typp = particion[3].part_type;
                         fiit = particion[3].part_fit;
-                        int sttart = particion[3].part_start;
+                        int sttart = (particion[0].part_start + (particion[0].part_s *1024) + (particion[1].part_s * 1024) + (particion[2].part_s * 1024) + 1);
                         int ss = (particion[3].part_s *1024);
                         nombrep = particion[3].part_name;
 
@@ -3157,7 +3212,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 nombrelog = Anterior.part_name;
                                 int neext = Anterior.part_next;
                                 int sss = (Anterior.part_s *1024);
-                                int startlog = Anterior.part_start;
+                                int startlog = (particion[0].part_start + (particion[0].part_s *1024) + (particion[1].part_s * 1024) + (particion[2].part_s * 1024) + 1);
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
@@ -3174,7 +3229,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 nombrelog1 = Siguiente.part_name;
                                 int neext1 = Siguiente.part_next;
                                 int sss1 = (Siguiente.part_s * 1024);
-                                int startlog1 = Siguiente.part_start;
+                                int startlog1 = startlog + (Anterior.part_s * 1024) + 1 ;
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
@@ -3210,5 +3265,139 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
     system(crear.c_str());
     string salida = "dot -Tpng ReporteMBR.dot -o " + rutap + nombresalida + ".png";
     system(salida.c_str()); 
+
+    string confirmacion = "";
+
+    cout << ""<<endl;
+    cout << "*                 Reporte MRB creado con exito                *" << endl;
+    cout << ""<<endl;
+
+    cout <<"*  ¿ Desea abrir el reporte automaticamente ? (Y/N) "<<endl;
+    getline(cin,confirmacion);
+    if(confirmacion=="y"||confirmacion=="Y"){
+        string abrirreporte = rutap + nombresalida + ".png";
+        system(abrirreporte.c_str());
+    }else{
+        cout << " " << endl;
+    }
 }
+}
+
+/* 
+* ? Falta Tener bien los espacios libres entre particiones
+*/
+
+void Comando:: reporte_disk(string nombresalida, string path, string id){
+    nodoMount *actual = primeroMount;
+    string pathdisco = " ";
+    int tamanoMBR;
+    int dskmbr;
+    string dot = "";
+    string nombredisco = "";
+    bool encontrado = false;
+
+    MBR lectura;
+    FILE* discolectura;
+
+    string rutap = "" ;
+    
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(actual->id == id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+            
+
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+            } else {
+
+                int inicio = 0;
+                int fin = path.find("/");
+                string delimitador = "/";
+
+                while (fin != -1)
+                {
+                    rutap += path.substr(inicio, fin - inicio);
+                    rutap += "/";
+                    inicio = fin + delimitador.size();
+                    fin = path.find("/", inicio);
+                }
+                string extension = pathdisco.substr(pathdisco.find_last_of("/") + 1);
+
+                string nombreedisco = extension.substr(0, extension.find("."));
+
+                fseek(discolectura, 0, SEEK_SET);
+                fread(&lectura, sizeof (MBR), 1, discolectura);
+                fclose(discolectura);
+
+                MBR disco = lectura;
+                Partition particion[4];
+                particion[0] = disco.mbr_partition_1;
+                particion[1] = disco.mbr_partition_2;
+                particion[2] = disco.mbr_partition_3;
+                particion[3] = disco.mbr_partition_4;
+
+                tamanoMBR = (disco.mbr_tamano * 1024);
+                dskmbr = disco.mbr_dsk_signature;
+
+                cout<<"Entra a este reporte " <<endl;
+
+                dot = dot + "digraph G {\n";
+                dot = dot + "labelloc=\"t\"\n";
+                dot = dot + "label=\"" + nombreedisco + ".dsk\"\n";
+                dot = dot + "parent [\n";
+                dot = dot + "shape=plaintext\n";
+                dot = dot + "label=<\n";
+                dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
+                dot = dot + "<tr> <td rowspan='3'>MBR</td>\n";
+
+
+
+
+
+//        <td rowspan="3"> Espacio Libre <br/>20% del disco </td>
+//        <td colspan="4" rowspan="1">Extendida</td>
+//        <td rowspan='3'>Primaria <br/>20% del disco</td>
+//        <td rowspan='3'>Primaria <br/>10% del disco </td>
+//        </tr>
+//        <tr>
+//        <td rowspan="2" port='log1'>EBR</td><td rowspan="2" port='log2'>Logica <br/>25% del disco</td>
+//        <td rowspan="2" port='log1'>EBR</td><td rowspan="2" port='log2'>Logica <br/>25% del disco</td>
+
+
+            break;
+        }
+        actual = actual->siguienteMontado;
+    }
+        }
+    }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
+    }
+    dot = dot + "</tr>\n";  
+    dot = dot + "</table>\n";
+    dot = dot +  ">];\n";
+    dot = dot +  "}\n";
+    ofstream file;
+    file.open("ReporteDisk.dot");
+    file << dot;
+    file.close();
+
+    string crear = "mkdir -p " + rutap;
+    system(crear.c_str());
+    string salida = "dot -Tpng ReporteDisk.dot -o " + rutap + nombresalida + ".png";
+    system(salida.c_str());
+
+    cout << ""<<endl;
+    cout << "*                 Reporte Disk creado con exito                *" << endl;
+    cout << ""<<endl;
+
 }

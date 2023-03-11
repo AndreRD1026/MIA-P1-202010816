@@ -192,6 +192,68 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
         }
         cmd.identificacionCMD(cmd.param);
     }
+
+
+
+    else if (comando == "execute"){
+        cmd.param.Comando = "execute";
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">path=") == 0){
+                param = replace_txt(param, ">path=", "");
+                param = replace_txt(param, "\"", "");
+                cmd.param.Path = param;
+
+                string ruta = "";
+                int inicio = 0;
+                int fin = param.find("/");
+                string delimitador = "/";
+
+                while (fin != -1) {
+                    ruta += param.substr(inicio, fin - inicio);
+                    ruta += "/";
+                    inicio = fin + delimitador.size();
+                    fin = param.find("/", inicio);
+                }
+
+                string extension = param.substr(param.find_last_of("/") + 1);
+                string name = extension.substr(0, extension.find("."));
+                int pos = extension.find(".");
+                extension.erase(0, 1 + pos);
+
+                if (extension != "eea"){
+                    cout << " "<<endl;
+                    cout << "¡¡ Error !! La extension del archivo no corresponde a .eea" << endl;
+                    cout << " "<<endl;
+                    return;
+                }else{
+                    ifstream archivolectura(param);
+                    string lineacomando = "";
+                    while (getline(archivolectura, lineacomando)){
+                        if(lineacomando.find("#") == 0){
+                            cout<<"Comentario - "<<lineacomando<<endl;
+                        }else{
+                            cout << "*----------------------------------------------------------*" << endl;
+                            cout << "*                      [MIA] Proyecto 1                    *" << endl;
+                            cout << "*           Cesar Andre Ramirez Davila 202010816           *"<<endl;
+                            cout << "*----------------------------------------------------------*" << endl;
+                            cout << "Ejecutando el comando - " <<lineacomando<<endl;
+                            analizar(lineacomando);
+                        }
+                    }
+                    cout << " "<<endl;
+                    cout << "Script ejecutado con exito "<<endl;
+                    cout << " "<<endl;
+                }                
+            }else {
+                cout<<"Un parametro es incorrecto"<<endl;
+            }
+        }
+    }else if (comando == "exit"){
+        cout << " "<<endl;
+        cout<<"Gracias por usar el programa :D"<<endl;
+    }
+
     else {
         cout<<"\n ¡¡ Error !!  Comando no reconocido por el sistema"<<endl;
     }
