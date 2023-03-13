@@ -25,6 +25,8 @@ typedef struct{
     string Add = " ";
     string ID = " ";
     string Fs = " ";
+    string User = " ";
+    string Pass = " ";
     string Ruta = " ";
 }Parametros;
 
@@ -84,13 +86,23 @@ typedef struct {
 
 
 typedef struct {
+    char j_type;
+    char j_name[16];
+    char j_content;
+    time_t j_time;
+
+
+}Journaling;
+
+
+typedef struct {
     int i_uid; // UID del usuario propietario del archivo o carpeta
     int I_gid; // GID del grupo al que pertenece el archivo o carpeta.
     int i_s; // Tamaño del archivo en bytes
     time_t i_atime; // Última fecha en que se leyó el inodo sin modificarlo
     time_t i_ctime; // Fecha en la que se creó el inodo
     time_t i_mtime; // Última fecha en la que se modifica el inodo
-    int i_block; // Array en los que los primeros 12 registros son bloques directos.
+    int i_block[15]; // Array en los que los primeros 12 registros son bloques directos.
     char i_type; // ndica si es archivo o carpeta. 1 = Archivo y 0 = Carpeta
     int i_perm; // Guardará los permisos del archivo o carpeta.
 } Inodos;
@@ -125,9 +137,6 @@ typedef struct {
     char status;
 }BitMapBloque;
 
-
-
-
 //Aqui van todas las acciones de los comandos
 class Comando{
     public:
@@ -156,13 +165,20 @@ class Comando{
         void verlista();
         void comando_mkfs(string id, string type, string fs);
         void crear_ext2(nodoMount *particion ,int n, int tipop);
+        void crear_ext3(nodoMount *particion, int n, int tipop);
         void Escribir_SuperBloque(string path, SuperBloque SP, int inicio);
         void Escribir_BitMapInodos(string path, BitMapInodo bmI[], int inicio, int n);
         void Escribir_BitMapBloques(string path, BitMapBloque bmB[], int inicio, int n);
+        void Escribir_Inodos(string path, Inodos inodo[] ,int inicio, int n);
+        void Escribir_BloqueCarpeta(string path, BloqueCarpeta Carpeta, int inicio);
+        void Escribir_BloqueArchivo(string path, BloqueArchivos Archivo, int inicio);
+        void Actualizar_SuperBloque(string path, SuperBloque SP, int inicio);
+        void comando_login(string user, string pass, string id);
 
         void comando_rep(string name, string path, string id, string ruta);
         void reporte_mbr(string nombresalida, string path, string id);
         void reporte_disk(string nombresalida, string path, string id);
+        void reporte_Sb(string nombresalida, string path, string id);
         
 };
 

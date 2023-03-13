@@ -41,7 +41,15 @@ void Comando::identificacionCMD(Parametros p){
         }else{
             cout << "Error para desmontar el Disco: Parametros obligatorios no definidos " << endl;
         }
-    }else if(p.Comando=="rep"){ // Se identifica el tipo de comando
+    }else if(p.Comando=="login"){ // Se identifica el tipo de comando
+        if(p.User != " " && p.Pass != " " && p.ID != " "){ // Se validan los parametros para el comando
+            comando_mkfs(p.ID, p.Type, p.Fs);
+        }else{
+            cout << "Error para desmontar el Disco: Parametros obligatorios no definidos " << endl;
+        }
+    }
+    
+    else if(p.Comando=="rep"){ // Se identifica el tipo de comando
         if(p.Name != " " && p.Path != " " && p.ID != " "){ // Se validan los parametros para el comando
             comando_rep(p.Name,p.Path,p.ID,p.Ruta);
         }else{
@@ -2630,7 +2638,7 @@ void Comando:: verlista(){
     nodoMount *actualmount = primeroMount;
     if(primeroMount!=NULL){
         cout<<"Particiones montadas actualmente "<<endl;
-        cout <<"| ID " << setw(15) <<"|" << "| Fecha y hora "<<setw(15) << "|"<<endl;
+        cout <<"| ID " <<setw(15) <<"|" << "| Fecha y hora "<<setw(15) << "|"<<endl;
         //cout<<"Hora? "<<std::ctime(&primeroMount->horamontado);
         h = std::ctime(&primeroMount->horamontado);
 
@@ -2722,9 +2730,8 @@ void Comando:: comando_mkfs(string id, string type, string fs){
 
 void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
     // Se crea el SuperBloque
-
     SuperBloque SP;
-        SP.s_filesystem_type = 2;
+        SP.s_filesystem_type = 2; // Formato EXT2
         SP.s_inodes_count = n;
         SP.s_blocks_count = 3*n;
         SP.s_free_blocks_count = 3*n-2;
@@ -2733,28 +2740,23 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
         SP.s_umtime = (actual->horamontado);
         SP.s_mnt_count = 1;
         SP.s_magic = 0XEF53;
-        SP.s_inode_s = sizeof(Inodos);
+        SP.s_inode_s = sizeof(Inodos); 
         SP.s_block_s = sizeof(BloqueCarpeta);
-        SP.s_firts_ino = (actual->inicioparticion + sizeof(SuperBloque) +  3* n + n);
-        SP.s_first_blo = SP.s_firts_ino + n * sizeof(Inodos);
-        SP.s_bm_inode_start = actual->inicioparticion + sizeof(SuperBloque);
-        SP.s_bm_block_start = SP.s_bm_inode_start + n;
-        SP.s_inode_start = SP.s_firts_ino;
-        SP.s_block_start = SP.s_inode_start + n *sizeof(Inodos);
+        SP.s_firts_ino = (actual->inicioparticion + sizeof(SuperBloque) +  3* n + n); // Es la suma del SuperBloque + BitmapInodos + BitmapBloques
+        SP.s_first_blo = SP.s_firts_ino + n * sizeof(Inodos); // Es la suma del primer Primer Inodo Libre + el tamaño de Inodos
+        SP.s_bm_inode_start = actual->inicioparticion + sizeof(SuperBloque); // Es la suma del Inicio de la particion + tamaño del SuperBloque
+        SP.s_bm_block_start = SP.s_bm_inode_start + n; // Es la suma de donde empieza el BitmapInodos + tamaño de Inodos
+        SP.s_inode_start = SP.s_firts_ino; // Es el primer Inodo libre
+        SP.s_block_start = SP.s_inode_start + n *sizeof(Inodos); // Es el primer Bloque libre
 
         Escribir_SuperBloque(actual->ruta, SP, actual->inicioparticion);
 
-        cout<<"Escribe ? " <<endl;
-
-
     //Se crea el Bitmap de Inodos
-
     BitMapInodo bmInodo[n];
     BitMapInodo siguientes;
 
         bmInodo[0].status = '1';
         bmInodo[1].status = '1';
-
         siguientes.status = '0';
 
         for(int i =2; i<n;i++){
@@ -2763,14 +2765,11 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
 
         Escribir_BitMapInodos(actual->ruta,bmInodo, SP.s_bm_inode_start, n);
 
-        cout<< "Escribe? "<<endl;
-
     BitMapBloque bmBloque[n*3];
     BitMapBloque siguientesM;
 
         bmBloque[0].status = '1';
         bmBloque[1].status = '1';
-
         siguientesM.status = '0';
 
         for(int i=2; i<n*3;i++){
@@ -2779,21 +2778,75 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
 
         Escribir_BitMapBloques(actual->ruta, bmBloque, SP.s_bm_block_start, n*3);
 
-    // cout<<"Entra al ext2 "<<endl;
-    // cout<<"Que sale ? "<<actual->id<<endl;
-    // cout<<"Que sale ? "<<actual->nombreparticion<<endl;
-    // cout<<"Que sale ? "<<actual->ruta<<endl;
-    // cout<<"Que sale ? "<<actual->tipoparticion<<endl;
-    // cout<<"Que sale ? "<<actual->tamanioparticion<<endl;
-    // cout<<"Que sale ? "<<actual->inicioparticion<<endl;
-    // cout<<"Que sale ? "<<ctime(&actual->horamontado)<<endl;
+    // Se crean manualmente los primeros Inodos
 
+    //Como primer usuario el ROOT
 
+    Inodos userRoot;
+
+    for(int i =0; i <16; i++){
+        userRoot.i_block[i] = -1;
+    }
+
+    Inodos Predeterminado[1];
+
+    //Inodo Carpeta raiz
+    Predeterminado[0].i_uid = 1;
+    Predeterminado[0].I_gid = 1;
+    Predeterminado[0].i_atime = std::time(0);
+    Predeterminado[0].i_ctime = std::time(0);
+    Predeterminado[0].i_mtime = std::time(0);
+    Predeterminado[0].i_block[0] = 0;
+    Predeterminado[0].i_type = '0';
+    Predeterminado[0].i_perm = 664;
+
+    //Inodo Archivo Users
+    Predeterminado[1].i_uid = 1;
+    Predeterminado[1].I_gid = 1;
+    Predeterminado[1].i_atime = std::time(0);
+    Predeterminado[1].i_ctime = std::time(0);
+    Predeterminado[1].i_mtime = std::time(0);
+    Predeterminado[1].i_block[0] = 1;
+    Predeterminado[1].i_type = '1';
+    Predeterminado[1].i_perm = 700;
+
+    Escribir_Inodos(actual->ruta, Predeterminado, SP.s_inode_start, n);
+
+    // Se actualiza el primero Inodo Libre
+    SP.s_firts_ino = SP.s_firts_ino + 2 * sizeof(Inodos);
+
+    //Se crean manualmente los primeros Bloques
+
+    //Bloque Carpeta
+    BloqueCarpeta Carpeta;
+    Content contenidoCarpeta;
+    contenidoCarpeta.b_inodo = 1;
+    strcpy(contenidoCarpeta.b_name, "users.txt");
+
+    Carpeta.b_content[0] = contenidoCarpeta;
+    // Carpeta.b_content[1].b_inodo = -1;
+    // Carpeta.b_content[2].b_inodo = -1;
+    // Carpeta.b_content[3].b_inodo = -1;
+
+    Escribir_BloqueCarpeta(actual->ruta, Carpeta, SP.s_first_blo);
+
+    SP.s_first_blo = SP.s_first_blo + sizeof(BloqueCarpeta);
+
+    //Bloque Archivos
+    BloqueArchivos Archivo;
+    strcpy(Archivo.b_content, "1,G,root\n1,U,root,root,123\n");
+
+    Escribir_BloqueArchivo(actual->ruta, Archivo, SP.s_first_blo);
+
+    SP.s_first_blo = SP.s_first_blo + sizeof(BloqueArchivos);
+
+    //Se actualiza el SuperBloque
+    Actualizar_SuperBloque(actual->ruta, SP, actual->inicioparticion);
+
+    cout<<" "<<endl;
+    cout<<"*              Formato EXT2 creado con exito         * "<<endl;
+    cout<<" "<<endl;
 }
-
-
-
-
 
 
 void Comando:: Escribir_SuperBloque(string path, SuperBloque SP , int inicio){
@@ -2841,6 +2894,64 @@ void Comando:: Escribir_BitMapBloques(string path, BitMapBloque bmBloque[], int 
 }
 
 
+void Comando:: Escribir_Inodos(string path, Inodos inodo[], int inicio, int n){
+    FILE *escrituraInodo;
+
+    if ((escrituraInodo = fopen(path.c_str(), "r+b")) == NULL){
+            cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
+            return;
+        }
+        for(int i=0; i<1;i++){
+        fseek(escrituraInodo, inicio+i*(sizeof(Inodos)) , SEEK_SET);
+        fwrite(&inodo[i], sizeof(inodo[i]), 1 , escrituraInodo);
+        }
+        fclose(escrituraInodo);
+}
+
+
+void Comando:: Escribir_BloqueCarpeta(string path, BloqueCarpeta Carpeta, int inicio){
+    FILE *escrituraBCarpeta;
+
+    if ((escrituraBCarpeta = fopen(path.c_str(), "r+b")) == NULL){
+            cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
+            return;
+        }
+        for(int i=0; i<1;i++){
+        fseek(escrituraBCarpeta, inicio , SEEK_SET);
+        fwrite(&Carpeta, sizeof(BloqueCarpeta), 1 , escrituraBCarpeta);
+        }
+        fclose(escrituraBCarpeta);
+}
+
+
+void Comando:: Escribir_BloqueArchivo(string path, BloqueArchivos Archivo, int inicio){
+    FILE *escrituraBArchivo;
+
+    if ((escrituraBArchivo = fopen(path.c_str(), "r+b")) == NULL){
+            cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
+            return;
+        }
+        for(int i=0; i<1;i++){
+        fseek(escrituraBArchivo, inicio , SEEK_SET);
+        fwrite(&Archivo, sizeof(BloqueArchivos), 1 , escrituraBArchivo);
+        }
+        fclose(escrituraBArchivo);
+}
+
+
+
+void Comando:: Actualizar_SuperBloque(string path, SuperBloque SP, int inicio){
+    FILE *escribirSP;
+
+     if ((escribirSP = fopen(path.c_str(), "r+b")) == NULL){
+            cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
+            return;
+        }
+
+        fseek(escribirSP, inicio, SEEK_SET);
+        fwrite(&SP, sizeof(SuperBloque), 1 , escribirSP);
+        fclose(escribirSP);
+}
 
 
 
@@ -2866,6 +2977,10 @@ void Comando:: comando_rep(string namerep, string path, string id, string rutaa)
             reporte_mbr(extension, path, id);
         }else if(namerep == "disk"){
             reporte_disk(extension,path, id);
+        }
+
+        else if(namerep == "sp"){
+            reporte_Sb(extension,path, id);
         }
         else{
             cout<<"¡¡ Error !! No se reconoce ese reporte "<<endl;
@@ -3485,5 +3600,110 @@ void Comando:: reporte_disk(string nombresalida, string path, string id){
     cout << ""<<endl;
     cout << "*                 Reporte Disk creado con exito                *" << endl;
     cout << ""<<endl;
+
+}
+
+
+void Comando:: reporte_Sb(string nombresalida, string path, string id){
+    nodoMount *actual = primeroMount;
+    string pathdisco = " ";
+    int tamanoMBR;
+    int dskmbr;
+    string dot = "";
+    string nombredisco = "";
+    bool encontrado = false;
+
+    MBR lectura;
+    FILE* discolectura;
+
+    string rutap = "" ;
+    int inicio = 0;
+    int fin = path.find("/");
+    string delimitador = "/";
+
+    while (fin != -1)
+    {
+        rutap += path.substr(inicio, fin - inicio);
+        rutap += "/";
+        inicio = fin + delimitador.size();
+        fin = path.find("/", inicio);
+    }
+    
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(actual->id == id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+            
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+            } else {
+                SuperBloque reporte;
+                fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                fread(&reporte, sizeof (SuperBloque), 1, discolectura);
+                fclose(discolectura);
+
+                dot = dot + "digraph G {\n";
+                dot = dot + "parent [\n";
+                dot = dot + "shape=plaintext\n";
+                dot = dot + "label=<\n";
+                dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
+                dot = dot + "<tr><td bgcolor=\"darkgreen\" colspan=\"3\">REPORTE DE SUPERBLOQUE</td></tr>\n";
+                dot = dot + "<tr><td port='fl'>s_filesystem_type</td><td port='siz1'>" + to_string(reporte.s_filesystem_type) + "</td></tr>\n";
+                dot = dot +  "<tr><td bgcolor=\"forestgreen\" port=\'count\'>s_inodes_count</td><td bgcolor=\"forestgreen\" port=\'siz17\'>" + to_string(reporte.s_inodes_count) + "</td></tr>\n";
+                dot = dot +  "<tr><td port='bcount'>s_blocks_count</td><td port='siz2'>" + to_string(reporte.s_blocks_count) +"</td></tr>\n";
+                dot = dot +  "<tr><td bgcolor=\"forestgreen\" port=\'freeblocks\'>s_free_blocks_count</td><td bgcolor=\"forestgreen\" port=\'siz16\'>" + to_string(reporte.s_free_blocks_count) + "</td></tr>\n";
+                dot = dot +  "<tr><td port='freeinodes'>s_free_inodes_count</td><td port='siz3'>" + to_string(reporte.s_free_inodes_count) +"</td></tr>\n";
+                dot = dot +  "<tr><td bgcolor=\"forestgreen\" port=\'mounttime\'>s_mtime</td><td bgcolor=\"forestgreen\" port=\'size15\'>" + ctime(&reporte.s_mtime) + "</td></tr>\n";
+                dot = dot +  "<tr><td port=\'unmounttime\'>s_umtime</td><td port=\'siz4\'>" + ctime(&reporte.s_umtime) + "</td></tr>\n";
+                dot = dot +  "<tr><td bgcolor=\"forestgreen\" port='mountcount'>s_mnt_count</td><td bgcolor=\"forestgreen\" port='siz14'>" + to_string(reporte.s_mnt_count) +"</td></tr>\n";
+                dot = dot +  "<tr><td port='magic'>s_magic</td><td port='siz5'>" + to_string(reporte.s_magic) +"</td></tr>\n";
+                dot = dot +  "<tr><td bgcolor=\"forestgreen\" port=\'inodes\'>s_inode_s</td><td bgcolor=\"forestgreen\" port=\'siz13\'>" + to_string(reporte.s_inode_s) + "</td></tr>\n";
+                dot = dot +  "<tr><td port='sblock'>s_block_s</td><td port='siz6'>" + to_string(reporte.s_block_s) +"</td></tr>\n";
+                dot = dot +  "<tr><td bgcolor=\"forestgreen\" port=\'sfirstino\'>s_firts_ino</td><td bgcolor=\"forestgreen\" port=\'siz12\'>" + to_string(reporte.s_firts_ino) + "</td></tr>\n";
+                dot = dot +  "<tr><td port='sfirstblo'>s_first_blo</td><td port='siz7'>" + to_string(reporte.s_first_blo) +"</td></tr>\n";
+                dot = dot +  "<tr><td bgcolor=\"forestgreen\" port='bminodes'>s_bm_inode_start</td><td bgcolor=\"forestgreen\" port='siz11'>" + to_string(reporte.s_bm_inode_start) +"</td></tr>\n";
+                dot = dot +  "<tr><td port='bmblocks'>s_bm_block_start</td><td port='siz8'>" + to_string(reporte.s_bm_block_start) +"</td></tr>\n";
+                dot = dot +  "<tr><td bgcolor=\"forestgreen\" port='inodestart'>s_inode_start</td><td bgcolor=\"forestgreen\" port='siz10'>" + to_string(reporte.s_inode_start) +"</td></tr>\n";
+                dot = dot +  "<tr><td port='blockstart'>s_block_start</td><td port='siz9'>" + to_string(reporte.s_block_start) +"</td></tr>\n";
+
+            break;
+        }
+        actual = actual->siguienteMontado;
+    }
+        }
+    }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
+    } 
+    dot = dot + "</table>\n";
+    dot = dot +  ">];\n";
+    dot = dot +  "}\n";
+    ofstream file;
+    file.open("ReporteSP.dot");
+    file << dot;
+    file.close();
+
+    string crear = "mkdir -p " + rutap;
+    system(crear.c_str());
+    string salida = "dot -Tpng ReporteSP.dot -o " + rutap + nombresalida + ".png";
+    system(salida.c_str());
+
+    cout << ""<<endl;
+    cout << "*                 Reporte SuperBloque creado con exito                *" << endl;
+    cout << ""<<endl;
+
+}
+
+
+void Comando:: comando_login(string user, string pass, string id){
+    
 
 }

@@ -1,0 +1,28 @@
+digraph G {
+parent [
+shape=plaintext
+label=<
+<table border='1' cellborder='1'>
+<tr><td bgcolor="darkgreen" colspan="3">REPORTE DE SUPERBLOQUE</td></tr>
+<tr><td port='fl'>s_filesystem_type</td><td port='siz1'>2</td></tr>
+<tr><td bgcolor="forestgreen" port='count'>s_inodes_count</td><td bgcolor="forestgreen" port='siz17'>2327</td></tr>
+<tr><td port='bcount'>s_blocks_count</td><td port='siz2'>6981</td></tr>
+<tr><td bgcolor="forestgreen" port='freeblocks'>s_free_blocks_count</td><td bgcolor="forestgreen" port='siz16'>6979</td></tr>
+<tr><td port='freeinodes'>s_free_inodes_count</td><td port='siz3'>2325</td></tr>
+<tr><td bgcolor="forestgreen" port='mounttime'>s_mtime</td><td bgcolor="forestgreen" port='size15'>Sun Mar 12 18:14:43 2023
+</td></tr>
+<tr><td port='unmounttime'>s_umtime</td><td port='siz4'>Sun Mar 12 18:14:43 2023
+</td></tr>
+<tr><td bgcolor="forestgreen" port='mountcount'>s_mnt_count</td><td bgcolor="forestgreen" port='siz14'>1</td></tr>
+<tr><td port='magic'>s_magic</td><td port='siz5'>61267</td></tr>
+<tr><td bgcolor="forestgreen" port='inodes'>s_inode_s</td><td bgcolor="forestgreen" port='siz13'>112</td></tr>
+<tr><td port='sblock'>s_block_s</td><td port='siz6'>64</td></tr>
+<tr><td bgcolor="forestgreen" port='sfirstino'>s_firts_ino</td><td bgcolor="forestgreen" port='siz12'>9749</td></tr>
+<tr><td port='sfirstblo'>s_first_blo</td><td port='siz7'>270277</td></tr>
+<tr><td bgcolor="forestgreen" port='bminodes'>s_bm_inode_start</td><td bgcolor="forestgreen" port='siz11'>217</td></tr>
+<tr><td port='bmblocks'>s_bm_block_start</td><td port='siz8'>2544</td></tr>
+<tr><td bgcolor="forestgreen" port='inodestart'>s_inode_start</td><td bgcolor="forestgreen" port='siz10'>9525</td></tr>
+<tr><td port='blockstart'>s_block_start</td><td port='siz9'>270149</td></tr>
+</table>
+>];
+}
