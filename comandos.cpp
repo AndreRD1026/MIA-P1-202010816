@@ -1,5 +1,6 @@
 #include "comandos.h"
 #include <cmath>
+#include <vector>
 
 
 void Comando::identificacionCMD(Parametros p){
@@ -43,7 +44,7 @@ void Comando::identificacionCMD(Parametros p){
         }
     }else if(p.Comando=="login"){ // Se identifica el tipo de comando
         if(p.User != " " && p.Pass != " " && p.ID != " "){ // Se validan los parametros para el comando
-            comando_mkfs(p.ID, p.Type, p.Fs);
+            comando_login(p.User,p.Pass,p.ID);
         }else{
             cout << "Error para desmontar el Disco: Parametros obligatorios no definidos " << endl;
         }
@@ -2699,6 +2700,7 @@ void Comando:: comando_mkfs(string id, string type, string fs){
                 double n; // Numero de Inodos y bloques
                 double n_e; // Numero de estructuras
 
+                //Obteniendo el numero de Inodos
                 n = (partb-sizeof(SuperBloque))/(4+sizeof(Inodos)+3*64);
 
                 n_e = floor(n);
@@ -2708,13 +2710,29 @@ void Comando:: comando_mkfs(string id, string type, string fs){
                 cout<<"que sale en Inodos: "<<sizeof(Inodos)<<endl;
                 cout<<"que sale en n: "<<n<<endl;
                 cout<<"que sale en N_e: "<<n_e<<endl;                
-                //ni = ()
-                //Obteniendo el numero de Inodos
+                
 
                 //Formato EXT2
                 crear_ext2(actual, n_e, 2);
             }
             if(sistemaarchivos == "3fs"){
+                partb = tparticion * 1024;
+                double n; // Numero de Inodos y bloques
+                double n_e; // Numero de estructuras
+
+                n = (partb-sizeof(SuperBloque))/(4+sizeof(Journaling) + sizeof(Inodos) + 3*64);
+
+                n_e = floor(n);
+
+                cout<<"que sale en particion: "<<partb<<endl;
+                cout<<"que sale en super: "<<sizeof(SuperBloque)<<endl;
+                cout<<"que sale en Inodos: "<<sizeof(Inodos)<<endl;
+                cout<<"que sale en Journaling "<<sizeof(Journaling)<<endl;
+                cout<<"que sale en n: "<<n<<endl;
+                cout<<"que sale en N_e: "<<n_e<<endl;  
+
+                //Formato EXT3
+                crear_ext3(actual, n_e, 3);
 
             }
             break;
@@ -2788,7 +2806,7 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
         userRoot.i_block[i] = -1;
     }
 
-    Inodos Predeterminado[1];
+    Inodos Predeterminado[2];
 
     //Inodo Carpeta raiz
     Predeterminado[0].i_uid = 1;
@@ -2844,8 +2862,136 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
     Actualizar_SuperBloque(actual->ruta, SP, actual->inicioparticion);
 
     cout<<" "<<endl;
-    cout<<"*              Formato EXT2 creado con exito         * "<<endl;
+    cout<<"*                Formato EXT2 creado con exito             *"<<endl;
     cout<<" "<<endl;
+}
+
+
+void Comando:: crear_ext3(nodoMount *actual, int n, int inicio){
+     // Se crea el SuperBloque
+    SuperBloque SP;
+        SP.s_filesystem_type = 3; // Formato EXT3
+        SP.s_inodes_count = n;
+        SP.s_blocks_count = 3*n;
+        SP.s_free_blocks_count = 3*n-2;
+        SP.s_free_inodes_count = n-2;
+        SP.s_mtime = (actual->horamontado);
+        SP.s_umtime = (actual->horamontado);
+        SP.s_mnt_count = 1;
+        SP.s_magic = 0XEF53;
+        SP.s_inode_s = sizeof(Inodos); 
+        SP.s_block_s = sizeof(BloqueCarpeta);
+        SP.s_firts_ino = (actual->inicioparticion + sizeof(SuperBloque) + n + n * sizeof(Journaling) + 3 * n); // Es la suma del SuperBloque + Journaling + BitmapInodos + BitmapBloques
+        SP.s_first_blo = SP.s_firts_ino + n * sizeof(Inodos); // Es la suma del primer Primer Inodo Libre + el tamaño de Inodos
+        SP.s_bm_inode_start = actual->inicioparticion + sizeof(SuperBloque) + n * sizeof(Journaling); // Es la suma del Inicio de la particion + tamaño del SuperBloque
+        SP.s_bm_block_start = SP.s_bm_inode_start + n; // Es la suma de donde empieza el BitmapInodos + tamaño de Inodos
+        SP.s_inode_start = SP.s_firts_ino; // Es el primer Inodo libre
+        SP.s_block_start = SP.s_inode_start + n *sizeof(Inodos); // Es el primer Bloque libre
+
+        Escribir_SuperBloque(actual->ruta, SP, actual->inicioparticion);
+
+    // Se crea el Journalist
+    Journaling jour[n];
+        int inicioJour = actual->inicioparticion + sizeof(SuperBloque);
+
+        Escribir_Journaling(actual->ruta, jour, inicioJour, n);
+
+    //Se crea el Bitmap de Inodos
+    BitMapInodo bmInodo[n];
+    BitMapInodo siguientes;
+
+        bmInodo[0].status = '1';
+        bmInodo[1].status = '1';
+        siguientes.status = '0';
+
+        for(int i =2; i<n;i++){
+            bmInodo[i]= siguientes;
+        }
+
+        Escribir_BitMapInodos(actual->ruta,bmInodo, SP.s_bm_inode_start, n);
+
+    BitMapBloque bmBloque[n*3];
+    BitMapBloque siguientesM;
+
+        bmBloque[0].status = '1';
+        bmBloque[1].status = '1';
+        siguientesM.status = '0';
+
+        for(int i=2; i<n*3;i++){
+            bmBloque[i] = siguientesM;
+        }
+
+        Escribir_BitMapBloques(actual->ruta, bmBloque, SP.s_bm_block_start, n*3);
+
+    // Se crean manualmente los primeros Inodos
+
+    //Como primer usuario el ROOT
+
+    Inodos userRoot;
+
+    for(int i =0; i <16; i++){
+        userRoot.i_block[i] = -1;
+    }
+
+    Inodos Predeterminado[2];
+
+    //Inodo Carpeta raiz
+    Predeterminado[0].i_uid = 1;
+    Predeterminado[0].I_gid = 1;
+    Predeterminado[0].i_atime = std::time(0);
+    Predeterminado[0].i_ctime = std::time(0);
+    Predeterminado[0].i_mtime = std::time(0);
+    Predeterminado[0].i_block[0] = 0;
+    Predeterminado[0].i_type = '0';
+    Predeterminado[0].i_perm = 664;
+
+    //Inodo Archivo Users
+    Predeterminado[1].i_uid = 1;
+    Predeterminado[1].I_gid = 1;
+    Predeterminado[1].i_atime = std::time(0);
+    Predeterminado[1].i_ctime = std::time(0);
+    Predeterminado[1].i_mtime = std::time(0);
+    Predeterminado[1].i_block[0] = 1;
+    Predeterminado[1].i_type = '1';
+    Predeterminado[1].i_perm = 700;
+
+    Escribir_Inodos(actual->ruta, Predeterminado, SP.s_inode_start, n);
+
+    // Se actualiza el primero Inodo Libre
+    SP.s_firts_ino = SP.s_firts_ino + 2 * sizeof(Inodos);
+
+    //Se crean manualmente los primeros Bloques
+
+    //Bloque Carpeta
+    BloqueCarpeta Carpeta;
+    Content contenidoCarpeta;
+    contenidoCarpeta.b_inodo = 1;
+    strcpy(contenidoCarpeta.b_name, "users.txt");
+
+    Carpeta.b_content[0] = contenidoCarpeta;
+    // Carpeta.b_content[1].b_inodo = -1;
+    // Carpeta.b_content[2].b_inodo = -1;
+    // Carpeta.b_content[3].b_inodo = -1;
+
+    Escribir_BloqueCarpeta(actual->ruta, Carpeta, SP.s_first_blo);
+
+    SP.s_first_blo = SP.s_first_blo + sizeof(BloqueCarpeta);
+
+    //Bloque Archivos
+    BloqueArchivos Archivo;
+    strcpy(Archivo.b_content, "1,G,root\n1,U,root,root,123\n");
+
+    Escribir_BloqueArchivo(actual->ruta, Archivo, SP.s_first_blo);
+
+    SP.s_first_blo = SP.s_first_blo + sizeof(BloqueArchivos);
+
+    //Se actualiza el SuperBloque
+    Actualizar_SuperBloque(actual->ruta, SP, actual->inicioparticion);
+
+    cout<<" "<<endl;
+    cout<<"*                Formato EXT3 creado con exito             *"<<endl;
+    cout<<" "<<endl;
+
 }
 
 
@@ -2901,7 +3047,7 @@ void Comando:: Escribir_Inodos(string path, Inodos inodo[], int inicio, int n){
             cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
             return;
         }
-        for(int i=0; i<1;i++){
+        for(int i=0; i<2;i++){
         fseek(escrituraInodo, inicio+i*(sizeof(Inodos)) , SEEK_SET);
         fwrite(&inodo[i], sizeof(inodo[i]), 1 , escrituraInodo);
         }
@@ -2938,12 +3084,39 @@ void Comando:: Escribir_BloqueArchivo(string path, BloqueArchivos Archivo, int i
         fclose(escrituraBArchivo);
 }
 
+void Comando:: Escribir_BloqueApuntadores(string path, BloqueApuntadores Apuntador, int inicio){
+    FILE *escrituraBApuntador;
+
+    if ((escrituraBApuntador = fopen(path.c_str(), "r+b")) == NULL){
+            cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
+            return;
+        }
+        for(int i=0; i<1;i++){
+        fseek(escrituraBApuntador, inicio , SEEK_SET);
+        fwrite(&Apuntador, sizeof(BloqueApuntadores), 1 , escrituraBApuntador);
+        }
+        fclose(escrituraBApuntador);
+}
+
+void Comando:: Escribir_Journaling(string path, Journaling jour[], int inicio, int n){
+    FILE *escribirJournaling;
+
+    if ((escribirJournaling = fopen(path.c_str(), "r+b")) == NULL){
+            cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
+            return;
+        }
+        for(int i=0; i<n;i++){
+        fseek(escribirJournaling, inicio + i * (sizeof(Journaling)), SEEK_SET);
+        fwrite(&jour[i], sizeof(Journaling), 1 , escribirJournaling);
+        }
+        fclose(escribirJournaling);
+}
 
 
 void Comando:: Actualizar_SuperBloque(string path, SuperBloque SP, int inicio){
     FILE *escribirSP;
 
-     if ((escribirSP = fopen(path.c_str(), "r+b")) == NULL){
+    if ((escribirSP = fopen(path.c_str(), "r+b")) == NULL){
             cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
             return;
         }
@@ -2953,6 +3126,125 @@ void Comando:: Actualizar_SuperBloque(string path, SuperBloque SP, int inicio){
         fclose(escribirSP);
 }
 
+
+void Comando:: comando_login(string user, string pass, string id){
+    nodoMount *actual = primeroMount;
+    string pathdisco = " ";
+    bool encontrado = false;
+
+    SuperBloque lectura;
+    FILE* discolectura;
+    string usuariostxt;
+    bool logeadoon = false;
+
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(actual->id == id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+
+            nodoLogin *verificaruser = loginregistrado;
+
+            if(verificaruser != NULL){
+                logeadoon = true;
+                cout<<"¡¡ Error !! Primero debe deslogearse de la otra sesion "<<endl;
+                return;
+            }
+            if(user == "root"){
+
+                
+
+                if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+                cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+            
+                } else {
+
+                    fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                    fread(&lectura, sizeof(SuperBloque), 1, discolectura);
+
+                    int pos2 = lectura.s_inode_start + sizeof(Inodos)  ;
+
+                    Inodos usuarios;
+                        fseek(discolectura, pos2 , SEEK_SET);
+                        fread(&usuarios, sizeof(usuarios), 1, discolectura);
+                        cout << "tipo sale de Inodo " << usuarios.i_type <<endl;
+                        cout << "Grupo sale de Inodo " << usuarios.I_gid <<endl;
+                        cout << "Usuario sale de Inodo " << usuarios.i_uid <<endl;
+                        cout << "Permiso sale de Inodo " << usuarios.i_perm <<endl;
+                    
+
+                    // Se busca al usuario en el archivo
+
+                    BloqueArchivos usuarioroot;
+
+                    int posArchivo = lectura.s_block_start + sizeof(BloqueArchivos);
+                    //int posArchivo = lectura.s_block_start + usuarios.i_block * sizeof(BloqueArchivos);
+
+                        fseek(discolectura, posArchivo, SEEK_SET);
+                        fread(&usuarioroot, sizeof(BloqueArchivos), 1 , discolectura);
+
+                        
+
+                        usuariostxt=usuarioroot.b_content;
+
+                        cout<<"Que sale en prueba "<<usuariostxt<<endl;
+                    fclose(discolectura);
+
+                    // Separando los datos 
+                    vector<string> separado;
+                    size_t poss = 0;
+                    string separador = ",";
+
+                    while((poss = usuariostxt.find(separador)) != string::npos){
+                        string palabra = usuariostxt.substr(0,poss);
+                        separado.push_back(palabra);
+                        usuariostxt.erase(0, poss + separador.length());
+                    }
+                    separado.push_back(usuariostxt);
+
+                    string userroot = separado[5];
+                    int passroot =  stoi(separado[6]);
+
+                    cout<<"Que sale ? "<<userroot<<endl;
+                    cout<<"que sale? "<<passroot<<endl;
+
+                    cout<<"que sale en pass "<<pass<<endl;
+                    int contra = stoi(pass);
+                    
+                    // if(contra == passroot){
+                    //     cout<<"Entra al de la contra"<<endl;
+                    // }
+
+                    if(user == userroot && contra == passroot){
+                        nodoLogin *usuarioactual = new nodoLogin();
+                        usuarioactual->usuario = userroot;
+                        if(loginregistrado == NULL){
+                            loginregistrado = usuarioactual;
+                            cout<<""<<endl;
+                            cout<<"*           Se ha iniciado sesion como usuario root        *"<<endl;
+                        }else{
+                            cout<<"¡¡ Error !! Ya hay un usuario logeado"<<endl;
+                        }
+                        //cout<<"Tiene que salir el login bien "<<endl;
+                        //return;
+                    }
+            }
+            break;
+        }
+        actual = actual->siguienteMontado;
+    }
+        }
+    }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
+    }
+}
 
 
 void Comando:: comando_rep(string namerep, string path, string id, string rutaa){
@@ -3699,11 +3991,5 @@ void Comando:: reporte_Sb(string nombresalida, string path, string id){
     cout << ""<<endl;
     cout << "*                 Reporte SuperBloque creado con exito                *" << endl;
     cout << ""<<endl;
-
-}
-
-
-void Comando:: comando_login(string user, string pass, string id){
-    
 
 }

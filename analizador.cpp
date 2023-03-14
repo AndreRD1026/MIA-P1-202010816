@@ -307,7 +307,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
                         // }
                     }
                     cout << " "<<endl;
-                    cout << "Script ejecutado con exito "<<endl;
+                    cout<<"*                 Script ejecutado con exito               *"<<endl;
                     cout << " "<<endl;
                 }                
             }else {

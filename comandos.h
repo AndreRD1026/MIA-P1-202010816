@@ -10,6 +10,7 @@
 #include <string>
 #include <string.h>
 #include "NodoMount.h"
+#include "NodoLogin.h"
 
 using namespace std;
 
@@ -88,10 +89,9 @@ typedef struct {
 typedef struct {
     char j_type;
     char j_name[16];
+    char j_destination[16];
     char j_content;
     time_t j_time;
-
-
 }Journaling;
 
 
@@ -143,10 +143,13 @@ class Comando{
         Parametros param;
         nodoMount *primeroMount;
         nodoMount *ultimoMount;
+        nodoLogin *loginregistrado;
         Comando(){
             primeroMount == NULL;
             ultimoMount == NULL;
+            loginregistrado == NULL;
         }
+        
         void identificacionCMD(Parametros p);
         void comando_mkdisk(string tam, string path, string ajuste, string dim);
         void comando_rmdisk(string path);
@@ -172,6 +175,8 @@ class Comando{
         void Escribir_Inodos(string path, Inodos inodo[] ,int inicio, int n);
         void Escribir_BloqueCarpeta(string path, BloqueCarpeta Carpeta, int inicio);
         void Escribir_BloqueArchivo(string path, BloqueArchivos Archivo, int inicio);
+        void Escribir_BloqueApuntadores(string path, BloqueApuntadores Apuntador, int inicio);
+        void Escribir_Journaling(string path, Journaling jour[], int inicio, int n);
         void Actualizar_SuperBloque(string path, SuperBloque SP, int inicio);
         void comando_login(string user, string pass, string id);
 
