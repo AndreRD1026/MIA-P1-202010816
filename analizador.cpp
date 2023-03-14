@@ -180,8 +180,9 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             }
         }
         cmd.identificacionCMD(cmd.param);
-    } else if (comando == "login"){
+    } else if (comando == "Login" || comando == "login"){
         cmd.param.Comando = "login";
+        transform(cmd.param.Comando.begin(), cmd.param.Comando.end(), cmd.param.Comando.begin(), ::tolower);
         for(int i=0; i<parametros.size(); i++){
             param = parametros.at(i);
             if(param.find(">user=") == 0){
@@ -198,7 +199,23 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             }
         }
         cmd.identificacionCMD(cmd.param);
-    }
+    } else if (comando == "Logout" || comando == "logout"){
+        cmd.param.Comando = "logout";
+        transform(cmd.param.Comando.begin(), cmd.param.Comando.end(), cmd.param.Comando.begin(), ::tolower);
+        cmd.identificacionCMD(cmd.param);
+    } else if (comando == "mkgrp"){
+        cmd.param.Comando = "mkgrp";
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">name=") == 0){
+                param = replace_txt(param, ">name=", "");
+                cmd.param.Name = param;
+            }else {
+                cout<<"Un parametro es incorrecto"<<endl;
+            }
+        }
+        cmd.identificacionCMD(cmd.param);
+    } 
     
     
     

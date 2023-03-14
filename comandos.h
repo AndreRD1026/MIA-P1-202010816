@@ -149,7 +149,7 @@ class Comando{
             ultimoMount == NULL;
             loginregistrado == NULL;
         }
-        
+
         void identificacionCMD(Parametros p);
         void comando_mkdisk(string tam, string path, string ajuste, string dim);
         void comando_rmdisk(string path);
@@ -179,6 +179,8 @@ class Comando{
         void Escribir_Journaling(string path, Journaling jour[], int inicio, int n);
         void Actualizar_SuperBloque(string path, SuperBloque SP, int inicio);
         void comando_login(string user, string pass, string id);
+        void comando_logout();
+        void comando_mkgrp(string name);
 
         void comando_rep(string name, string path, string id, string ruta);
         void reporte_mbr(string nombresalida, string path, string id);

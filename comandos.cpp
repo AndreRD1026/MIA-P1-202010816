@@ -40,13 +40,21 @@ void Comando::identificacionCMD(Parametros p){
         if(p.ID != " "){ // Se validan los parametros para el comando
             comando_mkfs(p.ID, p.Type, p.Fs);
         }else{
-            cout << "Error para desmontar el Disco: Parametros obligatorios no definidos " << endl;
+            cout << "Error para formatear la particion: Parametros obligatorios no definidos " << endl;
         }
     }else if(p.Comando=="login"){ // Se identifica el tipo de comando
         if(p.User != " " && p.Pass != " " && p.ID != " "){ // Se validan los parametros para el comando
             comando_login(p.User,p.Pass,p.ID);
         }else{
-            cout << "Error para desmontar el Disco: Parametros obligatorios no definidos " << endl;
+            cout << "Error para Iniciar sesion : Parametros obligatorios no definidos " << endl;
+        }
+    }else if(p.Comando=="logout"){ // Se identifica el tipo de comando
+            comando_logout();
+    }else if(p.Comando=="mkgrp"){ // Se identifica el tipo de comando
+        if(p.Name != " "){ // Se validan los parametros para el comando
+            comando_mkgrp(p.Name);
+        }else{
+            cout << "Error para crear un grupo:  Parametros obligatorios no definidos " << endl;
         }
     }
     
@@ -3151,7 +3159,7 @@ void Comando:: comando_login(string user, string pass, string id){
 
             if(verificaruser != NULL){
                 logeadoon = true;
-                cout<<"¡¡ Error !! Primero debe deslogearse de la otra sesion "<<endl;
+                cout<<"¡¡ Error !! Primero debe cerrar sesion "<<endl;
                 return;
             }
             if(user == "root"){
@@ -3243,6 +3251,33 @@ void Comando:: comando_login(string user, string pass, string id){
     if(!encontrado){
     cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
     return;
+    }
+}
+
+void Comando:: comando_logout(){
+    nodoLogin *verificarlogin = loginregistrado;
+
+    if(verificarlogin == NULL){
+        cout<<"¡¡ Error !! No hay ningun usuario con la sesion iniciada"<<endl;
+        return;
+    }else{
+        delete loginregistrado;
+        loginregistrado = NULL;
+        cout<<"*            Se ha cerrado sesion correctamente             *"<<endl;
+    }
+}
+
+void Comando:: comando_mkgrp(string name){
+    nodoLogin *verififcarlogin = loginregistrado;
+    if(verififcarlogin == NULL){
+        cout<<"¡¡ Error !! Primero debe iniciar sesion como usuario root"<<endl;
+        return;
+    }else{
+        if(verififcarlogin->usuario == "root"){
+            cout<<"Si es root"<<endl;
+        }else{
+            cout<<"¡¡ Error !! Este comando solo lo puede ejecutar el usuario root"<<endl;
+        }
     }
 }
 
