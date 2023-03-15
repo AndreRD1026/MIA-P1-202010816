@@ -185,6 +185,9 @@ class Comando{
         void comando_rep(string name, string path, string id, string ruta);
         void reporte_mbr(string nombresalida, string path, string id);
         void reporte_disk(string nombresalida, string path, string id);
+
+        void reporte_bm_inode(string nombresalida, string path, string id);
+        void reporte_bm_bloc(string nombresalida, string path, string id);
         void reporte_Sb(string nombresalida, string path, string id);
         
 };

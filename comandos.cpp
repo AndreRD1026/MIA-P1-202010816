@@ -158,21 +158,21 @@ void Comando::comando_mkdisk(string tam, string path, string ajuste, string dim)
             disco.mbr_dsk_signature = signature;
             disco.mbr_fecha_creacion = std::time(0);
 
-            if (ajuste == " ")
+            if (ajuste == " " || ajuste == "wf")
             {
-                ajuste = "w";
+                ajuste = "WF";
             }
-            else if (ajuste == "b")
+            else if (ajuste == "bf")
             {
-                ajuste = "b";
+                ajuste = "BF";
             }
-            else if (ajuste == "f")
+            else if (ajuste == "ff")
             {
-                ajuste = "f";
+                ajuste = "FF";
             }
             else
             {
-                cout << "¡¡ Error !! El ajuste de particiones solo puede ser: B, F, W " << endl;
+                cout << "¡¡ Error !! El ajuste de particiones solo puede ser: BF, FF, WF " << endl;
                 return;
             }
 
@@ -319,14 +319,14 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
         }
 
         if(fit != " "){
-            if(fit == "B" || fit == "b"){
-                ajuste = "B";
-            } else if(fit == "F" || fit == "f"){
-                ajuste = "F";
-            } else if(fit == "W" || fit == "w"){
-                ajuste = "W";
+            if(fit == "BF" || fit == "bf"){
+                ajuste = "BF";
+            } else if(fit == "FF" || fit == "ff"){
+                ajuste = "FF";
+            } else if(fit == "WF" || fit == "wf"){
+                ajuste = "WF";
             } else {
-                cout<<"¡¡ Error !! El ajuste solo puede ser: B , F, W "<<endl;
+                cout<<"¡¡ Error !! El ajuste solo puede ser: BF , FF, WF "<<endl;
                 return;
             }
         } else {
@@ -367,10 +367,10 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
         for (int i = 0; i < 4; i++) {
             pruebaa=particion[i].part_name;
             otroo = particion[i].part_status;
-            cout<<"Nombre? "<<pruebaa<<endl;
-            cout<<"Estatus "<<otroo<<endl;
-            cout<<"Tipo "<<particion[i].part_type<<endl;
-            cout<<"Tamanio "<<particion[i].part_s<<endl;
+            // cout<<"Nombre? "<<pruebaa<<endl;
+            // cout<<"Estatus "<<otroo<<endl;
+            // cout<<"Tipo "<<particion[i].part_type<<endl;
+            // cout<<"Tamanio "<<particion[i].part_s<<endl;
             }
 
         string nombreparticion = "";
@@ -399,16 +399,16 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
             existetipo = particion[i].part_type;
             if(existetipo != "P" || existetipo != "E"){
                 if(particion[0].part_type == 'P' || particion[0].part_type == 'E'){
-                    cout<<"Entra 1 "<<endl;
+                    //cout<<"Entra 1 "<<endl;
                     disco.mbr_partition_1.part_status = '1';
                 }if(particion[1].part_type == 'P' || particion[1].part_type == 'E'){
-                    cout<<"Entra 2 "<<endl;
+                    //cout<<"Entra 2 "<<endl;
                     disco.mbr_partition_2.part_status = '1';
                 }if(particion[2].part_type == 'P' || particion[2].part_type == 'E'){
-                    cout<<"Entra 3 "<<endl;
+                    //cout<<"Entra 3 "<<endl;
                     disco.mbr_partition_3.part_status = '1';
                 }if(particion[3].part_type == 'P' || particion[3].part_type == 'E'){
-                    cout<<"Entra 4 "<<endl;
+                    //cout<<"Entra 4 "<<endl;
                     disco.mbr_partition_4.part_status = '1';
                 }
             }
@@ -2775,6 +2775,8 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
         SP.s_inode_start = SP.s_firts_ino; // Es el primer Inodo libre
         SP.s_block_start = SP.s_inode_start + n *sizeof(Inodos); // Es el primer Bloque libre
 
+        cout<<"A donde va "<<actual->ruta<<endl;
+
         Escribir_SuperBloque(actual->ruta, SP, actual->inicioparticion);
 
     //Se crea el Bitmap de Inodos
@@ -3306,6 +3308,14 @@ void Comando:: comando_rep(string namerep, string path, string id, string rutaa)
             reporte_disk(extension,path, id);
         }
 
+
+
+        else if(namerep == "bm_inode"){
+            reporte_bm_inode(extension,path, id);
+        }else if(namerep == "bm_bloc"){
+            reporte_bm_bloc(extension,path, id);
+        }
+
         else if(namerep == "sp"){
             reporte_Sb(extension,path, id);
         }
@@ -3774,13 +3784,17 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
             }
             break;
         }
-        actual = actual->siguienteMontado;
+        
+    }
+    actual = actual->siguienteMontado;
+    
     }
     if(!encontrado){
     cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
     return;
     }
     }
+    
     dot = dot + "</table>\n";
     dot = dot + ">];\n";
     dot = dot + "}";
@@ -3799,16 +3813,6 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
     cout << ""<<endl;
     cout << "*                 Reporte MRB creado con exito                *" << endl;
     cout << ""<<endl;
-
-    cout <<"*  ¿ Desea abrir el reporte automaticamente ? (Y/N) "<<endl;
-    getline(cin,confirmacion);
-    if(confirmacion=="y"||confirmacion=="Y"){
-        string abrirreporte = rutap + nombresalida + ".png";
-        system(abrirreporte.c_str());
-    }else{
-        cout << " " << endl;
-    }
-}
 }
 
 /* 
@@ -3835,7 +3839,7 @@ void Comando:: reporte_disk(string nombresalida, string path, string id){
         return;
     }else{
         while(actual != NULL){
-        if(actual->id == id){
+        if(id == actual->id){
             encontrado = true;
             pathdisco = actual->ruta;
             
@@ -3902,14 +3906,16 @@ void Comando:: reporte_disk(string nombresalida, string path, string id){
 
             break;
         }
-        actual = actual->siguienteMontado;
+        
     }
+    actual = actual->siguienteMontado;
+        }
+        if(!encontrado){
+        cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+        return;
         }
     }
-    if(!encontrado){
-    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
-    return;
-    }
+    
     dot = dot + "</tr>\n";  
     dot = dot + "</table>\n";
     dot = dot +  ">];\n";
@@ -3928,6 +3934,168 @@ void Comando:: reporte_disk(string nombresalida, string path, string id){
     cout << "*                 Reporte Disk creado con exito                *" << endl;
     cout << ""<<endl;
 
+}
+
+
+
+
+
+
+
+void Comando:: reporte_bm_bloc(string nombresalida, string path, string id){
+    nodoMount *actual = primeroMount;
+    string pathdisco = " ";
+    bool encontrado = false;
+
+    FILE* discolectura;
+
+    string rutap = "" ;
+    int inicio = 0;
+    int fin = path.find("/");
+    string delimitador = "/";
+
+    while (fin != -1)
+    {
+        rutap += path.substr(inicio, fin - inicio);
+        rutap += "/";
+        inicio = fin + delimitador.size();
+        fin = path.find("/", inicio);
+    }
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(id == actual->id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+            
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+            } else {
+                SuperBloque reporte;
+                fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                fread(&reporte, sizeof (SuperBloque), 1, discolectura);
+                
+                int n = reporte.s_blocks_count;
+                char bitmap[n];
+
+                
+                    fseek(discolectura, reporte.s_bm_block_start, SEEK_SET);
+                    fread(&bitmap, n, 1, discolectura);
+                    fclose(discolectura);
+
+                string salidabloques;
+
+                for(int i = 0; i<n;i++){
+                    if(i%20==0){
+                        salidabloques+=" \n";
+                    }
+                    salidabloques+=bitmap[i];
+                    salidabloques+="  ";
+                }
+
+                ofstream file;
+                string nombrearch = rutap + nombresalida + ".txt";
+                file.open(nombrearch);
+                file << salidabloques.c_str();
+                file.close();
+                cout << ""<<endl;
+                cout << "*                  Reporte BM_Bloc creado con exito                *" << endl;
+                cout << ""<<endl;
+
+            break;
+        }
+        
+    }
+    actual = actual->siguienteMontado;
+        }
+        if(!encontrado){
+        cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+        return;
+        } 
+    }
+}
+
+void Comando:: reporte_bm_inode(string nombresalida, string path, string id){
+    nodoMount *actual = primeroMount;
+    string pathdisco = " ";
+    bool encontrado = false;
+
+    FILE* discolectura;
+
+    string rutap = "" ;
+    int inicio = 0;
+    int fin = path.find("/");
+    string delimitador = "/";
+
+    while (fin != -1)
+    {
+        rutap += path.substr(inicio, fin - inicio);
+        rutap += "/";
+        inicio = fin + delimitador.size();
+        fin = path.find("/", inicio);
+    }
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(id == actual->id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+            
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+            } else {
+                SuperBloque reporte;
+                fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                fread(&reporte, sizeof (SuperBloque), 1, discolectura);
+                
+                int n = reporte.s_inodes_count;
+                char bitmap[n];
+
+                
+                    fseek(discolectura, reporte.s_bm_inode_start, SEEK_SET);
+                    fread(&bitmap, n, 1, discolectura);
+                    fclose(discolectura);
+
+                string salidainodos;
+
+                for(int i = 0; i<n;i++){
+                    if(i%20==0){
+                        salidainodos+=" \n";
+                    }
+                    salidainodos+=bitmap[i];
+                    salidainodos+="  ";
+                }
+
+                ofstream file;
+                string nombrearch = rutap + nombresalida + ".txt";
+                file.open(nombrearch);
+                file << salidainodos.c_str();
+                file.close();
+                cout << ""<<endl;
+                cout << "*                 Reporte BM_Inode creado con exito               *" << endl;
+                cout << ""<<endl;
+
+            break;
+        }
+        
+    }
+    actual = actual->siguienteMontado;
+        }
+        if(!encontrado){
+        cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+        return;
+    }
+    }
 }
 
 
@@ -3955,7 +4123,25 @@ void Comando:: reporte_Sb(string nombresalida, string path, string id){
         inicio = fin + delimitador.size();
         fin = path.find("/", inicio);
     }
+
+    //cout<<"que sale en ID "<<id<<endl;
+
+    string ruta2 = " ";
+        int inicio2 = 0;
+        int fin2 = actual->ruta.find("/");
+        string delimitador2 = "/";
+
+        while (fin2 != -1)
+        {
+            ruta2 += actual->ruta.substr(inicio, fin - inicio2);
+            ruta2 += "/";
+            inicio2 = fin2 + delimitador2.size();
+            fin2 = actual->ruta.find("/", inicio2);
+        }
+        string name2 = actual->ruta.substr(actual->ruta.find_last_of("/") + 1);
+        string extension2 = name2.substr(0, name2.find("."));
     
+    cout<<"Que sale de nombre? "<<extension2<<endl;
 
     if(actual == NULL){
         cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
@@ -4000,16 +4186,18 @@ void Comando:: reporte_Sb(string nombresalida, string path, string id){
                 dot = dot +  "<tr><td bgcolor=\"forestgreen\" port='inodestart'>s_inode_start</td><td bgcolor=\"forestgreen\" port='siz10'>" + to_string(reporte.s_inode_start) +"</td></tr>\n";
                 dot = dot +  "<tr><td port='blockstart'>s_block_start</td><td port='siz9'>" + to_string(reporte.s_block_start) +"</td></tr>\n";
 
-            break;
+            break;  
         }
-        actual = actual->siguienteMontado;
+        
     }
+    actual = actual->siguienteMontado;    
         }
-    }
     if(!encontrado){
     cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
     return;
     } 
+    }
+    
     dot = dot + "</table>\n";
     dot = dot +  ">];\n";
     dot = dot +  "}\n";

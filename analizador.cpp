@@ -6,7 +6,7 @@ vector<string> Analizador::split_txt(string text){ // Split para separar tipo de
     vector<string> splited;
 
     while(std::getline(text_to_split, segment, ' ')){
-        splited.push_back(segment);
+            splited.push_back(segment);
     }
     return splited;
 }
@@ -25,9 +25,11 @@ void Analizador::analizar(string entrada){
     vector<string> cmdentrada = split_txt(entradacmd);
     vector<string> parametros;
     string comando = "";
+    
     for(int i = 0; i< cmdentrada.size(); i++){
         if(i == 0){
             comando = cmdentrada.at(i);
+            
         }else{
             parametros.push_back(cmdentrada.at(i));
         }
@@ -48,18 +50,6 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
                 cmd.param.Size = param;
             } else if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
-                param = replace_txt(param, "\"", "");
-                //string nuevo = param;
-
-                //cout<< "que sale? "<<nuevo<<endl;
-
-                // if (param.substr(0, 1) == "\"") {
-                //     cout << "La cadena comienza con comillas dobles." << endl;
-                //     string ruta = nuevo.substr(1, nuevo.length() - 2);
-                //     cout << "Y ahora? "<<ruta<<endl;
-                // } else {
-                //     cout << "La cadena no comienza con comillas dobles." << endl;
-                // }
                 cmd.param.Path = param;
             } else if(param.find(">fit=") == 0){
                 param = replace_txt(param, ">fit=", "");
@@ -221,7 +211,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
     
 
     
-     else if (comando == "rep"){
+    else if (comando == "rep"){
         cmd.param.Comando = "rep";
         for(int i=0; i<parametros.size(); i++){
             param = parametros.at(i);
@@ -283,49 +273,44 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
                     ifstream archivolectura(param);
                     string lineacomando = "";
                     while (getline(archivolectura, lineacomando)){
-                        size_t encontrarcomentario = lineacomando.find('#');
-                        if (encontrarcomentario != std::string::npos){
-                            if(encontrarcomentario == 0){
-                                string comentario = lineacomando.substr(encontrarcomentario +1);
-                                cout<<"Comentario - "<<comentario<<endl;
-                            }else{
-                                string comandoantes = lineacomando.substr(0, encontrarcomentario);
-                                if(comandoantes.empty()){
-                                    string comentario = lineacomando.substr(encontrarcomentario +1);
-                                    cout<<"Comentario - "<<comentario<<endl;
+                        //Si la linea a leer no esta vacia
+                        if(!lineacomando.empty()){
+                            size_t encontrar = lineacomando.find("#");
+                                if(encontrar != string::npos){
+                                    if(encontrar>0){
+                                        // Entra aqui cuando hay un comando antes del comentario
+                                        string nuevocomando = lineacomando.substr(0, encontrar);
+                                        string comenta = lineacomando.substr(encontrar + 1);
+                                        cout << "*----------------------------------------------------------*" << endl;
+                                        cout << "*                      [MIA] Proyecto 1                    *" << endl;
+                                        cout << "*           Cesar Andre Ramirez Davila 202010816           *"<<endl;
+                                        cout << "*----------------------------------------------------------*" << endl;
+                                        cout << "Ejecutando el comando - " <<nuevocomando<<endl;
+                                        analizar(nuevocomando);
+                                        cout<<" "<<endl;
+                                        cout<<"Comentario encontrado -> "<<comenta<<endl;
+                                        cout<<" "<<endl;
+                                    }else{
+                                        // Entra aqui cuando la linea analizada unicamente tiene un comentario
+                                        string coment = lineacomando.substr(encontrar + 1);
+                                        cout<<" "<<endl;
+                                        cout<<"Comentario encontrado -> "<<coment<<endl;
+                                        cout<<" "<<endl;
+                                    }
                                 }else{
+                                    // Entra aqui cuando no existe algun comentario en la linea analizada
                                     cout << "*----------------------------------------------------------*" << endl;
                                     cout << "*                      [MIA] Proyecto 1                    *" << endl;
                                     cout << "*           Cesar Andre Ramirez Davila 202010816           *"<<endl;
                                     cout << "*----------------------------------------------------------*" << endl;
                                     cout << "Ejecutando el comando - " <<lineacomando<<endl;
-                                    analizar(comandoantes);
+                                    analizar(lineacomando);
                                 }
                             }
-                            string comentario = lineacomando.substr(encontrarcomentario +1);
-                            cout<<"Comentario - "<<comentario<<endl;
-                        }else{
-                            cout << "*----------------------------------------------------------*" << endl;
-                            cout << "*                      [MIA] Proyecto 1                    *" << endl;
-                            cout << "*           Cesar Andre Ramirez Davila 202010816           *"<<endl;
-                            cout << "*----------------------------------------------------------*" << endl;
-                            cout << "Ejecutando el comando - " <<lineacomando<<endl;
-                            analizar(lineacomando);
                         }
-                        // if(lineacomando.find("#") == 0){
-                        //     cout<<"Comentario - "<<lineacomando<<endl;
-                        // }else{
-                        //     cout << "*----------------------------------------------------------*" << endl;
-                        //     cout << "*                      [MIA] Proyecto 1                    *" << endl;
-                        //     cout << "*           Cesar Andre Ramirez Davila 202010816           *"<<endl;
-                        //     cout << "*----------------------------------------------------------*" << endl;
-                        //     cout << "Ejecutando el comando - " <<lineacomando<<endl;
-                        //     analizar(lineacomando);
-                        // }
-                    }
-                    cout << " "<<endl;
-                    cout<<"*                 Script ejecutado con exito               *"<<endl;
-                    cout << " "<<endl;
+                        cout << " "<<endl;
+                        cout<<"*                 Script ejecutado con exito               *"<<endl;
+                        cout << " "<<endl;                        
                 }                
             }else {
                 cout<<"Un parametro es incorrecto"<<endl;
