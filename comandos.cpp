@@ -2479,7 +2479,24 @@ void Comando:: comando_mount(string path, string name){
 }
 
 void Comando:: montado(string id, string path, string nombreparticion, string tipoparticion, int inicioparticion ,int tamaniopart){
+    nodoMount* tmp = primeroMount;
+    while (tmp != NULL) {
+        if (tmp->id == id) {
+            tmp->status = "1";
+            tmp->vecesmontada++;
+            tmp->horamontado = std::time(0);
+            cout << "" << endl;
+            cout << "*                 Particion montada con exito                *" << endl;
+            cout << "" << endl;
+            verlista();
+            return;
+        }
+        tmp = tmp->siguienteMontado;
+    }
+
+
     nodoMount *nuevomontaje = new nodoMount();
+    nuevomontaje->status = "1";
     nuevomontaje->id = id;
     nuevomontaje->ruta = path;
     nuevomontaje->nombreparticion = nombreparticion;
@@ -2487,16 +2504,19 @@ void Comando:: montado(string id, string path, string nombreparticion, string ti
     nuevomontaje->inicioparticion = inicioparticion;
     nuevomontaje->tamanioparticion = tamaniopart;
     nuevomontaje->horamontado = std::time(0);
+    nuevomontaje->vecesmontada++;
 
     if(primeroMount ==NULL){
         primeroMount = nuevomontaje;
         primeroMount->siguienteMontado = NULL;
         ultimoMount = primeroMount;
     }else{
+
         ultimoMount->siguienteMontado = nuevomontaje;
         nuevomontaje->siguienteMontado = NULL;
         ultimoMount = nuevomontaje;
     }
+    
     cout << "" << endl;
     cout << "*                 Particion montada con exito                *" << endl;
     cout << "" << endl;
@@ -2590,72 +2610,43 @@ void Comando:: comando_unmount(string id){
 }
 
 void Comando:: desmontado(string id){
-    nodoMount *actual = primeroMount;
-    nodoMount *anterior = NULL;
-
-if (primeroMount == ultimoMount) {
-    if (primeroMount == NULL) {
-        cout << "¡¡ Error !! No hay ninguna particion montada" << endl;
-        return;
-    } else {
-        delete primeroMount;
-        primeroMount = NULL;
-        ultimoMount = NULL;
-        cout << "" << endl;
-        cout << "*                 Particion desmontada con exito                *" << endl;
-        cout << "" << endl;
-    }
-} else {
-    while (actual != NULL) {
-        if (actual->id == id) {
-            if (anterior == NULL) {
-                // si el nodo a eliminar es el primero de la lista
-                primeroMount = actual->siguienteMontado;
-                if (primeroMount != NULL) {
-                    primeroMount->anteriorMontado = NULL;
-                } else {
-                    ultimoMount = NULL;
-                }
-            } else if (actual->siguienteMontado == NULL) {
-                // si el nodo a eliminar es el último de la lista
-                anterior->siguienteMontado = NULL;
-                ultimoMount = anterior;
-            } else {
-                // si el nodo a eliminar no es ni el primero ni el último de la lista
-                anterior->siguienteMontado = actual->siguienteMontado;
-                actual->siguienteMontado->anteriorMontado = anterior;
-            }
-            delete actual;
-            break;
+    nodoMount* tmp = primeroMount;
+    while (tmp != NULL) {
+        if (tmp->id == id) {
+            tmp->status = "0";
+            tmp->horamontado = std::time(0);
+            cout << "" << endl;
+            cout << "*                 Particion desmontada con exito                *" << endl;
+            cout << "" << endl;
+            return;
         }
-        anterior = actual;
-        actual = actual->siguienteMontado;
+        tmp = tmp->siguienteMontado;
     }
-
-    if (actual == NULL) {
-        cout << "¡¡ Error !! No hay ninguna particion montada" << endl;
-    }
-        cout << "" << endl;
-        cout << "*                 Particion desmontada con exito                *" << endl;
-        cout << "" << endl;
-}
 }
 
 void Comando:: verlista(){
     string h;
     string hora;
     nodoMount *actualmount = primeroMount;
+    bool encontraractiva = false;
     if(primeroMount!=NULL){
         cout<<"Particiones montadas actualmente "<<endl;
-        cout <<"| ID " <<setw(15) <<"|" << "| Fecha y hora "<<setw(15) << "|"<<endl;
-        //cout<<"Hora? "<<std::ctime(&primeroMount->horamontado);
         h = std::ctime(&primeroMount->horamontado);
 
         while (actualmount!=NULL)
         {
-            cout<<"| "<<actualmount->id<<setw(4)<<"|" << "| "<< ctime(&actualmount->horamontado) << " |"<<endl;
+            if(actualmount->status == "1"){
+                cout <<"| ID " <<setw(15) <<"|" << "| Fecha y hora "<<setw(15) << "|"<<endl;
+                cout<<"| "<<actualmount->id<<setw(4)<<"|" << "| "<< ctime(&actualmount->horamontado) << " |"<<endl;
+                encontraractiva = true;
+            }
             actualmount = actualmount->siguienteMontado;
         }
+        if(!encontraractiva){
+            cout<<"| No ha montado ninguna una particion |"<<endl;
+            cout<<" "<<endl;
+        }
+        
         }else{
             cout<<""<<endl;
             cout<<"Particiones montadas actualmente "<<endl;
@@ -2764,7 +2755,7 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
         SP.s_free_inodes_count = n-2;
         SP.s_mtime = (actual->horamontado);
         SP.s_umtime = (actual->horamontado);
-        SP.s_mnt_count = 1;
+        SP.s_mnt_count = actual->vecesmontada;
         SP.s_magic = 0XEF53;
         SP.s_inode_s = sizeof(Inodos); 
         SP.s_block_s = sizeof(BloqueCarpeta);
@@ -2774,8 +2765,6 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
         SP.s_bm_block_start = SP.s_bm_inode_start + n; // Es la suma de donde empieza el BitmapInodos + tamaño de Inodos
         SP.s_inode_start = SP.s_firts_ino; // Es el primer Inodo libre
         SP.s_block_start = SP.s_inode_start + n *sizeof(Inodos); // Es el primer Bloque libre
-
-        cout<<"A donde va "<<actual->ruta<<endl;
 
         Escribir_SuperBloque(actual->ruta, SP, actual->inicioparticion);
 
@@ -3306,6 +3295,10 @@ void Comando:: comando_rep(string namerep, string path, string id, string rutaa)
             reporte_mbr(extension, path, id);
         }else if(namerep == "disk"){
             reporte_disk(extension,path, id);
+        }
+
+        else if(namerep == "journaling"){
+            reporte_journaling(extension,path, id);
         }
 
 
@@ -3989,14 +3982,14 @@ void Comando:: reporte_bm_bloc(string nombresalida, string path, string id){
                     fclose(discolectura);
 
                 string salidabloques;
-
-                for(int i = 0; i<n;i++){
-                    if(i%20==0){
-                        salidabloques+=" \n";
-                    }
-                    salidabloques+=bitmap[i];
-                    salidabloques+="  ";
+                for(int i = 0; i < n; i++) {
+                if(i % 20 == 0 && i > 0) {  // Verificamos que i sea mayor a cero para evitar una nueva línea en blanco al inicio.
+                    salidabloques += "\n";
                 }
+                salidabloques += " ";
+                salidabloques += bitmap[i];
+                salidabloques += " ";
+                }   
 
                 ofstream file;
                 string nombrearch = rutap + nombresalida + ".txt";
@@ -4067,13 +4060,13 @@ void Comando:: reporte_bm_inode(string nombresalida, string path, string id){
                     fclose(discolectura);
 
                 string salidainodos;
-
                 for(int i = 0; i<n;i++){
-                    if(i%20==0){
+                    if(i%20==0 && i > 0){ // Verificamos que i sea mayor a cero para evitar una nueva línea en blanco al inicio.
                         salidainodos+=" \n";
                     }
-                    salidainodos+=bitmap[i];
-                    salidainodos+="  ";
+                    salidainodos += " ";
+                    salidainodos += bitmap[i];
+                    salidainodos += "  ";
                 }
 
                 ofstream file;
@@ -4096,6 +4089,139 @@ void Comando:: reporte_bm_inode(string nombresalida, string path, string id){
         return;
     }
     }
+}
+
+
+
+void Comando:: reporte_journaling(string nombresalida, string path, string id){
+    nodoMount *actual = primeroMount;
+    string pathdisco = " ";
+    int tamanoMBR;
+    int dskmbr;
+    string dot = "";
+    string nombredisco = "";
+    bool encontrado = false;
+
+    MBR lectura;
+    FILE* discolectura;
+
+    string rutap = "" ;
+    int inicio = 0;
+    int fin = path.find("/");
+    string delimitador = "/";
+
+    while (fin != -1)
+    {
+        rutap += path.substr(inicio, fin - inicio);
+        rutap += "/";
+        inicio = fin + delimitador.size();
+        fin = path.find("/", inicio);
+    }
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(actual->id == id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+            
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+            } else {
+                SuperBloque reporte;
+                fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                fread(&reporte, sizeof (SuperBloque), 1, discolectura);
+                fclose(discolectura);
+
+                string ruta2 = " ";
+                int inicio2 = 0;
+                int fin2 = actual->ruta.find("/");
+                string delimitador2 = "/";
+
+                while (fin2 != -1)
+                {
+                    ruta2 += actual->ruta.substr(inicio, fin - inicio2);
+                    ruta2 += "/";
+                    inicio2 = fin2 + delimitador2.size();
+                    fin2 = actual->ruta.find("/", inicio2);
+                }
+                string extension = actual->ruta.substr(actual->ruta.find_last_of("/") + 1);
+                string nombreedisco = extension.substr(0, extension.find("."));
+
+                if(reporte.s_filesystem_type == 2){
+                    cout<<"¡¡ Error !! La particion debe tener un formato EXT3 para generar este reporte"<<endl;
+                    return;
+                }else{
+
+                    dot = dot + "digraph G {\n";
+                    dot = dot + "labelloc=\"t\"\n";
+                    dot = dot + "label=\"" + nombreedisco + ".dsk\"\n";
+                    dot = dot + "parent [\n";
+                    dot = dot + "shape=plaintext\n";
+                    dot = dot + "label=<\n";
+                    dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
+
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue\" colspan=\"3\">REPORTE DE JORUNALING</td></tr>";
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue\" colspan=\"3\">ACCION</td></tr>";
+                    dot = dot + "<tr><td port='type'>j_type</td><td port='siz1'>Creacion Carpeta</td></tr>";
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='name'>j_name</td><td bgcolor=\"deepskyblue3\" port='siz17'> / </td></tr>";
+                    dot = dot + "<tr><td port='destination'>j_destination</td><td port='siz2'></td></tr>";
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='freeblocks'>j_content</td><td bgcolor=\"deepskyblue3\" port='siz16'></td></tr>";
+                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>Wed Mar 15 12:00:23 2023</td></tr>";
+
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue\" colspan=\"3\">ACCION</td></tr>";
+                    dot = dot + "<tr><td port='type'>j_type</td><td port='siz1'>Creacion Archivo</td></tr>";
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='name'>j_name</td><td bgcolor=\"deepskyblue3\" port='siz17'>Usuarios.txt</td></tr>";
+                    dot = dot + "<tr><td port='destination'>j_destination</td><td port='siz2'></td></tr>";
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='freeblocks'>j_content</td><td bgcolor=\"deepskyblue3\" port='siz16'></td></tr>";
+                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>Wed Mar 15 12:00:23 2023</td></tr>";
+
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue\" colspan=\"3\">ACCION</td></tr>";
+                    dot = dot + "<tr><td port='type'>j_type</td><td port='siz1'>Creacion Grupo</td></tr>";
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='name'>j_name</td><td bgcolor=\"deepskyblue3\" port='siz17'> root </td></tr>";
+                    dot = dot + "<tr><td port='destination'>j_destination</td><td port='siz2'>Usuarios.txt</td></tr>";
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='freeblocks'>j_content</td><td bgcolor=\"deepskyblue3\" port='siz16'>1,G,root</td></tr>";
+                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>Wed Mar 15 12:00:23 2023</td></tr>";
+
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue\" colspan=\"3\">ACCION</td></tr>";
+                    dot = dot + "<tr><td port='type'>j_type</td><td port='siz1'>Creacion Usuario</td></tr>";
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='name'>j_name</td><td bgcolor=\"deepskyblue3\" port='siz17'> root </td></tr>";
+                    dot = dot + "<tr><td port='destination'>j_destination</td><td port='siz2'>Usuarios.txt</td></tr>";
+                    dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='freeblocks'>j_content</td><td bgcolor=\"deepskyblue3\" port='siz16'>1,U,root,root,123</td></tr>";
+                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>Wed Mar 15 12:00:23 2023</td></tr>";
+
+                }
+            break;  
+        }   
+    }
+    actual = actual->siguienteMontado;    
+        }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
+    } 
+    }
+    
+    dot = dot + "</table>\n";
+    dot = dot +  ">];\n";
+    dot = dot +  "}\n";
+    ofstream file;
+    file.open("ReporteJour.dot");
+    file << dot;
+    file.close();
+
+    string crear = "mkdir -p " + rutap;
+    system(crear.c_str());
+    string salida = "dot -Tpng ReporteJour.dot -o " + rutap + nombresalida + ".png";
+    system(salida.c_str());
+
+    cout << ""<<endl;
+    cout << "*                 Reporte Journaling creado con exito                *" << endl;
+    cout << ""<<endl;
 }
 
 
@@ -4124,25 +4250,6 @@ void Comando:: reporte_Sb(string nombresalida, string path, string id){
         fin = path.find("/", inicio);
     }
 
-    //cout<<"que sale en ID "<<id<<endl;
-
-    string ruta2 = " ";
-        int inicio2 = 0;
-        int fin2 = actual->ruta.find("/");
-        string delimitador2 = "/";
-
-        while (fin2 != -1)
-        {
-            ruta2 += actual->ruta.substr(inicio, fin - inicio2);
-            ruta2 += "/";
-            inicio2 = fin2 + delimitador2.size();
-            fin2 = actual->ruta.find("/", inicio2);
-        }
-        string name2 = actual->ruta.substr(actual->ruta.find_last_of("/") + 1);
-        string extension2 = name2.substr(0, name2.find("."));
-    
-    cout<<"Que sale de nombre? "<<extension2<<endl;
-
     if(actual == NULL){
         cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
         return;
@@ -4162,7 +4269,24 @@ void Comando:: reporte_Sb(string nombresalida, string path, string id){
                 fread(&reporte, sizeof (SuperBloque), 1, discolectura);
                 fclose(discolectura);
 
+                string ruta2 = " ";
+                int inicio2 = 0;
+                int fin2 = actual->ruta.find("/");
+                string delimitador2 = "/";
+
+                while (fin2 != -1)
+                {
+                    ruta2 += actual->ruta.substr(inicio, fin - inicio2);
+                    ruta2 += "/";
+                    inicio2 = fin2 + delimitador2.size();
+                    fin2 = actual->ruta.find("/", inicio2);
+                }
+                string extension = actual->ruta.substr(actual->ruta.find_last_of("/") + 1);
+                string nombreedisco = extension.substr(0, extension.find("."));
+
                 dot = dot + "digraph G {\n";
+                dot = dot + "labelloc=\"t\"\n";
+                dot = dot + "label=\"" + nombreedisco + ".dsk\"\n";
                 dot = dot + "parent [\n";
                 dot = dot + "shape=plaintext\n";
                 dot = dot + "label=<\n";

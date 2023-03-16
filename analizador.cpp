@@ -205,6 +205,14 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             }
         }
         cmd.identificacionCMD(cmd.param);
+    }else if (comando == "pause" || comando == "Pause"){
+        cout<<" "<<endl;
+        cout<<"*        Presione una tecla para continuar       *"<<endl;
+        cin.get();
+
+        //cmd.param.Comando = "logout";
+        //transform(cmd.param.Comando.begin(), cmd.param.Comando.end(), cmd.param.Comando.begin(), ::tolower);
+        //cmd.identificacionCMD(cmd.param);
     } 
     
     

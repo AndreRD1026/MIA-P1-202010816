@@ -5,6 +5,7 @@
 
 class nodoMount{
 public:
+    std::string status;
 	std::string id;
     std::string ruta;
     std::string nombreparticion;
@@ -12,17 +13,20 @@ public:
     int inicioparticion;
     int tamanioparticion;
     time_t horamontado;
+    int vecesmontada;
 	nodoMount *siguienteMontado;
     nodoMount *anteriorMontado;
     nodoMount(){
         siguienteMontado = NULL;
         anteriorMontado = NULL;
+        status = ' ';
         id = ' ';
         ruta = ' ';
         nombreparticion = ' ';
         tipoparticion = ' ';
         inicioparticion = 0;
         tamanioparticion = 0;
+        vecesmontada = 0;
     }
 private:
 };
