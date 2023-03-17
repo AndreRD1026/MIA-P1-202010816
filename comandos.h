@@ -28,6 +28,7 @@ typedef struct{
     string Fs = " ";
     string User = " ";
     string Pass = " ";
+    string Grp = " ";
     string Ruta = " ";
 }Parametros;
 
@@ -181,7 +182,11 @@ class Comando{
         void comando_login(string user, string pass, string id);
         void comando_logout();
         void comando_mkgrp(string name);
-
+        void comando_rmgrp(string name);
+        void crear_grupo(string name);
+        void eliminar_grupo(string name);
+        void comando_mkusr(string user, string pass, string grp);
+        void crear_usuario(string user, string pass, string grp);
         void comando_rep(string name, string path, string id, string ruta);
         void reporte_mbr(string nombresalida, string path, string id);
         void reporte_disk(string nombresalida, string path, string id);

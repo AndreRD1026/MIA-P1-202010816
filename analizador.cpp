@@ -205,14 +205,55 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             }
         }
         cmd.identificacionCMD(cmd.param);
-    }else if (comando == "pause" || comando == "Pause"){
+    }else if (comando == "rmgrp"){
+        cmd.param.Comando = "rmgrp";
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">name=") == 0){
+                param = replace_txt(param, ">name=", "");
+                cmd.param.Name = param;
+            }else {
+                cout<<"Un parametro es incorrecto"<<endl;
+            }
+        }
+        cmd.identificacionCMD(cmd.param);
+    }else if (comando == "mkusr"){
+        cmd.param.Comando = "mkusr";
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">user=") == 0){
+                param = replace_txt(param, ">user=", "");
+                cmd.param.User = param;
+            }else if(param.find(">pass=") == 0){
+                param = replace_txt(param, ">pass=", "");
+                cmd.param.Pass = param;
+            }else if(param.find(">grp=") == 0){
+                param = replace_txt(param, ">grp=", "");
+                cmd.param.Grp = param;
+            }else {
+                cout<<"Un parametro es incorrecto"<<endl;
+            }
+        }
+        cmd.identificacionCMD(cmd.param);
+    }else if (comando == "rmusr"){
+        cmd.param.Comando = "rmusr";
+        for(int i=0; i<parametros.size(); i++){
+            param = parametros.at(i);
+            if(param.find(">usr=") == 0){
+                param = replace_txt(param, ">usr=", "");
+                cmd.param.User = param;
+            }else {
+                cout<<"Un parametro es incorrecto"<<endl;
+            }
+        }
+        cmd.identificacionCMD(cmd.param);
+    }
+    
+    
+    else if (comando == "pause" || comando == "Pause"){
         cout<<" "<<endl;
         cout<<"*        Presione una tecla para continuar       *"<<endl;
         cin.get();
-
-        //cmd.param.Comando = "logout";
-        //transform(cmd.param.Comando.begin(), cmd.param.Comando.end(), cmd.param.Comando.begin(), ::tolower);
-        //cmd.identificacionCMD(cmd.param);
     } 
     
     
@@ -345,5 +386,6 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
     cmd.param.Name = " ";
     cmd.param.ID = " ";
     cmd.param.Fs = " ";
+    cmd.param.Grp = " ";
     cmd.param.Ruta = " ";
 }

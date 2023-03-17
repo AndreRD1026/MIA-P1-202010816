@@ -56,6 +56,18 @@ void Comando::identificacionCMD(Parametros p){
         }else{
             cout << "Error para crear un grupo:  Parametros obligatorios no definidos " << endl;
         }
+    }else if(p.Comando=="rmgrp"){ // Se identifica el tipo de comando
+        if(p.Name != " "){ // Se validan los parametros para el comando
+            comando_rmgrp(p.Name);
+        }else{
+            cout << "Error para crear un grupo:  Parametros obligatorios no definidos " << endl;
+        }
+    }else if(p.Comando=="mkusr"){ // Se identifica el tipo de comando
+        if(p.User != " " && p.Pass != " " && p.Grp != " "){ // Se validan los parametros para el comando
+            comando_mkusr(p.User,p.Pass,p.Grp);
+        }else{
+            cout << "Error para crear un usuario:  Parametros obligatorios no definidos " << endl;
+        }
     }
     
     else if(p.Comando=="rep"){ // Se identifica el tipo de comando
@@ -160,15 +172,15 @@ void Comando::comando_mkdisk(string tam, string path, string ajuste, string dim)
 
             if (ajuste == " " || ajuste == "wf")
             {
-                ajuste = "WF";
+                ajuste = "W";
             }
             else if (ajuste == "bf")
             {
-                ajuste = "BF";
+                ajuste = "B";
             }
             else if (ajuste == "ff")
             {
-                ajuste = "FF";
+                ajuste = "F";
             }
             else
             {
@@ -320,11 +332,11 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
 
         if(fit != " "){
             if(fit == "BF" || fit == "bf"){
-                ajuste = "BF";
+                ajuste = "B";
             } else if(fit == "FF" || fit == "ff"){
-                ajuste = "FF";
+                ajuste = "F";
             } else if(fit == "WF" || fit == "wf"){
-                ajuste = "WF";
+                ajuste = "W";
             } else {
                 cout<<"¡¡ Error !! El ajuste solo puede ser: BF , FF, WF "<<endl;
                 return;
@@ -2841,9 +2853,9 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
     strcpy(contenidoCarpeta.b_name, "users.txt");
 
     Carpeta.b_content[0] = contenidoCarpeta;
-    // Carpeta.b_content[1].b_inodo = -1;
-    // Carpeta.b_content[2].b_inodo = -1;
-    // Carpeta.b_content[3].b_inodo = -1;
+    Carpeta.b_content[1].b_inodo = -1;
+    Carpeta.b_content[2].b_inodo = -1;
+    Carpeta.b_content[3].b_inodo = -1;
 
     Escribir_BloqueCarpeta(actual->ruta, Carpeta, SP.s_first_blo);
 
@@ -2889,7 +2901,7 @@ void Comando:: crear_ext3(nodoMount *actual, int n, int inicio){
 
         Escribir_SuperBloque(actual->ruta, SP, actual->inicioparticion);
 
-    // Se crea el Journalist
+    // Se crea el Journaling
     Journaling jour[n];
         int inicioJour = actual->inicioparticion + sizeof(SuperBloque);
 
@@ -2968,9 +2980,9 @@ void Comando:: crear_ext3(nodoMount *actual, int n, int inicio){
     strcpy(contenidoCarpeta.b_name, "users.txt");
 
     Carpeta.b_content[0] = contenidoCarpeta;
-    // Carpeta.b_content[1].b_inodo = -1;
-    // Carpeta.b_content[2].b_inodo = -1;
-    // Carpeta.b_content[3].b_inodo = -1;
+    Carpeta.b_content[1].b_inodo = -1;
+    Carpeta.b_content[2].b_inodo = -1;
+    Carpeta.b_content[3].b_inodo = -1;
 
     Escribir_BloqueCarpeta(actual->ruta, Carpeta, SP.s_first_blo);
 
@@ -2990,18 +3002,16 @@ void Comando:: crear_ext3(nodoMount *actual, int n, int inicio){
     cout<<" "<<endl;
     cout<<"*                Formato EXT3 creado con exito             *"<<endl;
     cout<<" "<<endl;
-
 }
 
 
 void Comando:: Escribir_SuperBloque(string path, SuperBloque SP , int inicio){
     FILE *escribirSP;
 
-     if ((escribirSP = fopen(path.c_str(), "r+b")) == NULL){
+    if ((escribirSP = fopen(path.c_str(), "r+b")) == NULL){
             cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
             return;
         }
-
         fseek(escribirSP, inicio, SEEK_SET);
         fwrite(&SP, sizeof(SuperBloque), 1 , escribirSP);
         fclose(escribirSP);
@@ -3155,8 +3165,6 @@ void Comando:: comando_login(string user, string pass, string id){
             }
             if(user == "root"){
 
-                
-
                 if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
         
                 cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
@@ -3170,12 +3178,7 @@ void Comando:: comando_login(string user, string pass, string id){
 
                     Inodos usuarios;
                         fseek(discolectura, pos2 , SEEK_SET);
-                        fread(&usuarios, sizeof(usuarios), 1, discolectura);
-                        cout << "tipo sale de Inodo " << usuarios.i_type <<endl;
-                        cout << "Grupo sale de Inodo " << usuarios.I_gid <<endl;
-                        cout << "Usuario sale de Inodo " << usuarios.i_uid <<endl;
-                        cout << "Permiso sale de Inodo " << usuarios.i_perm <<endl;
-                    
+                        fread(&usuarios, sizeof(usuarios), 1, discolectura);                    
 
                     // Se busca al usuario en el archivo
 
@@ -3190,8 +3193,6 @@ void Comando:: comando_login(string user, string pass, string id){
                         
 
                         usuariostxt=usuarioroot.b_content;
-
-                        cout<<"Que sale en prueba "<<usuariostxt<<endl;
                     fclose(discolectura);
 
                     // Separando los datos 
@@ -3208,11 +3209,6 @@ void Comando:: comando_login(string user, string pass, string id){
 
                     string userroot = separado[5];
                     int passroot =  stoi(separado[6]);
-
-                    cout<<"Que sale ? "<<userroot<<endl;
-                    cout<<"que sale? "<<passroot<<endl;
-
-                    cout<<"que sale en pass "<<pass<<endl;
                     int contra = stoi(pass);
                     
                     // if(contra == passroot){
@@ -3222,6 +3218,7 @@ void Comando:: comando_login(string user, string pass, string id){
                     if(user == userroot && contra == passroot){
                         nodoLogin *usuarioactual = new nodoLogin();
                         usuarioactual->usuario = userroot;
+                        usuarioactual->iddisco = id;
                         if(loginregistrado == NULL){
                             loginregistrado = usuarioactual;
                             cout<<""<<endl;
@@ -3265,13 +3262,394 @@ void Comando:: comando_mkgrp(string name){
         return;
     }else{
         if(verififcarlogin->usuario == "root"){
-            cout<<"Si es root"<<endl;
+            crear_grupo(name);
+
         }else{
             cout<<"¡¡ Error !! Este comando solo lo puede ejecutar el usuario root"<<endl;
         }
     }
 }
 
+void Comando:: crear_grupo(string name){
+    nodoMount *actual = primeroMount;
+    nodoLogin *obtener = loginregistrado;
+    string pathdisco = " ";
+    bool encontrado = false;
+
+    SuperBloque lectura;
+    FILE* discolectura;
+    string usuariostxt;
+    bool logeadoon = false;
+
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(actual->id == obtener->iddisco){
+            encontrado = true;
+            pathdisco = actual->ruta;
+
+            nodoLogin *verificaruser = loginregistrado;
+
+                if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+                cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+            
+                } else {
+
+                    fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                    fread(&lectura, sizeof(SuperBloque), 1, discolectura);
+
+                    int pos2 = lectura.s_inode_start + sizeof(Inodos)  ;
+
+                    Inodos usuarios;
+                        fseek(discolectura, pos2 , SEEK_SET);
+                        fread(&usuarios, sizeof(usuarios), 1, discolectura);
+
+                
+                    // Se busca al usuario en el archivo
+
+                    BloqueArchivos usuarioroot;
+
+                    int posArchivo = lectura.s_block_start + sizeof(BloqueArchivos);
+                        fseek(discolectura, posArchivo, SEEK_SET);
+                        fread(&usuarioroot, sizeof(BloqueArchivos), 1 , discolectura);
+                        usuariostxt=usuarioroot.b_content;
+
+                        // cout<<"Que sale en prueba "<<usuariostxt<<endl;
+                        // cout<<"Que sale en size? "<<usuariostxt.size()<<endl;
+                        // cout<<"Que sale en size nombre "<<name.size()<<endl;
+                    fclose(discolectura);
+
+                    bool grupo_encontrado = false;
+                    int numsig = 0;
+
+                    stringstream ss(usuariostxt);
+                    vector<std::string> output;
+
+                    string line;
+                    int ultimo_numero = -1;
+                    while (getline(ss, line, '\n')) {
+                        if (line.find(",G,") != string::npos) {
+                            stringstream ss_line(line);
+                            string item;
+                            int number = -1;
+                            while (std::getline(ss_line, item, ',')) {
+                                if (isdigit(item[0])) {
+                                    number = stoi(item);
+                                }
+                            }
+                            if (number > ultimo_numero) {
+                                ultimo_numero = number;
+                            }
+                        }if (line.find(",G,") != string::npos && line.find(name) != string::npos) {
+                        grupo_encontrado = true;
+                        break;
+                    }
+                    }
+                    if (ultimo_numero > -1) {
+                        numsig = ultimo_numero + 1;
+                    } else {
+                        cout<<""<<endl;
+                    }
+                    
+
+                    if (grupo_encontrado) {
+                        cout << "¡¡ Error !! El Grupo " << name << " ya existe en el archivo." << endl;
+                        cout << ""<<endl;
+                    } else {
+                        cout << "El Grupo " << name << " se ha agregado al archivo" << endl;
+                        string obteniendo = to_string(numsig) + ",G," + name + "\n";
+                        string nuevoaa = usuariostxt.append(obteniendo);
+                        cout<<""<<nuevoaa.c_str()<<endl;
+
+                        BloqueArchivos Archivo;
+                        strcpy(Archivo.b_content, nuevoaa.c_str());
+                        Escribir_BloqueArchivo(actual->ruta, Archivo, posArchivo);
+                    }     
+                    }
+            }
+            break;
+        actual = actual->siguienteMontado;
+    }
+        }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
+    }
+}
+
+
+void Comando:: comando_rmgrp(string name){
+    nodoLogin *verififcarlogin = loginregistrado;
+    if(verififcarlogin == NULL){
+        cout<<"¡¡ Error !! Primero debe iniciar sesion como usuario root"<<endl;
+        return;
+    }else{
+        if(verififcarlogin->usuario == "root"){
+            eliminar_grupo(name);
+
+        }else{
+            cout<<"¡¡ Error !! Este comando solo lo puede ejecutar el usuario root"<<endl;
+        }
+    }
+}
+
+void Comando:: eliminar_grupo(string name){
+    nodoMount *actual = primeroMount;
+    nodoLogin *obtener = loginregistrado;
+    string pathdisco = " ";
+    bool encontrado = false;
+
+    SuperBloque lectura;
+    FILE* discolectura;
+    string usuariostxt;
+    bool logeadoon = false;
+
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(actual->id == obtener->iddisco){
+            encontrado = true;
+            pathdisco = actual->ruta;
+
+            nodoLogin *verificaruser = loginregistrado;
+
+                if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+                cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+            
+                } else {
+
+                    fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                    fread(&lectura, sizeof(SuperBloque), 1, discolectura);
+
+                    int pos2 = lectura.s_inode_start + sizeof(Inodos)  ;
+
+                    Inodos usuarios;
+                        fseek(discolectura, pos2 , SEEK_SET);
+                        fread(&usuarios, sizeof(usuarios), 1, discolectura);
+
+                
+                    // Se busca al usuario en el archivo
+
+                    BloqueArchivos usuarioroot;
+
+                    int posArchivo = lectura.s_block_start + sizeof(BloqueArchivos);
+                        fseek(discolectura, posArchivo, SEEK_SET);
+                        fread(&usuarioroot, sizeof(BloqueArchivos), 1 , discolectura);
+                        usuariostxt=usuarioroot.b_content;
+
+                        // cout<<"Que sale en prueba "<<usuariostxt<<endl;
+                        // cout<<"Que sale en size? "<<usuariostxt.size()<<endl;
+                        // cout<<"Que sale en size nombre "<<name.size()<<endl;
+                    fclose(discolectura);
+
+                    bool grupo_encontrado = false;
+                    int numsig = 0;
+
+                    stringstream ss(usuariostxt);
+                    vector<std::string> output;
+
+                    string line;
+                    int ultimo_numero = -1;
+                    while (getline(ss, line, '\n')) {
+                        if (line.find(",G,") != string::npos) {
+                            stringstream ss_line(line);
+                            string item;
+                            int number = -1;
+                            while (getline(ss_line, item, ',')) {
+                                if (isdigit(item[0])) {
+                                    number = stoi(item);
+                                }
+                            }
+                        }if (line.find(",G,") != string::npos && line.find(name) != string::npos) {
+                            if(line.find("root")){
+                                cout<<"¡¡ Error !! El grupo root no puede ser eliminado"<<endl;
+                                return;
+                            }else{
+                                line[0] = '0';
+                                grupo_encontrado = true;
+                                break;
+                            }
+                            output.push_back(line);
+                    }
+                    }
+                    if (!grupo_encontrado) {
+                        cout << "¡¡ Error !! El Grupo " << name << " no existe en el archivo." << endl;
+                        cout << ""<<endl;
+                    } else {
+                        cout<<"qUE SALE? "<<endl;
+                        // cout << "El Grupo " << name << " se ha agregado al archivo" << endl;
+                        // string obteniendo = to_string(numsig) + ",G," + name + "\n";
+                        // string nuevoaa = usuariostxt.append(obteniendo);
+                        // cout<<""<<nuevoaa.c_str()<<endl;
+
+                        // BloqueArchivos Archivo;
+                        // strcpy(Archivo.b_content, nuevoaa.c_str());
+                        // Escribir_BloqueArchivo(actual->ruta, Archivo, posArchivo);
+                    }     
+                    }
+            }
+            break;
+        actual = actual->siguienteMontado;
+    }
+        }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
+    }
+}
+
+void Comando:: comando_mkusr(string user, string pass, string grp){
+    nodoLogin *verififcarlogin = loginregistrado;
+    if(verififcarlogin == NULL){
+        cout<<"¡¡ Error !! Primero debe iniciar sesion como usuario root"<<endl;
+        return;
+    }else{
+        if(verififcarlogin->usuario == "root"){
+            if(user.size() > 10 || pass.size() > 10 || grp.size() > 10){
+                cout<<"¡¡ Error !! El limite maximo de caracteres es de 10"<<endl;
+                return;
+            }else{
+                crear_usuario(user,pass,grp);
+            }
+
+        }else{
+            cout<<"¡¡ Error !! Este comando solo lo puede ejecutar el usuario root"<<endl;
+        }
+    }
+}
+
+void Comando:: crear_usuario(string user, string pass, string grp){
+    nodoMount *actual = primeroMount;
+    nodoLogin *obtener = loginregistrado;
+    string pathdisco = " ";
+    bool encontrado = false;
+
+    SuperBloque lectura;
+    FILE* discolectura;
+    string usuariostxt;
+    bool logeadoon = false;
+
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(actual->id == obtener->iddisco){
+            encontrado = true;
+            pathdisco = actual->ruta;
+
+            nodoLogin *verificaruser = loginregistrado;
+
+                if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+                cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+            
+                } else {
+
+                    fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                    fread(&lectura, sizeof(SuperBloque), 1, discolectura);
+
+                    int pos2 = lectura.s_inode_start + sizeof(Inodos)  ;
+
+                    Inodos usuarios;
+                        fseek(discolectura, pos2 , SEEK_SET);
+                        fread(&usuarios, sizeof(usuarios), 1, discolectura);
+
+                
+                    // Se busca al usuario en el archivo
+
+                    BloqueArchivos usuarioroot;
+
+                    int posArchivo = lectura.s_block_start + sizeof(BloqueArchivos);
+                        fseek(discolectura, posArchivo, SEEK_SET);
+                        fread(&usuarioroot, sizeof(BloqueArchivos), 1 , discolectura);
+                        usuariostxt=usuarioroot.b_content;
+
+                        // cout<<"Que sale en prueba "<<usuariostxt<<endl;
+                        // cout<<"Que sale en size? "<<usuariostxt.size()<<endl;
+                        // cout<<"Que sale en size nombre "<<name.size()<<endl;
+                    fclose(discolectura);
+
+                    bool grupo_encontrado = false;
+                    bool usuario_encontrado = false;
+                    int numsig = 0;
+
+                    stringstream ss(usuariostxt);
+                    vector<std::string> output;
+
+                    string line;
+                    int ultimo_numero = -1;
+                    while (getline(ss, line, '\n')) {
+                        if (line.find(",G,") != string::npos) {
+                            stringstream ss_line(line);
+                            string item;
+                            int number = -1;
+                            while (std::getline(ss_line, item, ',')) {
+                                if (isdigit(item[0])) {
+                                    number = stoi(item);
+                                }
+                            }
+                            if (number > ultimo_numero) {
+                                ultimo_numero = number;
+                            }
+                        }if (line.find(",G,") != string::npos && line.find(grp) != string::npos) {
+                        grupo_encontrado = true;
+                        
+                        }if(line.find(",U,") != string::npos && line.find(user) != string::npos){
+                        usuario_encontrado = true;
+                    }
+                    break;
+                    }
+                    if (ultimo_numero > -1) {
+                        numsig = ultimo_numero + 1;
+                    } else {
+                        cout<<""<<endl;
+                    }
+                    
+
+                    if (grupo_encontrado) {
+                        //cout << "¡¡ Error !! El Grupo " << grp << " ya existe en el archivo." << endl;
+                        //cout << "Si se puede agregar usuario"<<endl;
+                        if(usuario_encontrado){
+                            cout<<" ¡¡ Error !! El usuario " << user << " ya se encuentra registrado "<<endl;
+                            return;
+                        }else{
+                            cout<<"Si se puede agregar usuario "<<endl;
+                        }
+                    } else {
+                        cout << "¡¡ Error !! El Grupo " << grp << " no existe en el archivo." << endl;
+                        cout << ""<<endl;
+                        return;
+                        // cout << "El Grupo " << grp << " se ha agregado al archivo" << endl;
+                        // string obteniendo = to_string(numsig) + ",G," + name + "\n";
+                        // string nuevoaa = usuariostxt.append(obteniendo);
+                        // cout<<""<<nuevoaa.c_str()<<endl;
+
+                        // BloqueArchivos Archivo;
+                        // strcpy(Archivo.b_content, nuevoaa.c_str());
+                        // Escribir_BloqueArchivo(actual->ruta, Archivo, posArchivo);
+                    }     
+                    }
+            }
+            break;
+        actual = actual->siguienteMontado;
+    }
+        }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
+    }
+
+}
 
 void Comando:: comando_rep(string namerep, string path, string id, string rutaa){
         string ruta = " ";
@@ -3869,6 +4247,22 @@ void Comando:: reporte_disk(string nombresalida, string path, string id){
                 particion[2] = disco.mbr_partition_3;
                 particion[3] = disco.mbr_partition_4;
 
+                int porcentaje = 0;
+                int espaciolibre = 0;
+
+                for(int i=0; i<4; i++){
+                    if(particion[i].part_fit != ' '){
+                        
+                        espaciolibre += particion[i].part_s;
+                    }
+                }
+
+//cout<<"Nombre que sale "<<particion[i].part_name<<endl;
+                        //cout<<"Aver "<<particion[i].part_s<<endl;
+                        //cout<<"Prueba "<<particion[i].part_start<<endl;
+                //cout<<"Tamaño "<<disco.mbr_tamano<<endl;
+                        cout<<"Que sale ? "<<espaciolibre<<endl;
+
                 tamanoMBR = (disco.mbr_tamano * 1024);
                 dskmbr = disco.mbr_dsk_signature;
 
@@ -4171,28 +4565,28 @@ void Comando:: reporte_journaling(string nombresalida, string path, string id){
                     dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='name'>j_name</td><td bgcolor=\"deepskyblue3\" port='siz17'> / </td></tr>";
                     dot = dot + "<tr><td port='destination'>j_destination</td><td port='siz2'></td></tr>";
                     dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='freeblocks'>j_content</td><td bgcolor=\"deepskyblue3\" port='siz16'></td></tr>";
-                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>Wed Mar 15 12:00:23 2023</td></tr>";
+                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>" + ctime(&reporte.s_mtime) + "</td></tr>";
 
                     dot = dot + "<tr><td bgcolor=\"deepskyblue\" colspan=\"3\">ACCION</td></tr>";
                     dot = dot + "<tr><td port='type'>j_type</td><td port='siz1'>Creacion Archivo</td></tr>";
                     dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='name'>j_name</td><td bgcolor=\"deepskyblue3\" port='siz17'>Usuarios.txt</td></tr>";
                     dot = dot + "<tr><td port='destination'>j_destination</td><td port='siz2'></td></tr>";
                     dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='freeblocks'>j_content</td><td bgcolor=\"deepskyblue3\" port='siz16'></td></tr>";
-                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>Wed Mar 15 12:00:23 2023</td></tr>";
+                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>" + ctime(&reporte.s_mtime) + "</td></tr>";
 
                     dot = dot + "<tr><td bgcolor=\"deepskyblue\" colspan=\"3\">ACCION</td></tr>";
                     dot = dot + "<tr><td port='type'>j_type</td><td port='siz1'>Creacion Grupo</td></tr>";
                     dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='name'>j_name</td><td bgcolor=\"deepskyblue3\" port='siz17'> root </td></tr>";
                     dot = dot + "<tr><td port='destination'>j_destination</td><td port='siz2'>Usuarios.txt</td></tr>";
                     dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='freeblocks'>j_content</td><td bgcolor=\"deepskyblue3\" port='siz16'>1,G,root</td></tr>";
-                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>Wed Mar 15 12:00:23 2023</td></tr>";
+                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>" + ctime(&reporte.s_mtime) + "</td></tr>";
 
                     dot = dot + "<tr><td bgcolor=\"deepskyblue\" colspan=\"3\">ACCION</td></tr>";
                     dot = dot + "<tr><td port='type'>j_type</td><td port='siz1'>Creacion Usuario</td></tr>";
                     dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='name'>j_name</td><td bgcolor=\"deepskyblue3\" port='siz17'> root </td></tr>";
                     dot = dot + "<tr><td port='destination'>j_destination</td><td port='siz2'>Usuarios.txt</td></tr>";
                     dot = dot + "<tr><td bgcolor=\"deepskyblue3\" port='freeblocks'>j_content</td><td bgcolor=\"deepskyblue3\" port='siz16'>1,U,root,root,123</td></tr>";
-                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>Wed Mar 15 12:00:23 2023</td></tr>";
+                    dot = dot + "<tr><td port='timee'>j_time</td><td port='siz4'>" + ctime(&reporte.s_mtime) + "</td></tr>";
 
                 }
             break;  

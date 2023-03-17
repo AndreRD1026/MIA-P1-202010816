@@ -6,8 +6,10 @@
 class nodoLogin{
 public:
 	std::string usuario;
+    std::string iddisco;
     nodoLogin(){
         usuario = ' ';
+        iddisco = ' ';
     }
 private:
 };
