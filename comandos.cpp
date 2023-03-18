@@ -430,10 +430,10 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                 disco.mbr_partition_1.part_s = size_file;
                 disco.mbr_partition_1.part_start = (sizeof(disco)+1);
                 tamanoDisponible = disco.mbr_tamano - disco.mbr_partition_1.part_s;
-                cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                 escritura(disco,path);
-                cout<<"Particion 1 asginada"<<endl;
+                cout<<"*        La Particion 1 ha sido asginada         *"<<endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -449,8 +449,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                 disco.mbr_partition_2.part_s = size_file;
                 disco.mbr_partition_2.part_start = (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
                 tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s);
-                cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                //cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                 escritura(disco,path);
                 cout<<"Particion 2 asignada"<<endl;
             }else{
@@ -469,8 +469,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                 disco.mbr_partition_3.part_s = size_file;
                 disco.mbr_partition_3.part_start = (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                 tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s);
-                cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                //cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                 escritura(disco,path);
                 cout<<"Particion 3 asignada"<<endl;
             }else{
@@ -490,8 +490,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                 disco.mbr_partition_4.part_s = size_file;
                 disco.mbr_partition_4.part_start = (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
                 tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s+ disco.mbr_partition_4.part_s);
-                cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                 escritura(disco,path);
                 cout<<"Particion 4 asignada"<<endl;
             }
@@ -510,8 +510,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     disco.mbr_partition_1.part_s = size_file;
                     disco.mbr_partition_1.part_start =  (sizeof(disco)+1) ;
                     tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                    //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                     escritura(disco,path);
                     cout<<"Particion 1 asignada"<<endl;
@@ -535,8 +535,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     disco.mbr_partition_2.part_s = size_file;
                     disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
                     tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                    //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                     
                     escritura(disco,path);
@@ -560,8 +560,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     disco.mbr_partition_3.part_s = size_file;
                     disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                     tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                    //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                     
                     escritura(disco,path);
@@ -587,8 +587,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     disco.mbr_partition_1.part_s = size_file;
                     disco.mbr_partition_1.part_start =  (sizeof(disco)+1);
                     tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                    //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                     escritura(disco,path);
                     cout<<"Particion 1 asignada"<<endl;
@@ -612,8 +612,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     disco.mbr_partition_1.part_s = size_file;
                     disco.mbr_partition_1.part_start =  (sizeof(disco)+1);
                     tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                    //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                     escritura(disco,path);
                     cout<<"Particion 1 asignada"<<endl;
@@ -637,8 +637,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     disco.mbr_partition_2.part_s = size_file;
                     disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
                     tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    //cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                    //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
                     escritura(disco,path);
                     cout<<"Particion 2 asignada"<<endl;
@@ -670,8 +670,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     disco.mbr_partition_2.part_s = size_file;
                     disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
                     tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                    cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                    cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                    //cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                    //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
                     escritura(disco,path);
                     cout<<"Particion 2 asignada"<<endl;
@@ -704,8 +704,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_2.part_s = size_file;
                             disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 2 asignada"<<endl;
@@ -722,8 +722,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_4.part_s = size_file;
                             disco.mbr_partition_4.part_start =  (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 4 asignada"<<endl;
@@ -744,8 +744,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_2.part_s = size_file;
                             disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 2 asignada"<<endl;
@@ -760,8 +760,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_4.part_s = size_file;
                             disco.mbr_partition_4.part_start =  (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 4 asignada"<<endl;
@@ -782,8 +782,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_4.part_s = size_file;
                             disco.mbr_partition_4.part_start =  (disco.mbr_partition_3.part_start + disco.mbr_partition_3.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 4 asignada"<<endl;
@@ -800,8 +800,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_2.part_s = size_file;
                             disco.mbr_partition_2.part_start =  (disco.mbr_partition_1.part_start + disco.mbr_partition_1.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 2 asignada"<<endl;
@@ -832,8 +832,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -850,8 +850,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_3.part_s = size_file;
                             disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 3 asignada"<<endl;
@@ -872,8 +872,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -888,8 +888,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_3.part_s = size_file;
                             disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 3 asignada"<<endl;
@@ -910,8 +910,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_3.part_s = size_file;
                             disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 3 asignada"<<endl;
@@ -928,8 +928,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -962,8 +962,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -980,8 +980,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_4.part_s = size_file;
                             disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 4 asignada"<<endl;
@@ -1002,8 +1002,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -1018,8 +1018,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_4.part_s = size_file;
                             disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 4 asignada"<<endl;
@@ -1040,8 +1040,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_4.part_s = size_file;
                             disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 4 asignada"<<endl;
@@ -1058,8 +1058,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -1094,8 +1094,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -1112,8 +1112,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_4.part_s = size_file;
                             disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 4 asignada"<<endl;
@@ -1134,8 +1134,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -1150,8 +1150,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_4.part_s = size_file;
                             disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 4 asignada"<<endl;
@@ -1172,8 +1172,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_4.part_s = size_file;
                             disco.mbr_partition_4.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 4 asignada"<<endl;
@@ -1190,8 +1190,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                           // cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -1223,8 +1223,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -1241,8 +1241,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_3.part_s = size_file;
                             disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 3 asignada"<<endl;
@@ -1263,8 +1263,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) +1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -1279,8 +1279,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_3.part_s = size_file;
                             disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                           // cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 3 asignada"<<endl;
@@ -1301,8 +1301,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_3.part_s = size_file;
                             disco.mbr_partition_3.part_start =  (disco.mbr_partition_2.part_start + disco.mbr_partition_2.part_s + 1);
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 3 asignada"<<endl;
@@ -1319,8 +1319,8 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             disco.mbr_partition_1.part_s = size_file;
                             disco.mbr_partition_1.part_start =  (sizeof(disco) + 1 );
                             tamanoDisponible = disco.mbr_tamano - (disco.mbr_partition_1.part_s + disco.mbr_partition_2.part_s + disco.mbr_partition_3.part_s + disco.mbr_partition_4.part_s);
-                            cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
-                            cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
+                            //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
+                            //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
                             cout<<"Particion 1 asignada"<<endl;
@@ -2642,8 +2642,10 @@ void Comando:: verlista(){
         while (actualmount!=NULL)
         {
             if(actualmount->status == "1"){
-                cout <<"| ID " <<setw(15) <<"|" << "| Fecha y hora "<<setw(15) << "|"<<endl;
-                cout<<"| "<<actualmount->id<<setw(4)<<"|" << "| "<< ctime(&actualmount->horamontado) << " |"<<endl;
+                string horam = ctime(&actualmount->horamontado);
+                horam.erase(horam.size()-1);
+                cout <<"| ID " <<setw(15) <<"|" << "| Fecha y hora "<<setw(13) << "|"<<endl;
+                cout<<"| "<<actualmount->id<<setw(9)<<"|" << "| "<< horam << " |"<<endl;
                 encontraractiva = true;
             }
             actualmount = actualmount->siguienteMontado;
@@ -4287,26 +4289,47 @@ void Comando:: reporte_disk(string nombresalida, string path, string id){
                 dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
                 dot = dot + "<tr> <td rowspan='3'>MBR</td>\n";
 
-
                 int porcentaje1 = 0;
                 int porcentaje2 = 0;
                 int porcentaje3 = 0;
                 int porcentaje4 = 0;
                 int obtenerlibre = 0;
                 int obtenerlibre1 = 0;
+                int obtenerlibrep1 = 0;
                 int obtenerlibre2 = 0;
+                int obtenerlibrep2 = 0;
                 int obtenerlibre3 = 0;
+                int obtenerlibrep3 = 0;
+                int porcentajelog1 = 0;
+                int porcentajelog2 = 0;
+                int porcentajelogica1 = 0;
+                int porcentajelogica2 = 0;
+                bool existeextendida = false;
+                bool existeextendida2 = false;
+                bool existeextendida3 = false;
+                bool existeextendida4 = false;
 
-                if(particion[0].part_fit != ' '){
-                    int tamp1 = (particion[0].part_s * 1024) ;
+                if(particion[0].part_fit == 'B' || particion[0].part_fit == 'F' || particion[0].part_fit == 'W' ){
 
-                    int salida = ((tamp1 * 100 )/tamanoMBR);
-                    int porcentaje1 = salida;
-                    dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salida) + "%" + " del disco</td>";
+                    if(!existeextendida && particion[0].part_type == 'E'){
+                        dot =  dot + "<td colspan=\"6\" rowspan=\"1\">Extendida</td>";
+                        int tamp1 = (particion[0].part_s * 1024) ;
+                        int salida = ((tamp1 * 100 )/tamanoMBR);
+                        porcentaje1 = salida;
+                        existeextendida = true;
+                    }else{
+                        int tamp1 = (particion[0].part_s * 1024) ;
+                        int salida = ((tamp1 * 100 )/tamanoMBR);
+                        porcentaje1 = salida;
+                        dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salida) + "%" + " del disco</td>";
+                    }
+                    if(particion[1].part_fit == 'B' || particion[1].part_fit == 'F' || particion[1].part_fit == 'W'){
 
-                    if(particion[1].part_fit != ' '){
+                        if(!existeextendida2 && particion[1].part_type == 'E'){
+                        dot =  dot + "<td colspan=\"6\" rowspan=\"1\">Extendida</td>";
+                        existeextendida2 = true;
+                    }else{
                         obtenerlibre = particion[1].part_start - (particion[0].part_start + particion[0].part_s + 1);
-                        //cout<<"Obtener libre ? "<<obtenerlibre<<endl;
                         if(obtenerlibre == 0){
                             int tamp2 = (particion[1].part_s * 1024) ;
                             int salida2 = ((tamp2 * 100 )/tamanoMBR);
@@ -4322,10 +4345,20 @@ void Comando:: reporte_disk(string nombresalida, string path, string id){
                             porcentaje2 = salida2 + salida3;
                             dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salida3) + "%" + " del disco</td>";
                         }
+                    }                        
+                    }else{
+                        obtenerlibrep1 = particion[1].part_s;
+                        int tamlibrep1 = (obtenerlibrep1 * 1024);
+                        int salida2p1 = ((tamlibrep1 * 100 )/tamanoMBR);
+                        porcentaje2 = salida2p1;
+                        dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(salida2p1) + "%" + " del disco </td>";
                     }
-                    if(particion[2].part_fit != ' '){
+                    if(particion[2].part_fit == 'B' || particion[2].part_fit == 'F' || particion[2].part_fit == 'W'){
+                        if(!existeextendida3 && particion[2].part_type == 'E'){
+                        dot =  dot + "<td colspan=\"6\" rowspan=\"1\">Extendida</td>";
+                        existeextendida3 = true;
+                    }else{
                         obtenerlibre1 = particion[2].part_start - (particion[0].part_start + particion[0].part_s + obtenerlibre + particion[1].part_s + 2);
-                        //cout<<"Obtener libre ? "<<obtenerlibre2<<endl;
                         if(obtenerlibre1 == 0){
                             int tamp3 = (particion[2].part_s * 1024) ;
                             int salida4 = ((tamp3 * 100 )/tamanoMBR);
@@ -4342,8 +4375,300 @@ void Comando:: reporte_disk(string nombresalida, string path, string id){
                             dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salida6) + "%" + " del disco</td>";
                         }
                     }
-                    if(particion[3].part_fit != ' '){
+                    }else{
+                        obtenerlibrep2 = particion[2].part_s;
+                        int tamlibrep2 = (obtenerlibrep2 * 1024);
+                        int salida2p2 = ((tamlibrep2 * 100 )/tamanoMBR);
+                        porcentaje3 = salida2p2;
+                        dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(salida2p2) + "%" + " del disco </td>";
+                    }
+                    if(particion[3].part_fit == 'B' || particion[3].part_fit == 'F' || particion[3].part_fit == 'W'){
+                        if(!existeextendida4 && particion[3].part_type == 'E'){
+                        dot =  dot + "<td colspan=\"6\" rowspan=\"1\">Extendida</td>";
+                        existeextendida4 = true;
+                    }else{
                         obtenerlibre2 = particion[3].part_start - (particion[0].part_start + particion[0].part_s + obtenerlibre + particion[1].part_s + obtenerlibre1 + particion[2].part_s + 3);
+                        if(obtenerlibre2 == 0){
+                            int tamp4 = (particion[3].part_s * 1024) ;
+                            int salidap4 = ((tamp4 * 100 )/tamanoMBR);
+                            porcentaje4 = salidap4;
+                            dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salidap4) + "%" + " del disco</td>";
+                        }else{
+                            int tamlibre2 = (obtenerlibre2 * 1024);
+                            int salida5 = ((tamlibre2 * 100 )/tamanoMBR);
+                            dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(salida5) + "%" + " del disco </td>";
+
+                            int tamp4 = (particion[3].part_s * 1024) ;
+                            int salida6 = ((tamp4 * 100 )/tamanoMBR);
+                            porcentaje4 = salida5 + salida6; 
+                            dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salida6) + "%" + " del disco</td>";
+                        }
+                    }
+                    }else{
+                        obtenerlibrep3 = particion[3].part_s;
+                        int tamlibrep3 = (obtenerlibrep3 * 1024);
+                        int salida2p3 = ((tamlibrep3 * 100 )/tamanoMBR);
+                        porcentaje2 = salida2p3;
+                        dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(salida2p3) + "%" + " del disco </td>";
+                    }
+                    int existeespacio = tamanoMBR - (particion[0].part_start + particion[0].part_s + obtenerlibre + particion[1].part_s + obtenerlibre1 + particion[2].part_s + obtenerlibre2 + particion[3].part_s + 4);
+
+                    if(existeespacio > 0 ){
+                        
+                        int restante = 100 - (porcentaje1 + porcentaje2 + porcentaje3 + porcentaje4);
+                            dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(restante) + "%" + " del disco </td>";
+                    }
+
+                    if(existeextendida){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[0].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                dot = dot + "</tr>\n";
+                                dot = dot + "<tr>\n";
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                nombrelog = Anterior.part_name;
+                                porcentajelogica1 = Anterior.part_s;
+                                int totallog1 = (Anterior.part_s * 1024);
+                                int salidalog = ((totallog1 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog + "<br/>" + to_string(salidalog) +"%" "del disco</td>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                nombrelog1 = Siguiente.part_name;
+                                porcentajelogica2 = Siguiente.part_s;
+                                int totallog2 = (Siguiente.part_s * 1024);
+                                int salidalog2 = ((totallog2 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog1 + "<br/>" + to_string(salidalog2) + "%" "del disco</td>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                                int totalextendida = particion[0].part_s - (porcentajelogica1+ porcentajelogica2);
+                                if(totalextendida > 0){
+                                    int pasandoabytes = (totalextendida * 1024);
+                                    int espaciolibrelog = ((pasandoabytes * 100 ) / tamanoMBR);
+                                    dot = dot + "<td rowspan=\"2\" port='libre'>Espacio Libre <br/>" + to_string(espaciolibrelog) +"%" "del disco</td>\n";
+                                }
+                        }
+                    }else if(existeextendida2){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[1].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                dot = dot + "</tr>\n";
+                                dot = dot + "<tr>\n";
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                nombrelog = Anterior.part_name;
+                                porcentajelogica1 = Anterior.part_s;
+                                int totallog1 = (Anterior.part_s * 1024);
+                                int salidalog = ((totallog1 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog + "<br/>" + to_string(salidalog) +"%" "del disco</td>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                nombrelog1 = Siguiente.part_name;
+                                porcentajelogica2 = Siguiente.part_s;
+                                int totallog2 = (Siguiente.part_s * 1024);
+                                int salidalog2 = ((totallog2 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog1 + "<br/>" + to_string(salidalog2) + "%" "del disco</td>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                                int totalextendida = particion[1].part_s - (porcentajelogica1+ porcentajelogica2);
+                                if(totalextendida > 0){
+                                    int pasandoabytes = (totalextendida * 1024);
+                                    int espaciolibrelog = ((pasandoabytes * 100 ) / tamanoMBR);
+                                    dot = dot + "<td rowspan=\"2\" port='libre'>Espacio Libre <br/>" + to_string(espaciolibrelog) +"%" "del disco</td>\n";
+                                }
+                        }
+                    }else if(existeextendida3){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[2].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                dot = dot + "</tr>\n";
+                                dot = dot + "<tr>\n";
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                nombrelog = Anterior.part_name;
+                                porcentajelogica1 = Anterior.part_s;
+                                int totallog1 = (Anterior.part_s * 1024);
+                                int salidalog = ((totallog1 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog + "<br/>" + to_string(salidalog) +"%" "del disco</td>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                nombrelog1 = Siguiente.part_name;
+                                porcentajelogica2 = Siguiente.part_s;
+                                int totallog2 = (Siguiente.part_s * 1024);
+                                int salidalog2 = ((totallog2 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog1 + "<br/>" + to_string(salidalog2) + "%" "del disco</td>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                                int totalextendida = particion[3].part_s - (porcentajelogica1+ porcentajelogica2);
+                                if(totalextendida > 0){
+                                    int pasandoabytes = (totalextendida * 1024);
+                                    int espaciolibrelog = ((pasandoabytes * 100 ) / tamanoMBR);
+                                    dot = dot + "<td rowspan=\"2\" port='libre'>Espacio Libre <br/>" + to_string(espaciolibrelog) +"%" "del disco</td>\n";
+                                }
+                        }
+                    }else if(existeextendida4){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[3].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                dot = dot + "</tr>\n";
+                                dot = dot + "<tr>\n";
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                nombrelog = Anterior.part_name;
+                                porcentajelogica1 = Anterior.part_s;
+                                int totallog1 = (Anterior.part_s * 1024);
+                                int salidalog = ((totallog1 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog + "<br/>" + to_string(salidalog) +"%" "del disco</td>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                nombrelog1 = Siguiente.part_name;
+                                porcentajelogica2 = Siguiente.part_s;
+                                int totallog2 = (Siguiente.part_s * 1024);
+                                int salidalog2 = ((totallog2 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog1 + "<br/>" + to_string(salidalog2) + "%" "del disco</td>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                                int totalextendida = particion[3].part_s - (porcentajelogica1+ porcentajelogica2);
+                                if(totalextendida > 0){
+                                    int pasandoabytes = (totalextendida * 1024);
+                                    int espaciolibrelog = ((pasandoabytes * 100 ) / tamanoMBR);
+                                    dot = dot + "<td rowspan=\"2\" port='libre'>Espacio Libre <br/>" + to_string(espaciolibrelog) +"%" "del disco</td>\n";
+                                }
+                        }
+                    }
+                }else{
+                    if(particion[0].part_start != 0 ){
+                        int espaciolibre = particion[0].part_start + particion[0].part_s ;
+                        int salidapor = (espaciolibre * 1024);
+                        int prueb = ((salidapor * 100)/tamanoMBR);
+                        dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(prueb) + "%" + " del disco </td>";
+
+
+                        if(particion[1].part_fit == 'B' || particion[1].part_fit == 'F' || particion[1].part_fit == 'W'){
+                            if(!existeextendida2 && particion[1].part_type == 'E'){
+                                dot =  dot + "<td colspan=\"6\" rowspan=\"1\">Extendida</td>";
+                                existeextendida2 = true;
+                        }else{
+                            obtenerlibre = particion[1].part_start - (particion[0].part_start + particion[0].part_s + 1);
+                        if(obtenerlibre == 0){
+                            int tamp2 = (particion[1].part_s * 1024) ;
+                            int salida2 = ((tamp2 * 100 )/tamanoMBR);
+                            porcentaje2 = salida2;
+                            dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salida2) + "%" + " del disco</td>";
+                        }else{
+                            int tamlibre = (obtenerlibre * 1024);
+                            int salida2 = ((tamlibre * 100 )/tamanoMBR);
+                            dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(salida2) + "%" + " del disco </td>";
+
+                            int tamp2 = (particion[1].part_s * 1024) ;
+                            int salida3 = ((tamp2 * 100 )/tamanoMBR);
+                            porcentaje2 = salida2 + salida3;
+                            dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salida3) + "%" + " del disco</td>";
+                        }
+                        }
+                    }else{
+                        obtenerlibrep1 = particion[1].part_s;
+                        int tamlibrep1 = (obtenerlibrep1 * 1024);
+                        int salida2p1 = ((tamlibrep1 * 100 )/tamanoMBR);
+                        porcentaje2 = salida2p1;
+                        dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(salida2p1) + "%" + " del disco </td>";
+                    }
+                    if(particion[2].part_fit == 'B' || particion[2].part_fit == 'F' || particion[2].part_fit == 'W'){
+                        if(!existeextendida3 && particion[2].part_type == 'E'){
+                            dot =  dot + "<td colspan=\"6\" rowspan=\"1\">Extendida</td>";
+                            existeextendida3 = true;
+                        }else{
+                            obtenerlibre1 = particion[2].part_start - (particion[0].part_start + particion[0].part_s + obtenerlibre + particion[1].part_s + 2);
+                        //cout<<"Obtener libre ? "<<obtenerlibre2<<endl;
+                        if(obtenerlibre1 == 0){
+                            int tamp3 = (particion[2].part_s * 1024) ;
+                            int salida4 = ((tamp3 * 100 )/tamanoMBR);
+                            porcentaje3 = salida4;
+                            dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salida4) + "%" + " del disco</td>";
+                        }else{
+                            int tamlibre2 = (obtenerlibre1 * 1024);
+                            int salida5 = ((tamlibre2 * 100 )/tamanoMBR);
+                            dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(salida5) + "%" + " del disco </td>";
+
+                            int tamp4 = (particion[2].part_s * 1024) ;
+                            int salida6 = ((tamp4 * 100 )/tamanoMBR);
+                            porcentaje3 = salida5 + salida6;
+                            dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salida6) + "%" + " del disco</td>";
+                        }
+                        }
+                    }else{
+                        obtenerlibrep2 = particion[2].part_s;
+                        int tamlibrep2 = (obtenerlibrep2 * 1024);
+                        int salida2p2 = ((tamlibrep2 * 100 )/tamanoMBR);
+                        porcentaje3 = salida2p2;
+                        dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(salida2p2) + "%" + " del disco </td>";
+                    }
+                    if(particion[3].part_fit == 'B' || particion[3].part_fit == 'F' || particion[3].part_fit == 'W'){
+                        if(!existeextendida3 && particion[3].part_type == 'E'){
+                            dot =  dot + "<td colspan=\"6\" rowspan=\"1\">Extendida</td>";
+                            existeextendida4 = true;
+                        }else{
+                            obtenerlibre2 = particion[3].part_start - (particion[0].part_start + particion[0].part_s + obtenerlibre + particion[1].part_s + obtenerlibre1 + particion[2].part_s + 3);
                         //cout<<"Obtener libre ? "<<obtenerlibre2<<endl;
                         if(obtenerlibre2 == 0){
                             int tamp3 = (particion[3].part_s * 1024) ;
@@ -4360,25 +4685,198 @@ void Comando:: reporte_disk(string nombresalida, string path, string id){
                             porcentaje4 = salida5 + salida6; 
                             dot = dot + "<td rowspan=\'3\'>Primaria <br/>" + to_string(salida6) + "%" + " del disco</td>";
                         }
+                        }
+                    }else{
+                        obtenerlibrep3 = particion[3].part_s;
+                        int tamlibrep3 = (obtenerlibrep3 * 1024);
+                        int salida2p3 = ((tamlibrep3 * 100 )/tamanoMBR);
+                        porcentaje2 = salida2p3;
+                        dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(salida2p3) + "%" + " del disco </td>";
                     }
                     int existeespacio = tamanoMBR - (particion[0].part_start + particion[0].part_s + obtenerlibre + particion[1].part_s + obtenerlibre1 + particion[2].part_s + obtenerlibre2 + particion[3].part_s + 4);
-
                     if(existeespacio > 0 ){
                         int restante = 100 - (porcentaje1 + porcentaje2 + porcentaje3 + porcentaje4);
                             dot = dot + "<td rowspan=\"3\"> Espacio Libre <br/>" + to_string(restante) + "%" + " del disco </td>";
                     }
+                    if(existeextendida){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[0].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                dot = dot + "</tr>\n";
+                                dot = dot + "<tr>\n";
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                nombrelog = Anterior.part_name;
+                                porcentajelogica1 = Anterior.part_s;
+                                int totallog1 = (Anterior.part_s * 1024);
+                                int salidalog = ((totallog1 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog + "<br/>" + to_string(salidalog) +"%" "del disco</td>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                nombrelog1 = Siguiente.part_name;
+                                porcentajelogica2 = Siguiente.part_s;
+                                int totallog2 = (Siguiente.part_s * 1024);
+                                int salidalog2 = ((totallog2 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog1 + "<br/>" + to_string(salidalog2) + "%" "del disco</td>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                                int totalextendida = particion[0].part_s - (porcentajelogica1+ porcentajelogica2);
+                                if(totalextendida > 0){
+                                    int pasandoabytes = (totalextendida * 1024);
+                                    int espaciolibrelog = ((pasandoabytes * 100 ) / tamanoMBR);
+                                    dot = dot + "<td rowspan=\"2\" port='libre'>Espacio Libre <br/>" + to_string(espaciolibrelog) +"%" "del disco</td>\n";
+                                }
+                        }
+                    }else if(existeextendida2){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[1].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                dot = dot + "</tr>\n";
+                                dot = dot + "<tr>\n";
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                nombrelog = Anterior.part_name;
+                                porcentajelogica1 = Anterior.part_s;
+                                int totallog1 = (Anterior.part_s * 1024);
+                                int salidalog = ((totallog1 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog + "<br/>" + to_string(salidalog) +"%" "del disco</td>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                nombrelog1 = Siguiente.part_name;
+                                porcentajelogica2 = Siguiente.part_s;
+                                int totallog2 = (Siguiente.part_s * 1024);
+                                int salidalog2 = ((totallog2 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog1 + "<br/>" + to_string(salidalog2) + "%" "del disco</td>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                                int totalextendida = particion[1].part_s - (porcentajelogica1+ porcentajelogica2);
+                                if(totalextendida > 0){
+                                    int pasandoabytes = (totalextendida * 1024);
+                                    int espaciolibrelog = ((pasandoabytes * 100 ) / tamanoMBR);
+                                    dot = dot + "<td rowspan=\"2\" port='libre'>Espacio Libre <br/>" + to_string(espaciolibrelog) +"%" "del disco</td>\n";
+                                }
+                        }
+                    }else if(existeextendida3){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[2].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                dot = dot + "</tr>\n";
+                                dot = dot + "<tr>\n";
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                nombrelog = Anterior.part_name;
+                                porcentajelogica1 = Anterior.part_s;
+                                int totallog1 = (Anterior.part_s * 1024);
+                                int salidalog = ((totallog1 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog + "<br/>" + to_string(salidalog) +"%" "del disco</td>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                nombrelog1 = Siguiente.part_name;
+                                porcentajelogica2 = Siguiente.part_s;
+                                int totallog2 = (Siguiente.part_s * 1024);
+                                int salidalog2 = ((totallog2 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog1 + "<br/>" + to_string(salidalog2) + "%" "del disco</td>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                                int totalextendida = particion[3].part_s - (porcentajelogica1+ porcentajelogica2);
+                                if(totalextendida > 0){
+                                    int pasandoabytes = (totalextendida * 1024);
+                                    int espaciolibrelog = ((pasandoabytes * 100 ) / tamanoMBR);
+                                    dot = dot + "<td rowspan=\"2\" port='libre'>Espacio Libre <br/>" + to_string(espaciolibrelog) +"%" "del disco</td>\n";
+                                }
+                        }
+                    }else if(existeextendida4){
+                        EBR Logica;
+                        FILE *discolecturaE;
+
+                        if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                            cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+                        }else {
+                            fseek(discolecturaE, particion[3].part_start, SEEK_SET);
+                            fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                            if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                                dot = dot + "</tr>\n";
+                                dot = dot + "<tr>\n";
+                                EBR Anterior;
+                                Anterior = Logica;
+                                int posig = Logica.part_next;
+                                EBR Siguiente;
+                                fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                                fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                                string statusa = " ", fitlog = " ", nombrelog = " ";
+                                nombrelog = Anterior.part_name;
+                                porcentajelogica1 = Anterior.part_s;
+                                int totallog1 = (Anterior.part_s * 1024);
+                                int salidalog = ((totallog1 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog + "<br/>" + to_string(salidalog) +"%" "del disco</td>\n";
+
+                            if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                                string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                                nombrelog1 = Siguiente.part_name;
+                                porcentajelogica2 = Siguiente.part_s;
+                                int totallog2 = (Siguiente.part_s * 1024);
+                                int salidalog2 = ((totallog2 * 100)/tamanoMBR);
+                                dot = dot + "<td rowspan=\"2\" port='log1'>EBR</td><td rowspan=\"2\" port='log2'>" + nombrelog1 + "<br/>" + to_string(salidalog2) + "%" "del disco</td>\n";
+                            }
+                                fclose(discolecturaE);
+                            }
+                                int totalextendida = particion[3].part_s - (porcentajelogica1+ porcentajelogica2);
+                                if(totalextendida > 0){
+                                    int pasandoabytes = (totalextendida * 1024);
+                                    int espaciolibrelog = ((pasandoabytes * 100 ) / tamanoMBR);
+                                    dot = dot + "<td rowspan=\"2\" port='libre'>Espacio Libre <br/>" + to_string(espaciolibrelog) +"%" "del disco</td>\n";
+                                }
+                        }
+                    }
+                    }
                 }
-
-//        <td rowspan="3"> Espacio Libre <br/>20% del disco </td>
-//        <td colspan="4" rowspan="1">Extendida</td>
-//        <td rowspan='3'>Primaria <br/>20% del disco</td>
-//        <td rowspan='3'>Primaria <br/>10% del disco </td>
-//        </tr>
-//        <tr>
-//        <td rowspan="2" port='log1'>EBR</td><td rowspan="2" port='log2'>Logica <br/>25% del disco</td>
-//        <td rowspan="2" port='log1'>EBR</td><td rowspan="2" port='log2'>Logica <br/>25% del disco</td>
-
-
             break;
         }
         

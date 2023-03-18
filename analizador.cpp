@@ -284,7 +284,6 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
                 transform(cmd.param.Name.begin(), cmd.param.Name.end(), cmd.param.Name.begin(), ::tolower);
             }else if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
-                cout<<"Que sale en path? "<<param<<endl;
                 //param = replace_txt(param, "\"", "");
                 cmd.param.Path = param;
             }else if(param.find(">id=") == 0){
