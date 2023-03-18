@@ -1,12 +1,26 @@
 #include "analizador.h"
 
-vector<string> Analizador::split_txt(string text){ // Split para separar tipo de comando y parametros
+vector<string> Analizador::split_txt(string text){
     stringstream text_to_split(text);
     string segment;
     vector<string> splited;
-
+    bool inside_quotes = false;
+    string current_word = "";
+    
     while(std::getline(text_to_split, segment, ' ')){
+        if(segment.find(">path=\"") == 0){ // si se encuentra la ruta del archivo
+            inside_quotes = true;
+            current_word = segment;
+        }else if(inside_quotes){
+            current_word += " " + segment;
+            if(segment.find("\"") != string::npos){ // si se cierra la comilla, se agrega la palabra completa
+                splited.push_back(current_word);
+                inside_quotes = false;
+                current_word = "";
+            }
+        }else{
             splited.push_back(segment);
+        }
     }
     return splited;
 }
@@ -129,7 +143,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             param = parametros.at(i);
             if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
-                param = replace_txt(param, "\"", "");
+                //param = replace_txt(param, "\"", "");
                 cmd.param.Path = param;
             }else if(param.find(">name=") == 0){
                 param = replace_txt(param, ">name=", "");
@@ -270,7 +284,8 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
                 transform(cmd.param.Name.begin(), cmd.param.Name.end(), cmd.param.Name.begin(), ::tolower);
             }else if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
-                param = replace_txt(param, "\"", "");
+                cout<<"Que sale en path? "<<param<<endl;
+                //param = replace_txt(param, "\"", "");
                 cmd.param.Path = param;
             }else if(param.find(">id=") == 0){
                 param = replace_txt(param, ">id=", "");
@@ -293,7 +308,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             param = parametros.at(i);
             if(param.find(">path=") == 0){
                 param = replace_txt(param, ">path=", "");
-                param = replace_txt(param, "\"", "");
+                //param = replace_txt(param, "\"", "");
                 cmd.param.Path = param;
 
                 string ruta = "";
