@@ -3267,7 +3267,6 @@ void Comando:: comando_login(string user, string pass, string id){
                         fread(&usuarios, sizeof(usuarios), 1, discolectura);                    
 
                     // Se busca al usuario en el archivo
-
                     BloqueArchivos usuarioroot;
 
                     int posArchivo = lectura.s_block_start + sizeof(BloqueArchivos);
@@ -3275,9 +3274,6 @@ void Comando:: comando_login(string user, string pass, string id){
 
                         fseek(discolectura, posArchivo, SEEK_SET);
                         fread(&usuarioroot, sizeof(BloqueArchivos), 1 , discolectura);
-
-                        
-
                         usuariostxt=usuarioroot.b_content;
                     fclose(discolectura);
 
@@ -3287,9 +3283,9 @@ void Comando:: comando_login(string user, string pass, string id){
                     string separador = ",";
 
                     while((poss = usuariostxt.find(separador)) != string::npos){
-                        string palabra = usuariostxt.substr(0,poss);
-                        separado.push_back(palabra);
-                        usuariostxt.erase(0, poss + separador.length());
+                    string palabra = usuariostxt.substr(0,poss);
+                    separado.push_back(palabra);
+                    usuariostxt.erase(0, poss + separador.length());
                     }
                     separado.push_back(usuariostxt);
 
@@ -3315,6 +3311,64 @@ void Comando:: comando_login(string user, string pass, string id){
                     }
             }
             break;
+        }else{
+                if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+                cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+            
+                } else {
+                    fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                    fread(&lectura, sizeof(SuperBloque), 1, discolectura);
+
+                    int pos2 = lectura.s_inode_start + sizeof(Inodos)  ;
+
+                    Inodos usuarios;
+                        fseek(discolectura, pos2 , SEEK_SET);
+                        fread(&usuarios, sizeof(usuarios), 1, discolectura);
+
+                    // Se busca al usuario en el archivo
+                    BloqueArchivos usuarioroot;
+
+                    int posArchivo = lectura.s_block_start + sizeof(BloqueArchivos);
+                        fseek(discolectura, posArchivo, SEEK_SET);
+                        fread(&usuarioroot, sizeof(BloqueArchivos), 1 , discolectura);
+                        usuariostxt=usuarioroot.b_content;
+                    fclose(discolectura);
+
+                stringstream ss(usuariostxt);
+                string linea, resultado;
+                while (getline(ss, linea, '\n')) {
+                    if (linea.find(",U,") != string::npos) {
+                        stringstream ss_linea(linea);
+                        string id, tipo,grupo, nombre, contra;
+                        getline(ss_linea, id, ',');
+                        getline(ss_linea, tipo, ',');
+                        getline(ss_linea, grupo, ',');
+                        getline(ss_linea, nombre, ',');
+                        getline(ss_linea, contra, ',');
+
+                        if (!contra.empty() && contra[contra.length()-1] == '\n') {
+                            contra.erase(contra.length()-1);
+                        }
+
+                        if (nombre == user) {
+                            if(contra == pass){
+                            nodoLogin *usuarioactual = new nodoLogin();
+                            usuarioactual->usuario = user;
+                            usuarioactual->iddisco = id;
+                            if(loginregistrado == NULL){
+                                loginregistrado = usuarioactual;
+                                cout<<""<<endl;
+                                cout << "*           Se ha iniciado sesion como" + user + "        *"<<endl;
+                            }else{
+                                cout<<"¡¡ Error !! Ya hay un usuario logeado"<<endl;
+                            }
+                        }
+                            encontrado = true;
+                        }
+                    }
+                }
+        }
         }
         actual = actual->siguienteMontado;
     }
@@ -3867,7 +3921,7 @@ void Comando:: comando_rep(string namerep, string path, string id, string rutaa)
         }else if(namerep == "bm_block"){
             reporte_bm_bloc(extension,path, id);
         }else if (namerep == "tree"){
-
+            reporte_tree(extension,path,id);
         }else if(namerep == "sb"){
             reporte_Sb(extension,path, id);
         }
@@ -5652,7 +5706,6 @@ void Comando:: reporte_bm_inode(string nombresalida, string path, string id){
 }
 
 
-
 void Comando:: reporte_journaling(string nombresalida, string path, string id){
     nodoMount *actual = primeroMount;
     string pathdisco = " ";
@@ -5788,6 +5841,131 @@ void Comando:: reporte_journaling(string nombresalida, string path, string id){
     cout << ""<<endl;
     cout << "*              Reporte Journaling creado con exito            *" << endl;
     cout << ""<<endl;
+}
+
+void Comando:: reporte_tree(string nombresalida, string path, string id){
+    nodoMount *actual = primeroMount;
+    string pathdisco = " ";
+    int tamanoMBR;
+    int dskmbr;
+    string dot = "";
+    string nombredisco = "";
+    bool encontrado = false;
+    string usuariostxt = " ";
+    SuperBloque lectura;
+    FILE* discolectura;
+
+    // Verificar si la ruta está entre comillas
+    if(path.front() == '"' && path.back() == '"'){
+        // Eliminar las comillas de la ruta
+        path = path.substr(1, path.size() - 2);
+    }
+
+    string rutap = "" ;
+    int inicio = 0;
+    int fin = path.find("/");
+    string delimitador = "/";
+
+    while (fin != -1)
+    {
+        rutap += path.substr(inicio, fin - inicio);
+        rutap += "/";
+        inicio = fin + delimitador.size();
+        fin = path.find("/", inicio);
+    }
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(actual->id == id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+                cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+            
+                } else {
+                    fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                    fread(&lectura, sizeof(SuperBloque), 1, discolectura);
+
+                    int pos2 = lectura.s_inode_start + sizeof(Inodos)  ;
+
+                    Inodos usuarios;
+                        fseek(discolectura, pos2 , SEEK_SET);
+                        fread(&usuarios, sizeof(usuarios), 1, discolectura);
+
+                    // Se busca al usuario en el archivo
+                    BloqueArchivos usuarioroot;
+
+                    int posArchivo = lectura.s_block_start + sizeof(BloqueArchivos);
+                        fseek(discolectura, posArchivo, SEEK_SET);
+                        fread(&usuarioroot, sizeof(BloqueArchivos), 1 , discolectura);
+                        usuariostxt=usuarioroot.b_content;
+                    fclose(discolectura);
+
+
+                    string ruta2 = " ";
+                    int inicio2 = 0;
+                    int fin2 = actual->ruta.find("/");
+                    string delimitador2 = "/";
+
+                    while (fin2 != -1)
+                    {
+                        ruta2 += actual->ruta.substr(inicio, fin - inicio2);
+                        ruta2 += "/";
+                        inicio2 = fin2 + delimitador2.size();
+                        fin2 = actual->ruta.find("/", inicio2);
+                    }
+                    string extension = actual->ruta.substr(actual->ruta.find_last_of("/") + 1);
+                    string nombreedisco = extension.substr(0, extension.find("."));
+
+
+                    dot = dot + "digraph G {\n";
+                    dot = dot + "labelloc=\"t\"\n";
+                    dot = dot + "label=\"" + nombreedisco + ".dsk\"\n";
+                    dot = dot + "rankdir = \"LR\"\n";
+                    dot = dot + "\"node0\" [label=\"<f0>Inodo 0|<f1>i_type: 0|<f2>Ap0: Bloq0|<f3>Ap1: -1|<f3>Ap3: -1|<f4>...|<f5>Ap15: -1\" shape=\"record\" style=filled fillcolor=\"cadetblue1\"]\n";
+                    dot = dot + "\"node1\" [label=\"<f0>B. Carpeta 0|<f1>Users.txt: Ino1|<f2>home: Ino2|<f3>. : -1|<f4>. : -1\" shape=\"record\" style=filled fillcolor=\"darkolivegreen1\"]\n";
+                    dot = dot + "\"node2\" [label=\"<f0>Inodo 1|<f1>i_type: 1|<f2>Ap0: Bloq1|<f3>Ap1: -1|<f3>Ap3: -1|<f4>...|<f5>Ap15: -1\" shape=\"record\" style=filled fillcolor=\"cadetblue1\"]\n";
+                    dot = dot + "\"node3\" [label=\"<f0>B. Archivo 1|<f1>";
+                    stringstream ss(usuariostxt);
+                    string linea;
+                    while (getline(ss, linea, '\n')) {
+                        dot = dot + " " + linea + "\n";
+                    }
+                    dot = dot + "\"shape=\"record\" style=filled fillcolor=\"gold\"];\n";
+                    dot = dot + "\"node0\":f2 -> \"node1\":f0;\n";
+                    dot = dot + "\"node1\":f1 -> \"node2\":f0;\n";
+                    dot = dot + "\"node2\":f2 -> \"node3\":f0;\n";
+            break;  
+        }
+    }
+    actual = actual->siguienteMontado;    
+        }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
+    } 
+    }
+    dot = dot +  "}\n";
+    ofstream file;
+    file.open("ReporteTree.dot");
+    file << dot;
+    file.close();
+
+    string crear = "mkdir -p " + rutap;
+    system(crear.c_str());
+    string salida = "dot -Tpng ReporteTree.dot -o " + rutap + nombresalida + ".png";
+    system(salida.c_str());
+
+    cout << ""<<endl;
+    //cout << "*               Reporte SuperBloque creado con exito          *" << endl;
+    cout << "*                Reporte Tree creado con exito                *" << endl;
+    cout << ""<<endl;
+
 }
 
 
