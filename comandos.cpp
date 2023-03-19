@@ -68,6 +68,12 @@ void Comando::identificacionCMD(Parametros p){
         }else{
             cout << "Error para crear un usuario:  Parametros obligatorios no definidos " << endl;
         }
+    }else if(p.Comando=="rmusr"){ // Se identifica el tipo de comando
+        if(p.User != " "){ // Se validan los parametros para el comando
+            comando_rmusr(p.User);
+        }else{
+            cout << "Error para crear un grupo:  Parametros obligatorios no definidos " << endl;
+        }
     }
     
     else if(p.Comando=="rep"){ // Se identifica el tipo de comando
@@ -287,12 +293,6 @@ void Comando::comando_rmdisk(string path)
     }
 }
 
-/* 
-
-* ? Falta valida logica repetida
-
-*/
-
 void Comando::comando_fdisk_creando(string size, string path, string name, string unit, string type, string fit, string del, string add){
     
     int size_file = 0, tamano = atoi(size.c_str());
@@ -433,7 +433,10 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                 //cout<<"Start: "<<disco.mbr_partition_1.part_start<<endl;
                 //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                 escritura(disco,path);
-                cout<<"*        La Particion 1 ha sido asginada         *"<<endl;
+                cout << "" << endl;
+                cout << "*                  Particion 1 asignada                       *"<<endl;
+                cout << "" << endl;
+                //cout << "*----------------------------------------------------------*" << endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -452,7 +455,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                 //cout<<"Start: "<<disco.mbr_partition_2.part_start<<endl;
                 //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                 escritura(disco,path);
-                cout<<"Particion 2 asignada"<<endl;
+                cout << "" << endl;
+                cout << "*                  Particion 2 asignada                       *"<<endl;
+                cout << "" << endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -472,7 +477,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                 //cout<<"Start: "<<disco.mbr_partition_3.part_start<<endl;
                 //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                 escritura(disco,path);
-                cout<<"Particion 3 asignada"<<endl;
+                cout << "" << endl;
+                cout << "*                  Particion 3 asignada                       *"<<endl;
+                cout << "" << endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -493,12 +500,14 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                 //cout<<"Start: "<<disco.mbr_partition_4.part_start<<endl;
                 //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                 escritura(disco,path);
-                cout<<"Particion 4 asignada"<<endl;
+                cout << "" << endl;
+                    cout << "*                  Particion 4 asignada                       *"<<endl;
+                    cout << "" << endl;
             }
         } else if(disco.mbr_partition_1.part_status == '0' && disco.mbr_partition_2.part_status == '1' && disco.mbr_partition_3.part_status == '1' && disco.mbr_partition_4.part_status == '1'){
                 
                 int tamanioParticion1 = (disco.mbr_partition_2.part_start - disco.mbr_partition_1.part_start) - 1;
-                cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_1.part_s<<endl;
+                //cout<<"Tamanio antes de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                 if(tamanioParticion1 >= size_file){
                     strcpy(disco.mbr_partition_1.part_name, name.c_str());
                     disco.mbr_partition_1.part_status = '0';
@@ -514,7 +523,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                     escritura(disco,path);
-                    cout<<"Particion 1 asignada"<<endl;
+                    cout << "" << endl;
+                    cout << "*                  Particion 1 asignada                       *"<<endl;
+                    cout << "" << endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -540,7 +551,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                     
                     escritura(disco,path);
-                    cout<<"Particion 2 asignada"<<endl;
+                    cout << "" << endl;
+                    cout << "*                  Particion 2 asignada                       *"<<endl;
+                    cout << "" << endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -565,7 +578,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                     
                     escritura(disco,path);
-                    cout<<"Particion 3 asignada"<<endl;
+                    cout << "" << endl;
+                    cout << "*                  Particion 3 asignada                       *"<<endl;
+                    cout << "" << endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -591,7 +606,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                     escritura(disco,path);
-                    cout<<"Particion 1 asignada"<<endl;
+                    cout << "" << endl;
+                    cout << "*                  Particion 1 asignada                       *"<<endl;
+                    cout << "" << endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -616,7 +633,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                     escritura(disco,path);
-                    cout<<"Particion 1 asignada"<<endl;
+                    cout << "" << endl;
+                    cout << "*                  Particion 1 asignada                       *"<<endl;
+                    cout << "" << endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -641,7 +660,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
                     escritura(disco,path);
-                    cout<<"Particion 2 asignada"<<endl;
+                    cout << "" << endl;
+                    cout << "*                  Particion 2 asignada                       *"<<endl;
+                    cout << "" << endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -674,7 +695,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                     //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                     //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
                     escritura(disco,path);
-                    cout<<"Particion 2 asignada"<<endl;
+                    cout << "" << endl;
+                    cout << "*                  Particion 2 asignada                       *"<<endl;
+                    cout << "" << endl;
             }else{
                     cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                     return;
@@ -708,7 +731,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 2 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 2 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else if (tamanioParticion4 < tamanioParticion2){
                         if (tamanioParticion4 >= size_file){
@@ -726,7 +751,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 4 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
@@ -748,7 +775,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 2 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 2 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }else if (tamanioParticion4 >= size_file){
                             strcpy(disco.mbr_partition_4.part_name, name.c_str());
                             disco.mbr_partition_1.part_status = '0';
@@ -764,7 +793,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 4 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                             return;
@@ -786,7 +817,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 4 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else if (tamanioParticion2 > tamanioParticion4){
                         if (tamanioParticion2 >= size_file){
@@ -804,7 +837,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_2.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 2 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 2 asignada                       *"<<endl;
+                            cout << "" << endl;
                         } 
                     } else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
@@ -836,7 +871,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else if (tamanioParticion3 < tamanioParticion1){
                         if (tamanioParticion3 >= size_file){
@@ -854,7 +891,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 3 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
@@ -876,7 +915,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }else if (tamanioParticion3 >= size_file){
                             strcpy(disco.mbr_partition_3.part_name, name.c_str());
                             disco.mbr_partition_1.part_status = '0';
@@ -892,7 +933,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 3 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                             return;
@@ -914,7 +957,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 3 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else if (tamanioParticion1 > tamanioParticion3){
                         if (tamanioParticion1 >= size_file){
@@ -932,7 +977,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         } 
                     } else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
@@ -966,7 +1013,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else if (espacioParticion4 < espacioParticion1){
                         if (espacioParticion4 >= size_file){
@@ -984,7 +1033,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 4 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
@@ -1006,7 +1057,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }else if (espacioParticion4 >= size_file){
                             strcpy(disco.mbr_partition_4.part_name, name.c_str());
                             disco.mbr_partition_1.part_status = '0';
@@ -1022,7 +1075,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 4 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                             return;
@@ -1044,7 +1099,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 4 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else if (espacioParticion1 > espacioParticion4){
                         if (espacioParticion1 >= size_file){
@@ -1062,7 +1119,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         } 
                     } else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
@@ -1098,7 +1157,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else if (espacioParticion4 < espacioparticion12){
                         if (espacioParticion4 >= size_file){
@@ -1116,7 +1177,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 4 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
@@ -1138,7 +1201,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }else if (espacioParticion4 >= size_file){
                             strcpy(disco.mbr_partition_4.part_name, name.c_str());
                             disco.mbr_partition_1.part_status = '0';
@@ -1154,7 +1219,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 4 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                             return;
@@ -1176,7 +1243,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_4.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 4 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 4 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else if (espacioparticion12 > espacioParticion4){
                         if (espacioparticion12 >= size_file){
@@ -1194,7 +1263,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                            // cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         } 
                     } else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
@@ -1227,7 +1298,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else if (tamanioParticion3 < tamanioParticion1){
                         if (tamanioParticion3 >= size_file){
@@ -1245,7 +1318,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 3 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
@@ -1267,7 +1342,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }else if (tamanioParticion3 >= size_file){
                             strcpy(disco.mbr_partition_3.part_name, name.c_str());
                             disco.mbr_partition_1.part_status = '0';
@@ -1283,7 +1360,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 3 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
                             return;
@@ -1305,7 +1384,9 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_3.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 3 asignada"<<endl;
+                            cout << "" << endl;
+                            cout << "*                  Particion 3 asignada                       *"<<endl;
+                            cout << "" << endl;
                         }
                     } else if (tamanioParticion1 > tamanioParticion3){
                         if (tamanioParticion1 >= size_file){
@@ -1323,7 +1404,10 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                             //cout<<"Tamano disponible en bytes "<<(tamanoDisponible*1024)<<endl;
                             //cout<<"Tamanio actual de la particion: "<<disco.mbr_partition_1.part_s<<endl;
                             escritura(disco,path);
-                            cout<<"Particion 1 asignada"<<endl;
+                            
+                            cout << "" << endl;
+                            cout << "*                  Particion 1 asignada                       *"<<endl;
+                            cout << "" << endl;
                         } 
                     } else{
                             cout<<"¡¡ Error !! EL tamanio asignado para la particion es mayor al tamanio disponible del disco"<<endl;
@@ -1424,7 +1508,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                                     fseek(discolecturaE, Anterior.part_start, SEEK_SET);
                                     fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
                                     cout << "" << endl;
-                                    cout << "*                 Particion logica creada con exito            *" << endl;
+                                    cout << "*                Particion logica creada con exito            *" << endl;
                                     cout << "" << endl;
                                 }
                             }
@@ -1509,7 +1593,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                                     fseek(discolecturaE, Anterior.part_start, SEEK_SET);
                                     fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
                                     cout << "" << endl;
-                                    cout << "*                 Particion logica creada con exito            *" << endl;
+                                    cout << "*                Particion logica creada con exito            *" << endl;
                                     cout << "" << endl;
                                 }
                             }
@@ -1597,7 +1681,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                                     fseek(discolecturaE, Anterior.part_start, SEEK_SET);
                                     fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
                                     cout << "" << endl;
-                                    cout << "*                 Particion logica creada con exito            *" << endl;
+                                    cout << "*                Particion logica creada con exito            *" << endl;
                                     cout << "" << endl;
                                 }
                             }
@@ -1682,7 +1766,7 @@ void Comando::comando_fdisk_creando(string size, string path, string name, strin
                                     fseek(discolecturaE, Anterior.part_start, SEEK_SET);
                                     fwrite(&Anterior, sizeof(EBR), 1, discolecturaE);
                                     cout << "" << endl;
-                                    cout << "*                 Particion logica creada con exito            *" << endl;
+                                    cout << "*                 Particion logica creada con exito           *" << endl;
                                     cout << "" << endl;
                                 }
                             }
@@ -1716,7 +1800,7 @@ void Comando::escritura(MBR actualizado, string path){
         fwrite(&actualizado, sizeof (MBR), 1, discoescritura);
         fclose(discoescritura);
         cout << "" << endl;
-        cout << "*                 Particion creada con exito                   *" << endl;
+        cout << "*                 Particion creada con exito                  *" << endl;
         cout << "" << endl;
     }
 }
@@ -1733,7 +1817,7 @@ void Comando::escrituraLogica(EBR logica, string path, int start){
         fwrite(&logica, sizeof (EBR), 1, discoescritura);
         fclose(discoescritura);
         cout << "" << endl;
-        cout << "*                 Particion logica creada con exito            *" << endl;
+        cout << "*                Particion logica creada con exito            *" << endl;
         cout << "" << endl;
     }
 }
@@ -1780,7 +1864,7 @@ void Comando::comando_fdisk_modificando(string path, string name, string unit, s
             //cout<<"Encontrado 3"<<endl;
         }else{
             //cout<<"No encontrado"<<endl;
-            cout<<"¡¡ Error !! NO se encuentra ninguna particion con ese nombre "<<endl;
+            cout<<"¡¡ Error !! No se encuentra ninguna particion con ese nombre "<<endl;
             return;
         }
 
@@ -1790,7 +1874,7 @@ void Comando::comando_fdisk_modificando(string path, string name, string unit, s
         if(confirmacion=="y"||confirmacion=="Y"){
             eliminar(name, path);
         }else{
-            cout << "Regresando" << endl;
+            cout << "Regresando al inicio" << endl;
         }
         cout<<""<<endl;
     }
@@ -2225,7 +2309,7 @@ void Comando::agregar(string name, string path, string unit, string size){
                         int positivo;
                         positivo = stoi(size);
                         positivo = (positivo * -1);
-                        cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
+                        cout << "*  Se han quitado "<<positivo<<" "<<unidad<<" a la particion  *"<<endl;
                         disco.mbr_partition_1.part_s = espacioFinal1;
                         modificaradd(disco, path);
                     }else {
@@ -2237,7 +2321,7 @@ void Comando::agregar(string name, string path, string unit, string size){
                         //cout << "Tamanio de la particion " << tamanioParticion1 << endl;
                         if (espacioFinal1 <= tamanioParticion1 && espacioFinal1 > 0){
                             if (size_file > 0){
-                                cout << "Se han agregado " << size << " " << unidad << " a la particion" << endl;
+                                cout << "*Se han agregado " << size << " "<< unidad << " a la particion*" << endl;
                                 disco.mbr_partition_1.part_s = espacioFinal1;
                                 modificaradd(disco, path);
                             }
@@ -2252,7 +2336,7 @@ void Comando::agregar(string name, string path, string unit, string size){
                         int positivo;
                         positivo = stoi(size);
                         positivo = (positivo * -1);
-                        cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
+                        cout << "*  Se han quitado "<<positivo<<" "<<unidad<<" a la particion  *"<<endl;
                         disco.mbr_partition_2.part_s = espacioFinal2;
                         modificaradd(disco, path);
                     }else{
@@ -2264,7 +2348,7 @@ void Comando::agregar(string name, string path, string unit, string size){
                         //cout<<"Tamanio de la particion "<<tamanioParticion2<<endl;
                         if(espacioFinal2 <= tamanioParticion2 && espacioFinal2 > 0){
                             if(size_file > 0){
-                                cout<<"Se han agregado "<<size<<" "<<unidad<<" a la particion"<<endl;
+                                cout << "*Se han agregado " << size << " "<< unidad << " a la particion*" << endl;
                                 disco.mbr_partition_2.part_s = espacioFinal2;
                                 modificaradd(disco, path);
                             }
@@ -2279,7 +2363,7 @@ void Comando::agregar(string name, string path, string unit, string size){
                         int positivo;
                         positivo = stoi(size);
                         positivo = (positivo * -1);
-                        cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
+                        cout << "*  Se han quitado "<<positivo<<" "<<unidad<<" a la particion  *"<<endl;
                         disco.mbr_partition_3.part_s = espacioFinal3;
                         modificaradd(disco, path);
                     }else{
@@ -2291,7 +2375,7 @@ void Comando::agregar(string name, string path, string unit, string size){
                             //cout<<"Tamanio de la particion "<<tamanioParticion3<<endl;
                             if(espacioFinal3 <= tamanioParticion3 && espacioFinal3 > 0){
                                 if(size_file > 0){
-                                    cout<<"Se han agregado "<<size<<" "<<unidad<<" a la particion"<<endl;
+                                    cout << "*Se han agregado " << size << " "<< unidad << " a la particion*" << endl;
                                     disco.mbr_partition_3.part_s = espacioFinal3;
                                     modificaradd(disco, path);
                                 }
@@ -2306,7 +2390,7 @@ void Comando::agregar(string name, string path, string unit, string size){
                         int positivo;
                         positivo = stoi(size);
                         positivo = (positivo * -1);
-                        cout<<"Se han quitado "<<positivo<<" "<<unidad<<" a la particion"<<endl;
+                        cout << "*  Se han quitado "<<positivo<<" "<<unidad<<" a la particion  *"<<endl;
                         disco.mbr_partition_4.part_s = espacioFinal4;
                         modificaradd(disco, path);
                     }else{
@@ -2318,7 +2402,7 @@ void Comando::agregar(string name, string path, string unit, string size){
                             //cout<<"Tamanio de la particion "<<tamanioParticion4<<endl;
                             if(espacioFinal4 <= tamanioParticion4 && espacioFinal4 > 0){
                                 if(size_file > 0){
-                                    cout<<"Se han agregado "<<size<<" "<<unidad<<" a la particion"<<endl;
+                                    cout << "*Se han agregado " << size << " "<< unidad << " a la particion*" << endl;
                                     disco.mbr_partition_4.part_s = espacioFinal4;
                                     modificaradd(disco, path);
                                 }
@@ -2344,7 +2428,7 @@ void Comando::modificaradd(MBR disco, string path){
         fwrite(&actualizado, sizeof (MBR), 1, discoescritura);
         fclose(discoescritura);
         cout << "" << endl;
-        cout << "*                 Particion modificada con exito                *" << endl;
+        cout << "*                Particion modificada con exito               *" << endl;
         cout << "" << endl;
     }
 }
@@ -2360,7 +2444,7 @@ void Comando:: actualizardisco(MBR disco, string path){
         fwrite(&actualizado, sizeof (MBR), 1, discoescritura);
         fclose(discoescritura);
         cout << "" << endl;
-        cout << "*                 Particion eliminada con exito                *" << endl;
+        cout << "*                Particion eliminada con exito                *" << endl;
         cout << "" << endl;
     }
 }
@@ -2492,7 +2576,7 @@ void Comando:: montado(string id, string path, string nombreparticion, string ti
             tmp->vecesmontada++;
             tmp->horamontado = std::time(0);
             cout << "" << endl;
-            cout << "*                 Particion montada con exito                *" << endl;
+            cout << "*                  Particion montada con exito                *" << endl;
             cout << "" << endl;
             verlista();
             return;
@@ -2524,7 +2608,7 @@ void Comando:: montado(string id, string path, string nombreparticion, string ti
     }
     
     cout << "" << endl;
-    cout << "*                 Particion montada con exito                *" << endl;
+    cout << "*                  Particion montada con exito                *" << endl;
     cout << "" << endl;
     verlista();
 }
@@ -2622,7 +2706,7 @@ void Comando:: desmontado(string id){
             tmp->status = "0";
             tmp->horamontado = std::time(0);
             cout << "" << endl;
-            cout << "*                 Particion desmontada con exito                *" << endl;
+            cout << "*                Particion desmontada con exito               *" << endl;
             cout << "" << endl;
             return;
         }
@@ -2869,7 +2953,7 @@ void Comando:: crear_ext2(nodoMount *actual ,int n, int tipop){
     Actualizar_SuperBloque(actual->ruta, SP, actual->inicioparticion);
 
     cout<<" "<<endl;
-    cout<<"*                Formato EXT2 creado con exito             *"<<endl;
+    cout << "*                 Formato EXT2 creado con exito               *"<<endl;
     cout<<" "<<endl;
 }
 
@@ -2996,7 +3080,7 @@ void Comando:: crear_ext3(nodoMount *actual, int n, int inicio){
     Actualizar_SuperBloque(actual->ruta, SP, actual->inicioparticion);
 
     cout<<" "<<endl;
-    cout<<"*                Formato EXT3 creado con exito             *"<<endl;
+    cout<<"*                 Formato EXT3 creado con exito                 *"<<endl;
     cout<<" "<<endl;
 }
 
@@ -3170,6 +3254,12 @@ void Comando:: comando_login(string user, string pass, string id){
                     fseek(discolectura, actual->inicioparticion, SEEK_SET);
                     fread(&lectura, sizeof(SuperBloque), 1, discolectura);
 
+                    if(lectura.s_filesystem_type != 2 && lectura.s_filesystem_type != 3){
+                        cout<<" "<<endl;
+                        cout<<"¡¡ Error !! Primero debe crear la particion con formato EXT2/EXT3"<<endl;
+                        return;
+                    }
+
                     int pos2 = lectura.s_inode_start + sizeof(Inodos)  ;
 
                     Inodos usuarios;
@@ -3218,12 +3308,10 @@ void Comando:: comando_login(string user, string pass, string id){
                         if(loginregistrado == NULL){
                             loginregistrado = usuarioactual;
                             cout<<""<<endl;
-                            cout<<"*           Se ha iniciado sesion como usuario root        *"<<endl;
+                            cout << "*           Se ha iniciado sesion como usuario root           *"<<endl;
                         }else{
                             cout<<"¡¡ Error !! Ya hay un usuario logeado"<<endl;
                         }
-                        //cout<<"Tiene que salir el login bien "<<endl;
-                        //return;
                     }
             }
             break;
@@ -3247,7 +3335,7 @@ void Comando:: comando_logout(){
     }else{
         delete loginregistrado;
         loginregistrado = NULL;
-        cout<<"*            Se ha cerrado sesion correctamente             *"<<endl;
+        cout << "*             Se ha cerrado sesion correctamente              *"<<endl;
     }
 }
 
@@ -3304,8 +3392,7 @@ void Comando:: crear_grupo(string name){
                         fseek(discolectura, pos2 , SEEK_SET);
                         fread(&usuarios, sizeof(usuarios), 1, discolectura);
 
-                
-                    // Se busca al usuario en el archivo
+                    // Se busca al grupo en el archivo
 
                     BloqueArchivos usuarioroot;
 
@@ -3313,10 +3400,6 @@ void Comando:: crear_grupo(string name){
                         fseek(discolectura, posArchivo, SEEK_SET);
                         fread(&usuarioroot, sizeof(BloqueArchivos), 1 , discolectura);
                         usuariostxt=usuarioroot.b_content;
-
-                        // cout<<"Que sale en prueba "<<usuariostxt<<endl;
-                        // cout<<"Que sale en size? "<<usuariostxt.size()<<endl;
-                        // cout<<"Que sale en size nombre "<<name.size()<<endl;
                     fclose(discolectura);
 
                     bool grupo_encontrado = false;
@@ -3351,12 +3434,11 @@ void Comando:: crear_grupo(string name){
                         cout<<""<<endl;
                     }
                     
-
                     if (grupo_encontrado) {
                         cout << "¡¡ Error !! El Grupo " << name << " ya existe en el archivo." << endl;
                         cout << ""<<endl;
                     } else {
-                        cout << "El Grupo " << name << " se ha agregado al archivo" << endl;
+                        cout << "*  El Grupo " << name << " se ha agregado al archivo          *" << endl;
                         string obteniendo = to_string(numsig) + ",G," + name + "\n";
                         string nuevoaa = usuariostxt.append(obteniendo);
                         cout<<""<<nuevoaa.c_str()<<endl;
@@ -3376,7 +3458,6 @@ void Comando:: crear_grupo(string name){
     return;
     }
 }
-
 
 void Comando:: comando_rmgrp(string name){
     nodoLogin *verififcarlogin = loginregistrado;
@@ -3431,65 +3512,48 @@ void Comando:: eliminar_grupo(string name){
                         fseek(discolectura, pos2 , SEEK_SET);
                         fread(&usuarios, sizeof(usuarios), 1, discolectura);
 
-                
                     // Se busca al usuario en el archivo
-
                     BloqueArchivos usuarioroot;
 
                     int posArchivo = lectura.s_block_start + sizeof(BloqueArchivos);
                         fseek(discolectura, posArchivo, SEEK_SET);
                         fread(&usuarioroot, sizeof(BloqueArchivos), 1 , discolectura);
                         usuariostxt=usuarioroot.b_content;
-
-                        // cout<<"Que sale en prueba "<<usuariostxt<<endl;
-                        // cout<<"Que sale en size? "<<usuariostxt.size()<<endl;
-                        // cout<<"Que sale en size nombre "<<name.size()<<endl;
                     fclose(discolectura);
 
-                    bool grupo_encontrado = false;
-                    int numsig = 0;
-
-                    stringstream ss(usuariostxt);
-                    vector<std::string> output;
-
-                    string line;
-                    int ultimo_numero = -1;
-                    while (getline(ss, line, '\n')) {
-                        if (line.find(",G,") != string::npos) {
-                            stringstream ss_line(line);
-                            string item;
-                            int number = -1;
-                            while (getline(ss_line, item, ',')) {
-                                if (isdigit(item[0])) {
-                                    number = stoi(item);
-                                }
-                            }
-                        }if (line.find(",G,") != string::npos && line.find(name) != string::npos) {
-                            if(line.find("root")){
-                                cout<<"¡¡ Error !! El grupo root no puede ser eliminado"<<endl;
+                stringstream ss(usuariostxt);
+                string linea, resultado;
+                bool encontrado = false;
+                while (getline(ss, linea, '\n')) {
+                    if (linea.find(",G,") != string::npos) {
+                        stringstream ss_linea(linea);
+                        string id, tipo, nombre;
+                        getline(ss_linea, id, ',');
+                        getline(ss_linea, tipo, ',');
+                        getline(ss_linea, nombre, ',');
+                        if (nombre == name) {
+                            if (id == "0") {
+                                cout<< "¡¡ Error !! No se encuentra ese grupo\n";
                                 return;
-                            }else{
-                                line[0] = '0';
-                                grupo_encontrado = true;
-                                break;
+                            } else {
+                                id = "0";
+                                encontrado = true;
                             }
-                            output.push_back(line);
-                    }
-                    }
-                    if (!grupo_encontrado) {
-                        cout << "¡¡ Error !! El Grupo " << name << " no existe en el archivo." << endl;
-                        cout << ""<<endl;
+                        }
+                        resultado += id + "," + tipo + "," + nombre + "\n";
                     } else {
-                        cout<<"qUE SALE? "<<endl;
-                        // cout << "El Grupo " << name << " se ha agregado al archivo" << endl;
-                        // string obteniendo = to_string(numsig) + ",G," + name + "\n";
-                        // string nuevoaa = usuariostxt.append(obteniendo);
-                        // cout<<""<<nuevoaa.c_str()<<endl;
-
-                        // BloqueArchivos Archivo;
-                        // strcpy(Archivo.b_content, nuevoaa.c_str());
-                        // Escribir_BloqueArchivo(actual->ruta, Archivo, posArchivo);
-                    }     
+                        resultado += linea + "\n";
+                        
+                    }
+                }
+                BloqueArchivos Archivo;
+                strcpy(Archivo.b_content, resultado.c_str());
+                Escribir_BloqueArchivo(actual->ruta, Archivo, posArchivo);
+                cout <<"*       Se ha eliminado el Grupo                *"<<endl;
+                if (!encontrado) {
+                    resultado += "No se encontró el nombre buscado\n";
+                }
+                cout << resultado;
                     }
             }
             break;
@@ -3515,7 +3579,6 @@ void Comando:: comando_mkusr(string user, string pass, string grp){
             }else{
                 crear_usuario(user,pass,grp);
             }
-
         }else{
             cout<<"¡¡ Error !! Este comando solo lo puede ejecutar el usuario root"<<endl;
         }
@@ -3532,7 +3595,6 @@ void Comando:: crear_usuario(string user, string pass, string grp){
     FILE* discolectura;
     string usuariostxt;
     bool logeadoon = false;
-
 
     if(actual == NULL){
         cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
@@ -3588,12 +3650,20 @@ void Comando:: crear_usuario(string user, string pass, string grp){
                                     number = stoi(item);
                                 }
                             }
-                        }if (line.find(",G,") != string::npos && line.find(grp) != string::npos) {
+                            if (number > ultimo_numero) {
+                                ultimo_numero = number;
+                            }
+                        }
+                        if (line.find(",G,") != string::npos && line.find(grp) != string::npos) {
                         grupo_encontrado = true;
                         break;
                     }
                     }
-                    
+                    if (ultimo_numero > -1) {
+                        numsig = ultimo_numero;
+                    } else {
+                        cout<<""<<endl;
+                    }
                     if (grupo_encontrado) {
                         stringstream ss(usuariostxt);
                         vector<std::string> output;
@@ -3610,9 +3680,6 @@ void Comando:: crear_usuario(string user, string pass, string grp){
                                     number = stoi(item);
                                 }
                             }
-                            // if (number > ultimo_numero) {
-                            //     ultimo_numero = number;
-                            // }
                         }if (line.find(",U,") != string::npos && line.find(user) != string::npos) {
                         grupo_encontrado = true;
                         break;
@@ -3627,7 +3694,7 @@ void Comando:: crear_usuario(string user, string pass, string grp){
                             cout<<" ¡¡ Error !! El usuario " << user << " ya se encuentra registrado "<<endl;
                             return;
                         }else{
-                            cout << "El Usuario " << user << " se ha agregado al archivo" << endl;
+                            cout << "*   El Usuario " << user << " se ha agregado al archivo          *" << endl;
                             string obteniendo = to_string(numsig) + ",U," + grp + "," + user + "," + pass  + "\n";
                             string nuevoaa = usuariostxt.append(obteniendo);
                             cout<<""<<nuevoaa.c_str()<<endl;
@@ -3635,7 +3702,6 @@ void Comando:: crear_usuario(string user, string pass, string grp){
                             BloqueArchivos Archivo;
                             strcpy(Archivo.b_content, nuevoaa.c_str());
                             Escribir_BloqueArchivo(actual->ruta, Archivo, posArchivo);
-                            //cout<<"Si se puede agregar usuario "<<endl;
                         }
                     } else {
                         cout << "¡¡ Error !! El Grupo " << grp << " no se encuentra en el archivo." << endl;
@@ -3652,6 +3718,114 @@ void Comando:: crear_usuario(string user, string pass, string grp){
     cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
     return;
     }
+}
+
+void Comando:: comando_rmusr(string user){
+    nodoLogin *verififcarlogin = loginregistrado;
+    if(verififcarlogin == NULL){
+        cout<<"¡¡ Error !! Primero debe iniciar sesion como usuario root"<<endl;
+        return;
+    }else{
+        if(verififcarlogin->usuario == "root"){
+            eliminar_usuario(user);
+
+        }else{
+            cout<<"¡¡ Error !! Este comando solo lo puede ejecutar el usuario root"<<endl;
+        }
+    }
+}
+
+void Comando:: eliminar_usuario(string user){
+    nodoMount *actual = primeroMount;
+    nodoLogin *obtener = loginregistrado;
+    string pathdisco = " ";
+    bool encontrado = false;
+
+    SuperBloque lectura;
+    FILE* discolectura;
+    string usuariostxt;
+    bool logeadoon = false;
+
+
+    if(actual == NULL){
+        cout<<"¡¡ Error !! No hay ninguna particion montada "<<endl;
+        return;
+    }else{
+        while(actual != NULL){
+        if(actual->id == obtener->iddisco){
+            encontrado = true;
+            pathdisco = actual->ruta;
+
+            nodoLogin *verificaruser = loginregistrado;
+
+                if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+                cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+            
+                } else {
+                    fseek(discolectura, actual->inicioparticion, SEEK_SET);
+                    fread(&lectura, sizeof(SuperBloque), 1, discolectura);
+
+                    int pos2 = lectura.s_inode_start + sizeof(Inodos)  ;
+
+                    Inodos usuarios;
+                        fseek(discolectura, pos2 , SEEK_SET);
+                        fread(&usuarios, sizeof(usuarios), 1, discolectura);
+
+                    // Se busca al usuario en el archivo
+                    BloqueArchivos usuarioroot;
+
+                    int posArchivo = lectura.s_block_start + sizeof(BloqueArchivos);
+                        fseek(discolectura, posArchivo, SEEK_SET);
+                        fread(&usuarioroot, sizeof(BloqueArchivos), 1 , discolectura);
+                        usuariostxt=usuarioroot.b_content;
+                    fclose(discolectura);
+
+                stringstream ss(usuariostxt);
+                string linea, resultado;
+                bool encontrado = false;
+                while (getline(ss, linea, '\n')) {
+                    if (linea.find(",U,") != string::npos) {
+                        stringstream ss_linea(linea);
+                        string id, tipo,grupo, nombre, contra;
+                        getline(ss_linea, id, ',');
+                        getline(ss_linea, tipo, ',');
+                        getline(ss_linea, grupo, ',');
+                        getline(ss_linea, nombre, ',');
+                        getline(ss_linea, contra, ',');
+                        if (nombre == user) {
+                            if (id == "0") {
+                                cout<< "¡¡ Error !! No se encuentra ese usuario\n";
+                                return;
+                            } else {
+                                id = "0";
+                                encontrado = true;
+                            }
+                        }
+                        resultado += id + "," + tipo + "," + grupo + "," + nombre + "," + contra + "\n";
+                    } else {
+                        resultado += linea + "\n";
+                    }
+                }
+                BloqueArchivos Archivo;
+                strcpy(Archivo.b_content, resultado.c_str());
+                Escribir_BloqueArchivo(actual->ruta, Archivo, posArchivo);
+                cout <<"*       Se ha eliminado el usuario                 *"<<endl;
+                if (!encontrado) {
+                    resultado += "No se encontró el nombre buscado\n";
+                }
+                cout << resultado;
+                    }
+            }
+            break;
+        actual = actual->siguienteMontado;
+    }
+        }
+    if(!encontrado){
+    cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
+    return;
+    }
+
 }
 
 void Comando:: comando_rep(string namerep, string path, string id, string rutaa){
@@ -3682,21 +3856,19 @@ void Comando:: comando_rep(string namerep, string path, string id, string rutaa)
             reporte_mbr(extension, path, id);
         }else if(namerep == "disk"){
             reporte_disk(extension,path, id);
-        }
+        }else if(namerep == "inode"){
 
-        else if(namerep == "journaling"){
+        }else if(namerep == "journaling"){
             reporte_journaling(extension,path, id);
-        }
+        }else if(namerep == "block"){
 
-
-
-        else if(namerep == "bm_inode"){
+        }else if(namerep == "bm_inode"){
             reporte_bm_inode(extension,path, id);
-        }else if(namerep == "bm_bloc"){
+        }else if(namerep == "bm_block"){
             reporte_bm_bloc(extension,path, id);
-        }
+        }else if (namerep == "tree"){
 
-        else if(namerep == "sb"){
+        }else if(namerep == "sb"){
             reporte_Sb(extension,path, id);
         }
         else{
@@ -3717,6 +3889,10 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
 
     MBR lectura;
     FILE* discolectura;
+    bool extendida1 = false;
+    bool extendida2 = false;
+    bool extendida3 = false;
+    bool extendida4 = false;
 
     // Verificar si la ruta está entre comillas
     if(path.front() == '"' && path.back() == '"'){
@@ -3762,6 +3938,8 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                 particion[2] = disco.mbr_partition_3;
                 particion[3] = disco.mbr_partition_4;
 
+                
+
                 tamanoMBR = (disco.mbr_tamano * 1024);
                 dskmbr = disco.mbr_dsk_signature;
                 fechacreacionmbr = disco.mbr_fecha_creacion;
@@ -3802,6 +3980,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                         string typp = " ";
                         string fiit = " ";
                         string nombrep = " ";
+                        extendida1 = true;
 
                         statt = particion[0].part_status;
                         typp = particion[0].part_type;
@@ -3840,9 +4019,10 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 statusa = Anterior.part_status;
                                 fitlog = Anterior.part_fit;
                                 nombrelog = Anterior.part_name;
-                                int neext = Anterior.part_next;
+                                
                                 int sss = (Anterior.part_s *1024);
-                                int startlog = Anterior.part_start;
+                                int startlog = particion[0].part_start ;
+                                int neext = startlog + (Anterior.part_s * 1024) + 1;
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
@@ -3859,7 +4039,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 nombrelog1 = Siguiente.part_name;
                                 int neext1 = Siguiente.part_next;
                                 int sss1 = (Siguiente.part_s * 1024);
-                                int startlog1 = Siguiente.part_start;
+                                int startlog1 = startlog + (Anterior.part_s * 1024) + 1;
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
@@ -3900,6 +4080,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                         string typp = " ";
                         string fiit = " ";
                         string nombrep = " ";
+                        extendida2 = true;
 
                         statt = particion[1].part_status;
                         typp = particion[1].part_type;
@@ -3938,9 +4119,9 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 statusa = Anterior.part_status;
                                 fitlog = Anterior.part_fit;
                                 nombrelog = Anterior.part_name;
-                                int neext = Anterior.part_next;
                                 int sss = (Anterior.part_s *1024);
                                 int startlog = (particion[0].part_start + (particion[0].part_s *1024) + 1);
+                                int neext = startlog + (Anterior.part_s *1024 ) + 1;
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
@@ -3998,6 +4179,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                         string typp = " ";
                         string fiit = " ";
                         string nombrep = " ";
+                        extendida3 = true;
 
                         statt = particion[2].part_status;
                         typp = particion[2].part_type;
@@ -4036,9 +4218,9 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 statusa = Anterior.part_status;
                                 fitlog = Anterior.part_fit;
                                 nombrelog = Anterior.part_name;
-                                int neext = Anterior.part_next;
                                 int sss = (Anterior.part_s *1024);
                                 int startlog = (particion[0].part_start + (particion[0].part_s *1024) + (particion[1].part_s * 1024) + 1);
+                                int neext = startlog + (Anterior.part_s * 1024) + 1;
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
@@ -4096,6 +4278,7 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                         string typp = " ";
                         string fiit = " ";
                         string nombrep = " ";
+                        extendida4 = true;
 
                         statt = particion[3].part_status;
                         typp = particion[3].part_type;
@@ -4134,9 +4317,9 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
                                 statusa = Anterior.part_status;
                                 fitlog = Anterior.part_fit;
                                 nombrelog = Anterior.part_name;
-                                int neext = Anterior.part_next;
                                 int sss = (Anterior.part_s *1024);
                                 int startlog = (particion[0].part_start + (particion[0].part_s *1024) + (particion[1].part_s * 1024) + (particion[2].part_s * 1024) + 1);
+                                int neext = startlog + (Anterior.part_s * 1024) + 1 ;
 
                                 dot = dot +  "<tr><td bgcolor=\"lightblue1\" colspan=\"3\">PARTICION LOGICA</td></tr>\n";
                                 dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
@@ -4175,14 +4358,408 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
     actual = actual->siguienteMontado;
     
     }
+    dot = dot + "</table>\n";
+    dot = dot + ">];\n";
+
+    if(extendida1){
+        if(actual->id == id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+
+        }
+
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+            } else {
+                fseek(discolectura, 0, SEEK_SET);
+                fread(&lectura, sizeof (MBR), 1, discolectura);
+                fclose(discolectura);
+            }
+
+            MBR disco = lectura;
+            Partition particion[4];
+            particion[0] = disco.mbr_partition_1;
+            particion[1] = disco.mbr_partition_2;
+            particion[2] = disco.mbr_partition_3;
+            particion[3] = disco.mbr_partition_4;
+            string statt = " ";
+            string typp = " ";
+            string fiit = " ";
+            string nombrep = " ";
+            extendida1 = true;
+
+            statt = particion[0].part_status;
+            typp = particion[0].part_type;
+            fiit = particion[0].part_fit;
+            int sttart = particion[0].part_start;
+            int ss = (particion[0].part_s *1024);
+            nombrep = particion[0].part_name;
+
+            dot = dot + "parent2 [\n";
+            dot = dot + "shape=plaintext\n";
+            dot = dot + "label=<\n";
+            dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
+            dot = dot + "<tr><td bgcolor=\"darkorange1\" colspan=\"3\">REPORTE DE EBR</td></tr>\n";
+            //dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+
+            EBR Logica;
+            FILE *discolecturaE;
+
+            if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+            }else {
+                fseek(discolecturaE, particion[0].part_start, SEEK_SET);
+                fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                    EBR Anterior;
+                    Anterior = Logica;
+                    int posig = Logica.part_next;
+                    EBR Siguiente;
+                    fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                    fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                    string statusa = " ", fitlog = " ", nombrelog = " ";
+                    statusa = Anterior.part_status;
+                    fitlog = Anterior.part_fit;
+                    nombrelog = Anterior.part_name;
+                    
+                    int sss = (Anterior.part_s *1024);
+                    int startlog = particion[0].part_start;
+                    int neext = startlog + (Anterior.part_s * 1024) + 1;
+
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" colspan=\"3\">PARTICION</td></tr>\n";
+                    dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='fit'>part_fit</td><td bgcolor=\"darkorange2\" port='size'>"+ fitlog + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='s'>part_s</td><td bgcolor=\"darkorange2\" port='size'>"+ to_string(sss) + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='name'>part_name</td><td bgcolor=\"darkorange2\" port='size'>"+ nombrelog + "</td></tr>\n";
+
+                if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                    string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                    statusa1 = Siguiente.part_status;
+                    fitlog1 = Siguiente.part_fit;
+                    nombrelog1 = Siguiente.part_name;
+                    int neext1 = Siguiente.part_next;
+                    int sss1 = (Siguiente.part_s * 1024);
+                    int startlog1 = startlog + (Anterior.part_s * 1024 ) + 1;
+
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" colspan=\"3\">PARTICION</td></tr>\n";
+                    dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='fit'>part_fit</td><td bgcolor=\"darkorange2\" port='size'>"+ fitlog1 + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='s'>part_s</td><td bgcolor=\"darkorange2\" port='size'>"+ to_string(sss1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='name'>part_name</td><td bgcolor=\"darkorange2\" port='size'>"+ nombrelog1 + "</td></tr>\n";
+                    dot = dot + "</table>\n";
+                    dot = dot + ">];\n";
+                }
+                    fclose(discolecturaE);
+                }
+            }
+    }else if(extendida2){
+        if(actual->id == id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+        }
+
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+            } else {
+                fseek(discolectura, 0, SEEK_SET);
+                fread(&lectura, sizeof (MBR), 1, discolectura);
+                fclose(discolectura);
+            }
+
+            MBR disco = lectura;
+            Partition particion[4];
+            particion[0] = disco.mbr_partition_1;
+            particion[1] = disco.mbr_partition_2;
+            particion[2] = disco.mbr_partition_3;
+            particion[3] = disco.mbr_partition_4;
+            string statt = " ";
+            string typp = " ";
+            string fiit = " ";
+            string nombrep = " ";
+            extendida1 = true;
+
+            statt = particion[1].part_status;
+            typp = particion[1].part_type;
+            fiit = particion[1].part_fit;
+            int sttart = particion[1].part_start;
+            int ss = (particion[1].part_s *1024);
+            nombrep = particion[1].part_name;
+
+            dot = dot + "parent2 [\n";
+            dot = dot + "shape=plaintext\n";
+            dot = dot + "label=<\n";
+            dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
+            dot = dot + "<tr><td bgcolor=\"darkorange1\" colspan=\"3\">REPORTE DE EBR</td></tr>\n";
+            //dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+
+            EBR Logica;
+            FILE *discolecturaE;
+
+            if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+            }else {
+                fseek(discolecturaE, particion[1].part_start, SEEK_SET);
+                fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                    EBR Anterior;
+                    Anterior = Logica;
+                    int posig = Logica.part_next;
+                    EBR Siguiente;
+                    fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                    fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                    string statusa = " ", fitlog = " ", nombrelog = " ";
+                    statusa = Anterior.part_status;
+                    fitlog = Anterior.part_fit;
+                    nombrelog = Anterior.part_name;
+                    int sss = (Anterior.part_s *1024);
+                    int startlog = (particion[0].part_start + (particion[0].part_s *1024) + 1);
+                    int neext = startlog + (Anterior.part_s *1024 ) + 1;
+
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" colspan=\"3\">PARTICION</td></tr>\n";
+                    dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='fit'>part_fit</td><td bgcolor=\"darkorange2\" port='size'>"+ fitlog + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='s'>part_s</td><td bgcolor=\"darkorange2\" port='size'>"+ to_string(sss) + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='name'>part_name</td><td bgcolor=\"darkorange2\" port='size'>"+ nombrelog + "</td></tr>\n";
+
+                if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                    string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                    statusa1 = Siguiente.part_status;
+                    fitlog1 = Siguiente.part_fit;
+                    nombrelog1 = Siguiente.part_name;
+                    int neext1 = Siguiente.part_next;
+                    int sss1 = (Siguiente.part_s * 1024);
+                    int startlog1 = startlog + (Anterior.part_s *1024 ) + 1;
+
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" colspan=\"3\">PARTICION</td></tr>\n";
+                    dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='fit'>part_fit</td><td bgcolor=\"darkorange2\" port='size'>"+ fitlog1 + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='s'>part_s</td><td bgcolor=\"darkorange2\" port='size'>"+ to_string(sss1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='name'>part_name</td><td bgcolor=\"darkorange2\" port='size'>"+ nombrelog1 + "</td></tr>\n";
+                    dot = dot + "</table>\n";
+                    dot = dot + ">];\n";
+                }
+                    fclose(discolecturaE);
+                }
+            }
+    }else if(extendida3){
+        if(actual->id == id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+        }
+
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+            } else {
+                fseek(discolectura, 0, SEEK_SET);
+                fread(&lectura, sizeof (MBR), 1, discolectura);
+                fclose(discolectura);
+            }
+
+            MBR disco = lectura;
+            Partition particion[4];
+            particion[0] = disco.mbr_partition_1;
+            particion[1] = disco.mbr_partition_2;
+            particion[2] = disco.mbr_partition_3;
+            particion[3] = disco.mbr_partition_4;
+            string statt = " ";
+            string typp = " ";
+            string fiit = " ";
+            string nombrep = " ";
+            extendida1 = true;
+
+            statt = particion[2].part_status;
+            typp = particion[2].part_type;
+            fiit = particion[2].part_fit;
+            int sttart = particion[2].part_start;
+            int ss = (particion[2].part_s *1024);
+            nombrep = particion[2].part_name;
+
+            dot = dot + "parent2 [\n";
+            dot = dot + "shape=plaintext\n";
+            dot = dot + "label=<\n";
+            dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
+            dot = dot + "<tr><td bgcolor=\"darkorange1\" colspan=\"3\">REPORTE DE EBR</td></tr>\n";
+            //dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+
+            EBR Logica;
+            FILE *discolecturaE;
+
+            if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+            }else {
+                fseek(discolecturaE, particion[2].part_start, SEEK_SET);
+                fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                    EBR Anterior;
+                    Anterior = Logica;
+                    int posig = Logica.part_next;
+                    EBR Siguiente;
+                    fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                    fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                    string statusa = " ", fitlog = " ", nombrelog = " ";
+                    statusa = Anterior.part_status;
+                    fitlog = Anterior.part_fit;
+                    nombrelog = Anterior.part_name;
+                    int sss = (Anterior.part_s *1024);
+                    int startlog = (particion[0].part_start + (particion[0].part_s *1024) + (particion[1].part_s * 1024) + 1);
+                    int neext = startlog + (Anterior.part_s * 1024) + 1;
+
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" colspan=\"3\">PARTICION</td></tr>\n";
+                    dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='fit'>part_fit</td><td bgcolor=\"darkorange2\" port='size'>"+ fitlog + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='s'>part_s</td><td bgcolor=\"darkorange2\" port='size'>"+ to_string(sss) + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='name'>part_name</td><td bgcolor=\"darkorange2\" port='size'>"+ nombrelog + "</td></tr>\n";
+
+                if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                    string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                    statusa1 = Siguiente.part_status;
+                    fitlog1 = Siguiente.part_fit;
+                    nombrelog1 = Siguiente.part_name;
+                    int neext1 = Siguiente.part_next;
+                    int sss1 = (Siguiente.part_s * 1024);
+                    int startlog1 = startlog + (Anterior.part_s * 1024) + 1;
+
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" colspan=\"3\">PARTICION</td></tr>\n";
+                    dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='fit'>part_fit</td><td bgcolor=\"darkorange2\" port='size'>"+ fitlog1 + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='s'>part_s</td><td bgcolor=\"darkorange2\" port='size'>"+ to_string(sss1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='name'>part_name</td><td bgcolor=\"darkorange2\" port='size'>"+ nombrelog1 + "</td></tr>\n";
+                    dot = dot + "</table>\n";
+                    dot = dot + ">];\n";
+                }
+                    fclose(discolecturaE);
+                }
+            }
+    }else if(extendida4){
+        if(actual->id == id){
+            encontrado = true;
+            pathdisco = actual->ruta;
+        }
+
+            if ((discolectura = fopen(pathdisco.c_str(), "r+b")) == NULL) {
+        
+            cout<<"¡¡ Error !!  No se ha podido acceder al disco!\n";
+        
+            } else {
+                fseek(discolectura, 0, SEEK_SET);
+                fread(&lectura, sizeof (MBR), 1, discolectura);
+                fclose(discolectura);
+            }
+
+            MBR disco = lectura;
+            Partition particion[4];
+            particion[0] = disco.mbr_partition_1;
+            particion[1] = disco.mbr_partition_2;
+            particion[2] = disco.mbr_partition_3;
+            particion[3] = disco.mbr_partition_4;
+            string statt = " ";
+            string typp = " ";
+            string fiit = " ";
+            string nombrep = " ";
+            extendida1 = true;
+
+            statt = particion[3].part_status;
+            typp = particion[3].part_type;
+            fiit = particion[3].part_fit;
+            int sttart = particion[3].part_start;
+            int ss = (particion[3].part_s *1024);
+            nombrep = particion[3].part_name;
+
+            dot = dot + "parent2 [\n";
+            dot = dot + "shape=plaintext\n";
+            dot = dot + "label=<\n";
+            dot = dot + "<table border=\'1\' cellborder=\'1\'>\n";
+            dot = dot + "<tr><td bgcolor=\"darkorange1\" colspan=\"3\">REPORTE DE EBR</td></tr>\n";
+            //dot = dot +  "<tr><td bgcolor=\"khaki1\" colspan=\"3\">PARTICION</td></tr>\n";
+
+            EBR Logica;
+            FILE *discolecturaE;
+
+            if((discolecturaE = fopen(pathdisco.c_str(), "r+b")) == NULL){
+                cout<<"¡¡ Error !! No se puede acceder al disco \n"<<endl;
+            }else {
+                fseek(discolecturaE, particion[3].part_start, SEEK_SET);
+                fread(&Logica, sizeof(EBR), 1, discolecturaE);
+
+                if(Logica.part_fit == 'B' || Logica.part_fit == 'F' || Logica.part_fit == 'W'){
+                    EBR Anterior;
+                    Anterior = Logica;
+                    int posig = Logica.part_next;
+                    EBR Siguiente;
+                    fseek(discolecturaE, Anterior.part_next, SEEK_SET);
+                    fread(&Siguiente, sizeof(EBR) ,1, discolecturaE);
+
+                    string statusa = " ", fitlog = " ", nombrelog = " ";
+                    statusa = Anterior.part_status;
+                    fitlog = Anterior.part_fit;
+                    nombrelog = Anterior.part_name;
+                    int sss = (Anterior.part_s *1024);
+                    int startlog = (particion[0].part_start + (particion[0].part_s *1024) + (particion[1].part_s * 1024) + (particion[2].part_s * 1024) + 1);
+                    int neext = startlog + (Anterior.part_s * 1024) + 1 ;
+
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" colspan=\"3\">PARTICION</td></tr>\n";
+                    dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='fit'>part_fit</td><td bgcolor=\"darkorange2\" port='size'>"+ fitlog + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='s'>part_s</td><td bgcolor=\"darkorange2\" port='size'>"+ to_string(sss) + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='name'>part_name</td><td bgcolor=\"darkorange2\" port='size'>"+ nombrelog + "</td></tr>\n";
+
+                if(Siguiente.part_fit == 'B' || Siguiente.part_fit == 'F' || Siguiente.part_fit == 'W'){
+                    string statusa1 = " ", fitlog1 = " ", nombrelog1 = " ";
+                    statusa1 = Siguiente.part_status;
+                    fitlog1 = Siguiente.part_fit;
+                    nombrelog1 = Siguiente.part_name;
+                    int neext1 = Siguiente.part_next;
+                    int sss1 = (Siguiente.part_s * 1024);
+                    int startlog1 = startlog + (Anterior.part_s * 1024) + 1 ;
+
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" colspan=\"3\">PARTICION</td></tr>\n";
+                    dot = dot +  "<tr><td port='status'>part_status</td><td port='size'>"+ statusa1 + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='fit'>part_fit</td><td bgcolor=\"darkorange2\" port='size'>"+ fitlog1 + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='start'>part_start</td><td port='size'>"+ to_string(startlog1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='s'>part_s</td><td bgcolor=\"darkorange2\" port='size'>"+ to_string(sss1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td port='next'>part_next</td><td port='size'>"+ to_string(neext1) + "</td></tr>\n";
+                    dot = dot +  "<tr><td bgcolor=\"darkorange2\" port='name'>part_name</td><td bgcolor=\"darkorange2\" port='size'>"+ nombrelog1 + "</td></tr>\n";
+                    dot = dot + "</table>\n";
+                    dot = dot + ">];\n";
+                }
+                    fclose(discolecturaE);
+                }
+            }
+    }
+
     if(!encontrado){
     cout<<"¡¡ Error !! No se encuentra ninguna particion con ese ID "<<endl;
     return;
     }
     }
     
-    dot = dot + "</table>\n";
-    dot = dot + ">];\n";
+    
     dot = dot + "}";
     ofstream file;
     file.open("ReporteMBR.dot");
@@ -4200,10 +4777,6 @@ void Comando:: reporte_mbr(string nombresalida, string path, string id){
     cout << "*                 Reporte MRB creado con exito                *" << endl;
     cout << ""<<endl;
 }
-
-/* 
-* ? Falta Tener bien los espacios libres entre particiones
-*/
 
 void Comando:: reporte_disk(string nombresalida, string path, string id){
     nodoMount *actual = primeroMount;
@@ -4904,9 +5477,8 @@ void Comando:: reporte_disk(string nombresalida, string path, string id){
     system(salida.c_str());
 
     cout << ""<<endl;
-    cout << "*                 Reporte Disk creado con exito                *" << endl;
+    cout << "*                 Reporte Disk creado con exito               *" << endl;
     cout << ""<<endl;
-
 }
 
 
@@ -4983,12 +5555,10 @@ void Comando:: reporte_bm_bloc(string nombresalida, string path, string id){
                 file << salidabloques.c_str();
                 file.close();
                 cout << ""<<endl;
-                cout << "*                  Reporte BM_Bloc creado con exito                *" << endl;
+                cout << "*               Reporte BM_Bloc creado con exito              *" << endl;
                 cout << ""<<endl;
-
             break;
         }
-        
     }
     actual = actual->siguienteMontado;
         }
@@ -5067,12 +5637,10 @@ void Comando:: reporte_bm_inode(string nombresalida, string path, string id){
                 file << salidainodos.c_str();
                 file.close();
                 cout << ""<<endl;
-                cout << "*                 Reporte BM_Inode creado con exito               *" << endl;
+                cout << "*                Reporte BM_Inode creado con exito             *" << endl;
                 cout << ""<<endl;
-
             break;
         }
-        
     }
     actual = actual->siguienteMontado;
         }
@@ -5218,7 +5786,7 @@ void Comando:: reporte_journaling(string nombresalida, string path, string id){
     system(salida.c_str());
 
     cout << ""<<endl;
-    cout << "*                 Reporte Journaling creado con exito                *" << endl;
+    cout << "*              Reporte Journaling creado con exito            *" << endl;
     cout << ""<<endl;
 }
 
@@ -5340,7 +5908,6 @@ void Comando:: reporte_Sb(string nombresalida, string path, string id){
     system(salida.c_str());
 
     cout << ""<<endl;
-    cout << "*                 Reporte SuperBloque creado con exito                *" << endl;
+    cout << "*               Reporte SuperBloque creado con exito          *" << endl;
     cout << ""<<endl;
-
 }

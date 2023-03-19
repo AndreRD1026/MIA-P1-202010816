@@ -186,7 +186,9 @@ class Comando{
         void crear_grupo(string name);
         void eliminar_grupo(string name);
         void comando_mkusr(string user, string pass, string grp);
+        void comando_rmusr(string user);
         void crear_usuario(string user, string pass, string grp);
+        void eliminar_usuario(string user);
         void comando_rep(string name, string path, string id, string ruta);
         void reporte_mbr(string nombresalida, string path, string id);
         void reporte_disk(string nombresalida, string path, string id);

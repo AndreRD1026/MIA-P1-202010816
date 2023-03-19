@@ -132,7 +132,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
                 param = replace_txt(param, ">add=", "");
                 param = replace_txt(param, "\"", "");
                 cmd.param.Add = param;
-            }    else {
+            }else {
                 cout<<"Un parametro es incorrecto"<<endl;
             }
         }
@@ -149,7 +149,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
                 param = replace_txt(param, ">name=", "");
                 param = replace_txt(param, "\"", "");
                 cmd.param.Name = param;
-            } else {
+            }else {
                 cout<<"Un parametro es incorrecto"<<endl;
             }
         }
@@ -179,7 +179,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             }else if(param.find(">fs=") == 0){
                 param = replace_txt(param, ">fs=", "");
                 cmd.param.Fs = param;
-            } else {
+            }else {
                 cout<<"Un parametro es incorrecto"<<endl;
             }
         }
@@ -198,7 +198,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             }else if(param.find(">id=") == 0){
                 param = replace_txt(param, ">id=", "");
                 cmd.param.ID = param;
-            } else {
+            }else {
                 cout<<"Un parametro es incorrecto"<<endl;
             }
         }
@@ -292,7 +292,7 @@ void Analizador::identificarParametros(string comando, vector<string> parametros
             }else if(param.find(">ruta=") == 0){
                 param = replace_txt(param, ">ruta=", "");
                 cmd.param.Ruta = param;
-            }  else {
+            } else {
                 cout<<"Un parametro es incorrecto"<<endl;
             }
         }
