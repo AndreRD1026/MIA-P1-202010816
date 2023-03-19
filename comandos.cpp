@@ -160,6 +160,9 @@ void Comando::comando_mkdisk(string tam, string path, string ajuste, string dim)
         // Creacion del path
         string crear = "mkdir -p \""  + ruta + "\"";
         system(crear.c_str());
+
+        string tenerpermiso = "sudo chmod 777 \"" + ruta + "\"" ;
+        system(tenerpermiso.c_str());
         if ((archivo_binario = fopen(path.c_str(), "w+b")) == NULL)
         {
             cout << "¡¡ Error !! No se pudo acceder al disco" << endl;
